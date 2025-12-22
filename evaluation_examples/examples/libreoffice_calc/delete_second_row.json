@@ -1,0 +1,74 @@
+{
+  "id": "delete-second-row-task",
+  "snapshot": "libreoffice_calc",
+  "instruction": "删除 Excel 文件中的第二行（第一行数据行）。",
+  "source": "custom-task",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/libreoffice_calc/0326d92d-d218-48a8-9ca1-981cd6d064c7/SalesRep.xlsx",
+            "path": "/home/user/SalesRep.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/SalesRep.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/delete-second-row-task",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "SalesRep.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_second_row_deleted_without_gold",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/SalesRep.xlsx",
+      "dest": "SalesRep.xlsx"
+    },
+    "options": {
+      "original_file_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/libreoffice_calc/0326d92d-d218-48a8-9ca1-981cd6d064c7/SalesRep.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

@@ -167,4 +167,3 @@ python3 simple_score.py --model_name cu_sft_0902_nothink_history_508
 ```
 
 
-"# vibe_working_data" 

@@ -1,0 +1,20 @@
+{
+  "id": "simple_desktop_task",
+  "snapshot": "os",
+  "instruction": "简单的桌面任务：创建一个文件夹",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": "mkdir -p /home/user/Desktop/test_folder",
+        "shell": true
+      }
+    }
+  ],
+  "related_apps": [
+    "os"
+  ],
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
