@@ -708,6 +708,29 @@ def compare_table(result: str, expected: str = None, **options) -> float:
                                 f"Failed to read cell value at {r['coordinate']}: {e}"
                             )
                             val = None
+                    elif prpt == "formula":
+                        # Support checking cell formula directly
+                        try:
+                            if cell.data_type == "f":
+                                # For formula cells, get the formula text
+                                # In openpyxl, formula is stored in cell.value for formula cells
+                                # But we need the actual formula text, not the calculated value
+                                # Try to get formula from internal representation
+                                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                                    val = cell._value
+                                elif hasattr(cell, "formula"):
+                                    val = cell.formula
+                                else:
+                                    # Fallback: try to reconstruct from value if it's a formula
+                                    val = f"={cell.value}" if cell.value is not None else None
+                            else:
+                                val = None
+                            logger.debug(f"Cell {r['coordinate']} formula: {val}")
+                        except Exception as e:
+                            logger.error(
+                                f"Failed to read cell formula at {r['coordinate']}: {e}"
+                            )
+                            val = None
                     else:
                         try:
                             val = _read_cell_style(prpt, cell)
@@ -926,5 +949,219 @@ def verify_second_row_deleted_without_gold(result: str, expected: str = None, **
     except Exception as e:
         import traceback
         logger.error(f"评估出错: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_regexp_extract(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if REGEX formulas exist in specified columns (B and C) with correct patterns.
+    
+    This function checks:
+    1. Whether cells in specified columns contain REGEX formulas
+    2. Whether formulas reference the corresponding A column cell (B2->A2, B3->A3, etc.)
+    3. Whether formulas contain the correct pattern text (牛肉丸 for B column, 牛筋丸 for C column)
+    4. Whether formulas have the correct structure with lookbehind and lookahead
+    
+    The function automatically detects the number of data rows by checking the data column
+    (default: A column) for non-empty cells. It stops checking after finding 3 consecutive
+    empty rows.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_columns: List of columns to check (e.g., ["B", "C"])
+            - start_row: Starting row number (default: 2)
+            - end_row: Ending row number (optional, will auto-detect if not provided)
+            - expected_pattern: Expected function name (default: "REGEX")
+            - column_patterns: Dict mapping column letters to expected pattern text
+            - data_column: Column to check for data to determine end_row (default: "A")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_columns = options.get('check_columns', ['B', 'C'])
+        start_row = options.get('start_row', 2)
+        end_row = options.get('end_row', None)  # Optional, will auto-detect if not provided
+        expected_pattern = options.get('expected_pattern', 'REGEX')
+        column_patterns = options.get('column_patterns', {'B': '牛肉丸', 'C': '牛筋丸'})
+        data_column = options.get('data_column', 'A')  # Column to check for data to determine end_row
+        
+        if not check_columns:
+            logger.error("No columns specified in options")
+            return 0.0
+        
+        logger.info(f"Verifying REGEX formulas in file: {result}")
+        logger.info(f"Columns to check: {check_columns}")
+        logger.info(f"Start row: {start_row}")
+        logger.info(f"Expected function: {expected_pattern}")
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Auto-detect end_row by checking data_column for non-empty cells
+        if end_row is None:
+            logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+            max_row = ws.max_row
+            end_row = start_row  # Start from start_row
+            
+            # Find the last row with data in the data column
+            # Check up to max_row, but stop if we find 3 consecutive empty rows
+            empty_count = 0
+            for row_num in range(start_row, max_row + 1):
+                data_cell = ws[f"{data_column}{row_num}"]
+                if data_cell.value is None or (isinstance(data_cell.value, str) and data_cell.value.strip() == ""):
+                    empty_count += 1
+                    if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                        break
+                else:
+                    empty_count = 0
+                    end_row = row_num  # Update end_row to the last row with data
+            
+            logger.info(f"Auto-detected end row: {end_row}")
+        else:
+            logger.info(f"Using specified end row: {end_row}")
+        
+        # Check each column and row
+        all_passed = True
+        for col_letter in check_columns:
+            expected_pattern_text = column_patterns.get(col_letter)
+            if not expected_pattern_text:
+                logger.warning(f"No pattern text specified for column {col_letter}, skipping")
+                continue
+            
+            logger.info(f"Checking column {col_letter} with pattern '{expected_pattern_text}' (rows {start_row} to {end_row})")
+            
+            for row_num in range(start_row, end_row + 1):
+                cell_coord = f"{col_letter}{row_num}"
+                try:
+                    cell = ws[cell_coord]
+                    logger.debug(f"Checking cell {cell_coord}")
+                    
+                    # Check if cell contains a formula
+                    if cell.data_type != "f":
+                        logger.warning(f"Cell {cell_coord} does not contain a formula")
+                        all_passed = False
+                        continue
+                    
+                    # Get formula text
+                    formula_text = None
+                    if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                        formula_text = cell._value
+                    elif hasattr(cell, "formula"):
+                        formula_text = cell.formula
+                    else:
+                        # Try to get from value attribute
+                        if cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                            formula_text = cell.value
+                    
+                    if formula_text is None:
+                        logger.warning(f"Could not extract formula from cell {cell_coord}")
+                        all_passed = False
+                        continue
+                    
+                    # Remove leading = if present for comparison
+                    formula_clean = formula_text.lstrip("=")
+                    logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+                    
+                    # Check 1: Formula contains REGEX function
+                    if expected_pattern.upper() not in formula_text.upper():
+                        logger.warning(f"Cell {cell_coord} formula does not contain {expected_pattern}")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 2: Formula contains expected pattern text (牛肉丸 or 牛筋丸)
+                    if expected_pattern_text not in formula_text:
+                        logger.warning(f"Cell {cell_coord} formula does not contain pattern text '{expected_pattern_text}'")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 3: Formula contains REGEX function call structure
+                    regex_match = re.search(r'REGEX\s*\([^)]+\)', formula_text, re.IGNORECASE)
+                    if not regex_match:
+                        logger.warning(f"Cell {cell_coord} formula does not have correct REGEX structure")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 4: Formula references the corresponding A column cell (A2, A3, etc.)
+                    expected_a_cell = f"A{row_num}"
+                    # Check if formula contains A column reference with the same row number
+                    a_cell_pattern = rf'A{row_num}\b'
+                    if not re.search(a_cell_pattern, formula_text, re.IGNORECASE):
+                        logger.warning(f"Cell {cell_coord} formula does not reference {expected_a_cell}")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 5: Formula contains lookbehind pattern (?<=...)
+                    if "(?<=" not in formula_text:
+                        logger.warning(f"Cell {cell_coord} formula does not contain lookbehind pattern (?<=...)")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 6: Formula contains lookahead pattern (?=,)
+                    if "(?=," not in formula_text:
+                        logger.warning(f"Cell {cell_coord} formula does not contain lookahead pattern (?=,)")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        continue
+                    
+                    # Check 7: Formula contains \d+ pattern
+                    if "\\d+" not in formula_text:
+                        # Also check for unescaped version in the pattern
+                        if not re.search(r'\\d\+|d\+', formula_text):
+                            logger.warning(f"Cell {cell_coord} formula does not contain digit pattern \\d+")
+                            logger.warning(f"Formula: {formula_text}")
+                            all_passed = False
+                            continue
+                    
+                    # Check 8: Formula pattern should contain 5 dots after pattern text
+                    # Pattern should be like: (?<=牛肉丸.....)
+                    pattern_with_dots = expected_pattern_text + "....."
+                    if pattern_with_dots not in formula_text:
+                        logger.warning(f"Cell {cell_coord} formula pattern may not have 5 dots after '{expected_pattern_text}'")
+                        logger.debug(f"Formula: {formula_text}")
+                        # Don't fail, just warn - the pattern might be correct but formatted differently
+                    
+                    logger.info(f"✓ Cell {cell_coord} has valid REGEX formula: {formula_text}")
+                    
+                except Exception as e:
+                    logger.error(f"Error checking cell {cell_coord}: {e}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    all_passed = False
+        
+        if all_passed:
+            logger.info("=" * 60)
+            logger.info(f"✓ All cells in columns {check_columns} contain correct {expected_pattern} formulas")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ {expected_pattern} formula verification failed")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0

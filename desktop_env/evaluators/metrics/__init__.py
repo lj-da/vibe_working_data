@@ -122,7 +122,8 @@ from .table import (
     compare_table,
     compare_csv,
     compare_conference_city_in_order,
-    verify_second_row_deleted_without_gold
+    verify_second_row_deleted_without_gold,
+    verify_regexp_extract
 )
 from .thunderbird import (
     check_thunderbird_prefs,

@@ -1,0 +1,83 @@
+{
+  "id": "e8d1679d-efab-4acd-b0f9-d7d472c851c6",
+  "snapshot": "libreoffice_calc",
+  "instruction": "excel求助 ，我想单独列出牛肉丸和牛筋丸每一列有多少袋，要用什么函数呀",
+  "method": "Use the REGEX function to extract numbers following specific text patterns. For beef meatballs in column B, use the formula =REGEX(A2,\"(?<=牛肉丸.....)\\d+(?=,)\") in cell B2. For beef tendon balls in column C, use =REGEX(A2,\"(?<=牛筋丸.....)\\d+(?=,)\") in cell C2. The formula uses a positive lookbehind (?<=牛肉丸.....) to find '牛肉丸' followed by 5 characters, then captures one or more digits \\d+, and uses a positive lookahead (?=,) to ensure the digits are followed by a comma. Copy the formula down for all rows. If the pattern is not found, the formula will return an error or empty value.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LDADASD/vibe_working_data/resolve/main/2.xlsx",
+            "path": "/home/user/data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/e8d1679d-efab-4acd-b0f9-d7d472c851c6",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_regexp_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/data.xlsx",
+      "dest": "data.xlsx"
+    },
+    "options": {
+      "check_columns": ["B", "C"],
+      "start_row": 2,
+      "expected_pattern": "REGEX",
+      "column_patterns": {
+        "B": "牛肉丸",
+        "C": "牛筋丸"
+      },
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
