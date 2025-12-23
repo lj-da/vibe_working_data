@@ -1,0 +1,83 @@
+{
+  "id": "a1cc026c-5b12-47fd-95c5-ca87c79ba7bf",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel制作百分比进度条，在D列显示进度条和百分比",
+  "method": "Use the REPT and TEXT functions to create a progress bar with percentage. In column D, starting from row 2, enter the formula =REPT(\"|\",C2/B2*50)&TEXT(C2/B2,\"0%\") for the first row, then copy the formula down to all rows with data. The REPT function repeats the \"|\" character a number of times equal to C2/B2*50, creating a visual progress bar. The TEXT function formats C2/B2 as a percentage (0%). The & operator concatenates the progress bar and percentage together. Copy the formula down for all rows with data in columns B and C (D2, D3, D4, etc.), where each formula references the corresponding B and C column cells (B2/C2, B3/C3, B4/C4, etc.).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/103.xlsx",
+            "path": "/home/user/progress_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/progress_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/a1cc026c-5b12-47fd-95c5-ca87c79ba7bf",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "progress_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_rept_text_progress_bar",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/progress_data.xlsx",
+      "dest": "progress_data.xlsx"
+    },
+    "options": {
+      "check_column": "D",
+      "start_row": 2,
+      "expected_functions": ["REPT", "TEXT"],
+      "numerator_column": "C",
+      "denominator_column": "B",
+      "rept_char": "|",
+      "rept_multiplier": 50,
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

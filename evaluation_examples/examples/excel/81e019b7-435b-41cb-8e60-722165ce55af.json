@@ -1,0 +1,86 @@
+{
+  "id": "81e019b7-435b-41cb-8e60-722165ce55af",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel根据K列的开工日期和L列的完工日期，计算实际工作天数（排除周末），并在M列显示结果",
+  "method": "1. Open the Excel file in LibreOffice Calc. 2. In column L, starting from row 3, enter the NETWORKDAYS formula: =NETWORKDAYS(J3,K3) for the first row, then copy the formula down to all rows with data. 3. The NETWORKDAYS function calculates the number of working days (Monday to Friday) between two dates, excluding weekends. 4. Ensure the formula references the correct start date cell (column J) and end date cell (column K) for each row. 5. Save the file.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/88.xlsx",
+            "path": "/home/user/workdays_calculation.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/workdays_calculation.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/81e019b7-435b-41cb-8e60-722165ce55af",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "workdays_calculation.xlsx - LibreOffice Calc",
+          "strict": true
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey(\"ctrl\", \"s\");"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_networkdays_formula",
+    "expected": {
+      "type": "vm_file",
+      "path": "/home/user/workdays_calculation.xlsx",
+      "dest": "workdays_calculation.xlsx"
+    },
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/workdays_calculation.xlsx",
+      "dest": "workdays_calculation.xlsx"
+    },
+    "options": {
+      "check_column": "M",
+      "start_row": 16,
+      "start_date_column": "K",
+      "end_date_column": "L",
+      "expected_function": "NETWORKDAYS",
+      "data_column": "K"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

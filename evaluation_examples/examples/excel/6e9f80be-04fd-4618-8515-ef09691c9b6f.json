@@ -1,0 +1,81 @@
+{
+  "id": "6e9f80be-04fd-4618-8515-ef09691c9b6f",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel从A列的地址中提取单号，显示在C列",
+  "method": "Use the REGEX function to extract order numbers from address text. The order numbers are 10-character alphanumeric codes (e.g., B2409A0114, B2409A0171). In column C, use the formula =REGEX(A1,\"[a-zA-Z0-9]{10}\") in cell C1, where A1 contains the address text. The pattern [a-zA-Z0-9]{10} matches exactly 10 alphanumeric characters (letters or digits). Copy the formula down for all rows with data. The formula will extract the 10-character order number from each address string.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/6.xlsx",
+            "path": "/home/user/order_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/order_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/6e9f80be-04fd-4618-8515-ef09691c9b6f",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "order_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_regexp_order_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/order_data.xlsx",
+      "dest": "order_data.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 1,
+      "expected_pattern": "REGEX",
+      "expected_formula_pattern": "REGEX(A",
+      "regex_pattern": "[a-zA-Z0-9]{10}",
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

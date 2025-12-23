@@ -1,0 +1,79 @@
+{
+  "id": "11bee2bd-3d08-4b49-bce9-f8e3dcff31d0",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel从B列的采购明细中提取水笔的金额，并在C列显示结果",
+  "method": "Use the REGEX function with IFERROR to extract specific content from purchase details. In column C, starting from row 2, enter the formula =IFERROR(REGEX(B2,\".*水笔(\\\\d+).*\",\"$1元\"),\"\") for the first row, then copy the formula down to all rows with data. The REGEX function uses the pattern \".*水笔(\\\\d+).*\" to find \"水笔\" followed by one or more digits in column B, captures the digits using a capture group (\\\\d+), and replaces it with \"$1元\" where $1 refers to the captured digits. The IFERROR function wraps the REGEX to return an empty string if no match is found. Copy the formula down for all rows with data in column B (C2, C3, C4, etc.), where each formula references the corresponding B column cell (B2, B3, B4, etc.).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/91.xlsx",
+            "path": "/home/user/purchase_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/purchase_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/11bee2bd-3d08-4b49-bce9-f8e3dcff31d0",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "purchase_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_iferror_regex_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/purchase_data.xlsx",
+      "dest": "purchase_data.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 2,
+      "expected_pattern_text": "水笔",
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

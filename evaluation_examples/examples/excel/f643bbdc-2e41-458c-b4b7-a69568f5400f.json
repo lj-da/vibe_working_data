@@ -1,0 +1,79 @@
+{
+  "id": "f643bbdc-2e41-458c-b4b7-a69568f5400f",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel对不同的两列做对账",
+  "method": "Use conditional formatting with a formula to compare two tables and highlight differences. Select the entire first table (columns A, B, C), then go to Format > Conditional Formatting > New Rule. Choose 'Use a formula to determine which cells to format'. Enter the formula =A1<>E1 to compare cell A1 with cell E1 (the corresponding cell in the second table). If the values are different, the cell will be formatted with a different color. The formula uses relative references, so when applied to the entire first table, it will compare A1 with E1, A2 with E2, B1 with F1, B2 with F2, C1 with G1, C2 with G2, and so on. Set the format to a different color (e.g., pink or yellow) to highlight cells where values differ between the two tables. This allows quick visual identification of discrepancies in the data reconciliation.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/42.xlsx",
+            "path": "/home/user/reconciliation_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/reconciliation_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/f643bbdc-2e41-458c-b4b7-a69568f5400f",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "reconciliation_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_conditional_formatting_reconciliation",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/reconciliation_data.xlsx",
+      "dest": "reconciliation_data.xlsx"
+    },
+    "options": {
+      "check_range": "A1:C16",
+      "compare_range": "E1:G16",
+      "expected_formula": "A1<>E1",
+      "format_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

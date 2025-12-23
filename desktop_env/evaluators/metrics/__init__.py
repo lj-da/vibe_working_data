@@ -123,7 +123,15 @@ from .table import (
     compare_csv,
     compare_conference_city_in_order,
     verify_second_row_deleted_without_gold,
-    verify_regexp_extract
+    verify_regexp_extract,
+    verify_regexp_order_extract,
+    verify_sumif_formula,
+    verify_conditional_formatting_reconciliation,
+    verify_right_len_find_extract,
+    verify_networkdays_formula,
+    verify_iferror_regex_extract,
+    verify_rept_text_progress_bar,
+    verify_id_extract_gender_age_birthday
 )
 from .thunderbird import (
     check_thunderbird_prefs,

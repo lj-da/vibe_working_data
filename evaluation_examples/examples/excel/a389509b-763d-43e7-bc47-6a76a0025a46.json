@@ -1,0 +1,81 @@
+{
+  "id": "a389509b-763d-43e7-bc47-6a76a0025a46",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel从B列的身份证号中快速提取性别、年龄、生日，分别显示在C列、D列和E列",
+  "method": "Use MID, MOD, IF, TEXT, DATEDIF, and TODAY functions to extract gender, age, and birthday from ID numbers. For gender in column C, starting from row 3, enter the formula =IF(MOD(MID(B3,17,1),2),\"男\",\"女\") which extracts the 17th digit of the ID number, checks if it's odd or even using MOD, and returns \"男\" (male) for odd numbers or \"女\" (female) for even numbers. For age in column D, enter the formula =DATEDIF(TEXT(MID(B3,7,8),\"0-00-00\"),TODAY(),\"Y\") which extracts the date portion (characters 7-14) from the ID number, formats it as a date using TEXT, and calculates the age using DATEDIF with TODAY(). For birthday in column E, enter the formula =--TEXT(MID(B3,7,8),\"0-00-00\") which extracts and formats the date, then converts it to a serial number using --. Format column E as date format if the result shows as a 5-digit number. Copy all formulas down for all rows with data in column B (C3, C4, C5, etc.), where each formula references the corresponding B column cell (B3, B4, B5, etc.).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/106.xlsx",
+            "path": "/home/user/id_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/id_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/a389509b-763d-43e7-bc47-6a76a0025a46",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "id_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_id_extract_gender_age_birthday",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/id_data.xlsx",
+      "dest": "id_data.xlsx"
+    },
+    "options": {
+      "id_column": "B",
+      "gender_column": "C",
+      "age_column": "D",
+      "birthday_column": "E",
+      "start_row": 3,
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

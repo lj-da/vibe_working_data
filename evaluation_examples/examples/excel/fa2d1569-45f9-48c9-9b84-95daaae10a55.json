@@ -1,0 +1,81 @@
+{
+  "id": "fa2d1569-45f9-48c9-9b84-95daaae10a55",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel从B列的信息中提取姓名，显示在C列",
+  "method": "Use the RIGHT, LEN, and FIND functions to extract names with different character counts from column B. The formula =RIGHT(B2,LEN(B2)-FIND(\"班\",B2)) in cell C2 extracts the name from the information string in B2. The FIND(\"班\",B2) function locates the position of the character \"班\" (class) in the string. LEN(B2) gets the total length of the string. LEN(B2)-FIND(\"班\",B2) calculates the number of characters from after \"班\" to the end of the string. RIGHT(B2,...) extracts those characters from the right side, which is the name part after \"班\". Copy this formula down for all rows with data in column B (C2, C3, C4, etc.), where each formula references the corresponding B column cell (B2, B3, B4, etc.).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/44.xlsx",
+            "path": "/home/user/student_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/student_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/fa2d1569-45f9-48c9-9b84-95daaae10a55",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "student_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_right_len_find_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/student_data.xlsx",
+      "dest": "student_data.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 2,
+      "expected_functions": ["RIGHT", "LEN", "FIND"],
+      "expected_formula_pattern": "RIGHT(B",
+      "find_text": "班",
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

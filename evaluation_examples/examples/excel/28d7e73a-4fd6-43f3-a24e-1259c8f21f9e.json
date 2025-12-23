@@ -1,0 +1,82 @@
+{
+  "id": "28d7e73a-4fd6-43f3-a24e-1259c8f21f9e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel计算各项花费的总和，结果显示在F列",
+  "method": "Use the SUMIF function to calculate the total cost for each expense item. The formula =SUMIF(B2:B16,E2,C2:C16) in cell F2 sums all values in column C (cost) where the corresponding value in column B (item) matches the value in E2. The range B2:B16 contains the items, E2 contains the criteria (item name), and C2:C16 contains the costs to sum. Copy the formula down for all items in column E (F2 to F6). This will calculate the total expenditure for each item (breakfast, lunch, dinner, drinks, public transport) across all dates.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/11.xlsx",
+            "path": "/home/user/expense_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/expense_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/28d7e73a-4fd6-43f3-a24e-1259c8f21f9e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "expense_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumif_formula",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/expense_data.xlsx",
+      "dest": "expense_data.xlsx"
+    },
+    "options": {
+      "check_column": "F",
+      "start_row": 2,
+      "expected_function": "SUMIF",
+      "criteria_column": "B",
+      "sum_column": "C",
+      "criteria_column_start": 2,
+      "data_column": "E"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
