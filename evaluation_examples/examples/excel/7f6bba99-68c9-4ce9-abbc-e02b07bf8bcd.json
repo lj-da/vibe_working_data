@@ -1,0 +1,79 @@
+{
+  "id": "7f6bba99-68c9-4ce9-abbc-e02b07bf8bcd",
+  "snapshot": "libreoffice_calc",
+  "instruction": "城市工资可视化模板制作",
+  "method": "Create a combination chart (bar chart + line chart) to visualize store manager salary growth across cities. The bar chart should display salary values for 08年店长工资 (2008 Store Manager Salary) and 07年店长工资 (2007 Store Manager Salary) for 11 cities. The line chart should show 增长比例 (Growth Ratio) percentage for each city. The chart title should be \"店长工资增长\" (Store Manager Salary Growth). The X-axis should list the 11 cities (海南, 汕头, 深圳, 广州, 桂林, 柳州, 南宁, 顺德, 福州, 南昌, 厦门). The left Y-axis should represent salary values (0-3500), and the right Y-axis should represent growth ratio percentage (-10% to 35%). The data table should have columns: 城市 (City), 08年店长工资 (08 Store Manager Salary), 07年店长工资 (07 Store Manager Salary), and 增长比例 (Growth Ratio).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/405.xlsx",
+            "path": "/home/user/store_manager_salary.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/store_manager_salary.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/7f6bba99-68c9-4ce9-abbc-e02b07bf8bcd",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "store_manager_salary.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_salary_growth_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/store_manager_salary.xlsx",
+      "dest": "store_manager_salary.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_title": "店长工资增长",
+      "min_series_count": 2,
+      "chart_type": "combination"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

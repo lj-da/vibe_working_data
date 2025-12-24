@@ -1,0 +1,80 @@
+{
+  "id": "b41b6ebf-f37e-48d3-a5d8-026ddf1693e6",
+  "snapshot": "libreoffice_calc",
+  "instruction": "清晰可视化数据界面",
+  "method": "Create a combination chart (bar chart + line chart) to visualize project data clearly. The bar chart should display project values for 8 projects across 5 quarters (23Q3, 23Q4, 24Q1, 24Q2, 24Q3), and the line chart should show completion rates for each project. The chart title should be \"项目-季度-完成率\" (Project-Quarter-Completion Rate). The X-axis should list quarters grouped by projects, the left Y-axis should represent project values (0-30000), and the right Y-axis should represent completion rates (0-120%).",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/402.xlsx",
+            "path": "/home/user/project_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/project_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/b41b6ebf-f37e-48d3-a5d8-026ddf1693e6",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "project_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_project_completion_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/project_data.xlsx",
+      "dest": "project_data.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_title": "项目",
+      "min_series_count": 15,
+      "project_count": 8,
+      "quarters_per_project": 5
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

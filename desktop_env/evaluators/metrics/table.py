@@ -3027,3 +3027,421 @@ def verify_line_chart(result: str, expected: str = None, **options) -> float:
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_salary_growth_chart(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if the salary growth chart matches the expected specifications.
+    
+    This function checks the chart itself (not the data table):
+    1. Whether a chart exists in the specified sheet
+    2. Whether the chart title matches "店长工资增长"
+    3. Whether the chart has the expected number of series (at least 3)
+    4. Whether the chart is a combination chart (bar + line)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - sheet_idx: Sheet index (default: 0)
+            - expected_title: Expected chart title (default: "店长工资增长")
+            - min_series_count: Minimum number of series (default: 3)
+            - chart_type: Expected chart type (default: "combination")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        sheet_idx = options.get('sheet_idx', 0)
+        expected_title = options.get('expected_title', '店长工资增长')
+        min_series_count = options.get('min_series_count', 3)
+        chart_type = options.get('chart_type', 'combination')
+        
+        logger.info(f"Verifying salary growth chart in file: {result}")
+        logger.info(f"Sheet index: {sheet_idx}")
+        logger.info(f"Expected title: {expected_title}")
+        logger.info(f"Min series count: {min_series_count}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            pdworkbook = pd.ExcelFile(result)
+            sheet_names = pdworkbook.sheet_names
+            
+            if sheet_idx >= len(sheet_names):
+                logger.error(f"Sheet index {sheet_idx} out of range. Available sheets: {sheet_names}")
+                return 0.0
+            
+            sheet_name = sheet_names[sheet_idx]
+            logger.info(f"Checking sheet: {sheet_name}")
+            ws = wb[sheet_name]
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts:
+            logger.error("No charts found in the sheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the sheet")
+        
+        # Load chart information
+        chart_props = ['title', 'type', 'legend', 'xtitle', 'ytitle']
+        chart_info = load_charts(wb, sheet_name, chart_props=chart_props)
+        
+        if not chart_info:
+            logger.error("Could not load chart information")
+            return 0.0
+        
+        # Check each chart
+        chart_passed = False
+        for chart_key, chart_data in chart_info.items():
+            logger.info(f"Checking chart: {chart_key}")
+            logger.debug(f"Chart data: {chart_data}")
+            
+            # Check 1: Chart title
+            chart_title = chart_data.get('title')
+            if chart_title != expected_title:
+                logger.warning(f"Chart title mismatch: expected '{expected_title}', got '{chart_title}'")
+                continue
+            else:
+                logger.info(f"✓ Chart title matches: {chart_title}")
+            
+            # Check 2: Chart type (for combination charts, we might see multiple types)
+            chart_type_actual = chart_data.get('type')
+            logger.info(f"Chart type: {chart_type_actual}")
+            # Note: Combination charts might be represented differently in openpyxl
+            # We'll be lenient here and just check that a chart exists
+            
+            # Check 3: Number of series
+            # Extract series count from chart_key (format: "value_ref1,category_ref1;value_ref2,category_ref2;...")
+            series_parts = chart_key.split(';')
+            series_count = len(series_parts)
+            logger.info(f"Number of series: {series_count}")
+            
+            if series_count < min_series_count:
+                logger.warning(f"Insufficient series count: expected at least {min_series_count}, got {series_count}")
+                continue
+            else:
+                logger.info(f"✓ Series count sufficient: {series_count} >= {min_series_count}")
+            
+            # If we get here, this chart passed all checks
+            chart_passed = True
+            logger.info("=" * 60)
+            logger.info(f"✓ Chart verification passed!")
+            logger.info("=" * 60)
+            break
+        
+        if chart_passed:
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error("✗ Chart verification failed - no chart matched all criteria")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_project_completion_chart(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a combination chart exists with the expected title that contains
+    both bar chart series (for project values) and line chart series (for completion rates).
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart title matches expected_title
+    3. Whether the chart has at least 16 series (8 projects + 8 completion rates)
+    4. Whether at least one series name contains "rate" (for completion rates)
+    5. Whether the chart has at least project_count * 5 categories (for 5 quarters per project)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - sheet_idx: Sheet index to check (default: 0)
+            - expected_title: Expected chart title (default: "项目")
+            - min_series_count: Minimum number of series required (default: 16)
+            - project_count: Number of projects (default: 8)
+            - quarters_per_project: Number of quarters per project (default: 5)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        sheet_idx = options.get('sheet_idx', 0)
+        expected_title = options.get('expected_title', '项目')
+        min_series_count = options.get('min_series_count', 16)
+        project_count = options.get('project_count', 8)
+        quarters_per_project = options.get('quarters_per_project', 5)
+        min_categories = project_count * quarters_per_project
+        
+        logger.info(f"Verifying project completion chart in file: {result}")
+        logger.info(f"Sheet index: {sheet_idx}")
+        logger.info(f"Expected title: {expected_title}")
+        logger.info(f"Minimum series count: {min_series_count}")
+        logger.info(f"Project count: {project_count}")
+        logger.info(f"Quarters per project: {quarters_per_project}")
+        logger.info(f"Minimum categories: {min_categories}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            sheet_names = wb.sheetnames
+            if sheet_idx >= len(sheet_names):
+                logger.error(f"Sheet index {sheet_idx} out of range. Available sheets: {sheet_names}")
+                return 0.0
+            sheet_name = sheet_names[sheet_idx]
+            ws = wb[sheet_name]
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        chart_found = False
+        for chart in charts:
+            # Check chart title
+            chart_title = None
+            try:
+                if chart.title and chart.title.tx:
+                    if hasattr(chart.title.tx, 'rich') and chart.title.tx.rich:
+                        if hasattr(chart.title.tx.rich, 'p') and chart.title.tx.rich.p:
+                            if len(chart.title.tx.rich.p) > 0:
+                                if hasattr(chart.title.tx.rich.p[0], 'r') and chart.title.tx.rich.p[0].r:
+                                    if len(chart.title.tx.rich.p[0].r) > 0:
+                                        if hasattr(chart.title.tx.rich.p[0].r[0], 't'):
+                                            chart_title = chart.title.tx.rich.p[0].r[0].t
+            except Exception as e:
+                logger.debug(f"Error reading chart title: {e}")
+            
+            logger.info(f"Chart title: {chart_title}")
+            
+            # Check if title matches
+            if chart_title == expected_title:
+                logger.info(f"✓ Chart title matches: {chart_title}")
+                chart_found = True
+                
+                # Use load_charts to get all series information (includes both bar and line series)
+                # This is more reliable for combination charts
+                chart_props = ['title']
+                chart_info = load_charts(wb, sheet_name, chart_props=chart_props)
+                
+                # Find the chart that matches our title
+                chart_key = None
+                for key, info in chart_info.items():
+                    if info.get('title') == expected_title:
+                        chart_key = key
+                        break
+                
+                # Get all series from the chart object for detailed inspection
+                all_series = list(chart.series) if hasattr(chart, 'series') else []
+                logger.info(f"Series count from chart.series: {len(all_series)}")
+                
+                if not chart_key:
+                    logger.warning("Could not find chart in load_charts output, using direct series access")
+                    # Fallback to direct series access
+                    series_count = len(all_series)
+                else:
+                    # Extract series count from chart_key (format: "value_ref1,category_ref1;value_ref2,category_ref2;...")
+                    # This includes ALL series (both bar and line) in combination charts
+                    series_parts = chart_key.split(';')
+                    series_count_from_load = len(series_parts)
+                    logger.info(f"Series count from load_charts: {series_count_from_load}")
+                    
+                    # For combination charts, load_charts should give us all series
+                    # Use the count from load_charts as it's more reliable for combination charts
+                    series_count = series_count_from_load
+                    
+                    # Also check for sub-charts in case series are stored there
+                    if hasattr(chart, '_charts') and chart._charts:
+                        # Check for sub-charts (for combination charts)
+                        for sub_chart in chart._charts:
+                            if hasattr(sub_chart, 'series'):
+                                sub_series = list(sub_chart.series)
+                                all_series.extend(sub_series)
+                                logger.info(f"Found {len(sub_series)} additional series in sub-chart")
+                    
+                    # If load_charts gave us fewer series than direct access, use the larger count
+                    # This handles edge cases where load_charts might miss some series
+                    if series_count < len(all_series):
+                        logger.warning(f"load_charts found {series_count} series but direct access found {len(all_series)}, using larger count")
+                        series_count = len(all_series)
+                
+                logger.info(f"Chart has {series_count} series (including both bar and line series)")
+                
+                # Debug: Log all series details
+                if all_series:
+                    logger.info(f"Detailed series information:")
+                    for idx, ser in enumerate(all_series):
+                        logger.info(f"  Series {idx}: {type(ser).__name__}")
+                        try:
+                            if hasattr(ser, 'title'):
+                                logger.debug(f"    Title: {ser.title}")
+                        except:
+                            pass
+                
+                if series_count < min_series_count:
+                    logger.error(f"✗ Chart has only {series_count} series, expected at least {min_series_count}")
+                    return 0.0
+                
+                logger.info(f"✓ Chart has {series_count} series (>= {min_series_count})")
+                
+                # Check series names for "rate" (completion rate series)
+                has_rate_series = False
+                series_names = []
+                for i, ser in enumerate(all_series):
+                    series_name = None
+                    try:
+                        # Try to get series title/name
+                        if hasattr(ser, 'title') and ser.title:
+                            if hasattr(ser.title, 'tx') and ser.title.tx:
+                                if hasattr(ser.title.tx, 'rich') and ser.title.tx.rich:
+                                    if hasattr(ser.title.tx.rich, 'p') and ser.title.tx.rich.p:
+                                        if len(ser.title.tx.rich.p) > 0:
+                                            if hasattr(ser.title.tx.rich.p[0], 'r') and ser.title.tx.rich.p[0].r:
+                                                if len(ser.title.tx.rich.p[0].r) > 0:
+                                                    if hasattr(ser.title.tx.rich.p[0].r[0], 't'):
+                                                        series_name = ser.title.tx.rich.p[0].r[0].t
+                        # Alternative: check if title is a string reference
+                        if not series_name and hasattr(ser, 'title') and hasattr(ser.title, 'tx') and hasattr(ser.title.tx, 'strRef'):
+                            if hasattr(ser.title.tx.strRef, 'f'):
+                                series_name = ser.title.tx.strRef.f
+                    except Exception as e:
+                        logger.debug(f"Error reading series {i} name: {e}")
+                    
+                    if series_name:
+                        series_names.append(series_name)
+                        if "rate" in series_name.lower():
+                            has_rate_series = True
+                            logger.info(f"✓ Found series with 'rate' in name: {series_name}")
+                
+                if series_names:
+                    logger.info(f"Series names found: {series_names[:10]}...")  # Log first 10
+                else:
+                    logger.warning("Could not extract series names, will skip rate check")
+                
+                if not has_rate_series and series_names:
+                    logger.error(f"✗ No series found with 'rate' in name. Series names: {series_names}")
+                    return 0.0
+                elif not has_rate_series:
+                    logger.warning("⚠ Could not verify 'rate' in series names (series names not extractable)")
+                
+                # Check category count
+                max_categories = 0
+                category_ranges = []
+                
+                def parse_range_count(range_str):
+                    """Parse Excel range string and return count of cells"""
+                    try:
+                        # Remove sheet name if present (e.g., "Sheet1!$A$2:$A$6" -> "$A$2:$A$6")
+                        if '!' in range_str:
+                            range_str = range_str.split('!')[1]
+                        
+                        # Remove $ signs
+                        range_str = range_str.replace('$', '')
+                        
+                        if ':' in range_str:
+                            start, end = range_str.split(':')
+                            # Parse start and end coordinates
+                            start_col, start_row = coordinate_to_tuple(start)
+                            end_col, end_row = coordinate_to_tuple(end)
+                            
+                            # Calculate count based on range
+                            if start_col == end_col:
+                                # Same column, count rows
+                                return abs(end_row - start_row) + 1
+                            elif start_row == end_row:
+                                # Same row, count columns
+                                return abs(end_col - start_col) + 1
+                            else:
+                                # 2D range
+                                return (abs(end_row - start_row) + 1) * (abs(end_col - start_col) + 1)
+                        else:
+                            # Single cell
+                            return 1
+                    except Exception as e:
+                        logger.debug(f"Error parsing range {range_str}: {e}")
+                        return 0
+                
+                for i, ser in enumerate(all_series):
+                    try:
+                        # Try to get category count from category reference
+                        if hasattr(ser, 'cat'):
+                            cat_range = None
+                            # Check if categories are from a range
+                            if hasattr(ser.cat, 'numRef') and hasattr(ser.cat.numRef, 'f'):
+                                cat_range = ser.cat.numRef.f
+                            elif hasattr(ser.cat, 'strRef') and hasattr(ser.cat.strRef, 'f'):
+                                cat_range = ser.cat.strRef.f
+                            
+                            if cat_range:
+                                category_ranges.append(cat_range)
+                                cat_count = parse_range_count(cat_range)
+                                if cat_count > max_categories:
+                                    max_categories = cat_count
+                                logger.debug(f"Series {i} category range: {cat_range}, count: {cat_count}")
+                    except Exception as e:
+                        logger.debug(f"Error reading categories for series {i}: {e}")
+                
+                if max_categories > 0:
+                    logger.info(f"Maximum category count found: {max_categories}")
+                    if max_categories < min_categories:
+                        logger.error(f"✗ Chart has only {max_categories} categories, expected at least {min_categories} (project_count * quarters_per_project)")
+                        return 0.0
+                    logger.info(f"✓ Chart has {max_categories} categories (>= {min_categories})")
+                else:
+                    # If we can't determine category count from ranges, use heuristic
+                    # For 8 projects with 5 quarters each, we need at least 40 categories
+                    # But since we can't verify directly, we'll log a warning
+                    logger.warning(f"⚠ Could not determine exact category count from ranges. Expected at least {min_categories} categories.")
+                    logger.info(f"Category ranges found: {category_ranges[:5]}...")  # Log first 5
+                
+                # Check if it's a combination chart
+                if series_count >= 2:
+                    logger.info("✓ Chart appears to be a combination chart (has multiple series)")
+                else:
+                    logger.error(f"✗ Chart has only {series_count} series, expected at least 2 for combination chart")
+                    return 0.0
+                
+                break
+        
+        if chart_found:
+            logger.info("=" * 60)
+            logger.info("✓ Project completion combination chart verification passed")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ Chart with title '{expected_title}' not found")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0

@@ -132,7 +132,9 @@ from .table import (
     verify_iferror_regex_extract,
     verify_rept_text_progress_bar,
     verify_id_extract_gender_age_birthday,
-    verify_line_chart
+    verify_line_chart,
+    verify_salary_growth_chart,
+    verify_project_completion_chart
 )
 from .thunderbird import (
     check_thunderbird_prefs,
