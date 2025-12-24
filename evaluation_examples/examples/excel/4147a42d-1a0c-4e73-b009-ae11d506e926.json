@@ -1,0 +1,80 @@
+{
+  "id": "4147a42d-1a0c-4e73-b009-ae11d506e926",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel快速拆分内容并转成一列，使用公式将A列中包含换行符的内容拆分成多行显示",
+  "method": "Use the formula =TRIM(MID(SUBSTITUTE(A2,CHAR(10),REPT(\" \",100)),(ROW(A1)-1)*100+1,100)) in column B to split content from column A into multiple rows. The formula works by: Step 1: SUBSTITUTE(A2,CHAR(10),REPT(\" \",100)) replaces line breaks (CHAR(10)) with 100 spaces. Step 2: MID(...,(ROW(A1)-1)*100+1,100) extracts 100 characters starting from position calculated by (ROW(A1)-1)*100+1, which increments by 100 for each row. Step 3: TRIM(...) removes leading and trailing spaces from the extracted text. Copy this formula down multiple rows in column B to extract all lines from the content in column A. Each row will extract the next 100-character segment, and TRIM will remove the padding spaces, leaving only the actual content from each line.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/34.xlsx",
+            "path": "/home/user/split_content.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/split_content.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/4147a42d-1a0c-4e73-b009-ae11d506e926",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "split_content.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_split_content_formula",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/split_content.xlsx",
+      "dest": "split_content.xlsx"
+    },
+    "options": {
+      "check_column": "B",
+      "start_row": 2,
+      "source_column": "A",
+      "expected_functions": ["TRIM", "MID", "SUBSTITUTE", "CHAR", "REPT", "ROW"],
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

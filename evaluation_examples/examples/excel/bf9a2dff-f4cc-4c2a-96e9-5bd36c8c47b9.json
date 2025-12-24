@@ -1,0 +1,81 @@
+{
+  "id": "bf9a2dff-f4cc-4c2a-96e9-5bd36c8c47b9",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel根据商品规格快速计算发货量，根据B列的商品规格和C列的客户订购量，在D列计算应发盒数",
+  "method": "Use the LEFT, FIND, VALUE, INT, MOD, and IF functions to calculate shipping boxes from product specifications and order quantities. The formula =INT(C2/VALUE(LEFT(B2,FIND(\"支\",B2)-1)))&\"盒\"&IF(MOD(C2,VALUE(LEFT(B2,FIND(\"支\",B2)-1)))=0,\"\",\"加\"&MOD(C2,VALUE(LEFT(B2,FIND(\"支\",B2)-1)))&\"支\") in cell D2 extracts the number of pieces per box from column B (e.g., \"12支/盒\" -> 12), divides the order quantity in column C by this number to get the number of boxes (integer part), calculates the remainder, and formats the result as \"X盒\" or \"X盒加Y支\" depending on whether there's a remainder. LEFT(B2,FIND(\"支\",B2)-1) extracts the number before \"支\" from the specification. VALUE(...) converts it to a number. INT(C2/...) calculates the integer part of division (number of boxes). MOD(C2,...) calculates the remainder. IF(MOD(...)=0,\"\",\"加\"&MOD(...)&\"支\") adds \"加Y支\" only if there's a remainder. Copy this formula down for all rows with data.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/38.xlsx",
+            "path": "/home/user/shipping_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/shipping_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/bf9a2dff-f4cc-4c2a-96e9-5bd36c8c47b9",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "shipping_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_shipping_boxes_calculation",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/shipping_data.xlsx",
+      "dest": "shipping_data.xlsx"
+    },
+    "options": {
+      "check_column": "D",
+      "start_row": 2,
+      "spec_column": "B",
+      "quantity_column": "C",
+      "expected_functions": ["INT", "VALUE", "LEFT", "FIND", "MOD", "IF"],
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -134,7 +134,9 @@ from .table import (
     verify_id_extract_gender_age_birthday,
     verify_line_chart,
     verify_salary_growth_chart,
-    verify_project_completion_chart
+    verify_project_completion_chart,
+    verify_shipping_boxes_calculation,
+    verify_split_content_formula
 )
 from .thunderbird import (
     check_thunderbird_prefs,

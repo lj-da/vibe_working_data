@@ -3445,3 +3445,428 @@ def verify_project_completion_chart(result: str, expected: str = None, **options
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_shipping_boxes_calculation(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if formulas exist to calculate shipping boxes from product specifications and order quantities.
+    
+    This function checks:
+    1. Whether cells in specified column contain formulas (not just values)
+    2. Whether formulas contain required functions: INT, VALUE, LEFT, FIND, MOD, IF
+    3. Whether formulas reference the specification column (B) and quantity column (C)
+    4. Whether formulas contain Chinese characters "支" and "盒"
+    5. Whether formulas use string concatenation (&)
+    
+    The expected formula pattern:
+    =INT(C2/VALUE(LEFT(B2,FIND("支",B2)-1)))&"盒"&IF(MOD(C2,VALUE(LEFT(B2,FIND("支",B2)-1)))=0,"","加"&MOD(C2,VALUE(LEFT(B2,FIND("支",B2)-1)))&"支")
+    
+    The function automatically detects the number of data rows by checking the data column
+    for non-empty cells. It stops checking after finding 3 consecutive empty rows.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_column: Column to check (e.g., "D")
+            - start_row: Starting row number (default: 2)
+            - spec_column: Column containing product specifications (e.g., "B")
+            - quantity_column: Column containing order quantities (e.g., "C")
+            - expected_functions: List of expected function names (e.g., ["INT", "VALUE", "LEFT", "FIND", "MOD", "IF"])
+            - data_column: Column to check for data to determine end_row (default: "B")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_column = options.get('check_column', 'D')
+        start_row = options.get('start_row', 2)
+        spec_column = options.get('spec_column', 'B')
+        quantity_column = options.get('quantity_column', 'C')
+        expected_functions = options.get('expected_functions', ['INT', 'VALUE', 'LEFT', 'FIND', 'MOD', 'IF'])
+        data_column = options.get('data_column', 'B')
+        
+        logger.info(f"Verifying shipping boxes calculation formulas in file: {result}")
+        logger.info(f"Column to check: {check_column}")
+        logger.info(f"Start row: {start_row}")
+        logger.info(f"Specification column: {spec_column}")
+        logger.info(f"Quantity column: {quantity_column}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Auto-detect end_row by checking data_column for non-empty cells
+        logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+        max_row = ws.max_row
+        end_row = start_row  # Start from start_row
+        
+        # Find the last row with data in the data column
+        # Check up to max_row, but stop if we find 3 consecutive empty rows
+        empty_count = 0
+        for row_num in range(start_row, max_row + 1):
+            data_cell = ws[f"{data_column}{row_num}"]
+            if data_cell.value is None or (isinstance(data_cell.value, str) and data_cell.value.strip() == ""):
+                empty_count += 1
+                if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                    break
+            else:
+                empty_count = 0
+                end_row = row_num  # Update end_row to the last row with data
+        
+        logger.info(f"Auto-detected end row: {end_row}")
+        
+        if end_row < start_row:
+            logger.error(f"No data rows found starting from row {start_row}")
+            return 0.0
+        
+        # Check formulas in each row
+        all_checks_passed = True
+        rows_checked = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            check_cell = ws[f"{check_column}{row_num}"]
+            spec_cell = ws[f"{spec_column}{row_num}"]
+            quantity_cell = ws[f"{quantity_column}{row_num}"]
+            
+            # Skip if spec or quantity cell is empty
+            if spec_cell.value is None or quantity_cell.value is None:
+                continue
+            
+            rows_checked += 1
+            formula = check_cell.value
+            
+            # Check 1: Formula exists (not just a value)
+            if formula is None or not isinstance(formula, str) or not formula.startswith('='):
+                logger.error(f"Cell {check_column}{row_num} should contain a formula, but got: {formula}")
+                all_checks_passed = False
+                continue
+            
+            formula_upper = formula.upper()
+            logger.debug(f"Row {row_num} formula: {formula}")
+            
+            # Check 2: Contains all required functions
+            missing_functions = []
+            for func in expected_functions:
+                # Check for function name (with word boundary to avoid partial matches)
+                func_pattern = r'\b' + re.escape(func) + r'\s*\('
+                if not re.search(func_pattern, formula_upper, re.IGNORECASE):
+                    missing_functions.append(func)
+            
+            if missing_functions:
+                logger.error(f"Cell {check_column}{row_num} formula missing functions: {missing_functions}")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 3: References specification column (B)
+            spec_pattern = rf'{spec_column}\d+'
+            if not re.search(spec_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should reference {spec_column} column")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 4: References quantity column (C)
+            quantity_pattern = rf'{quantity_column}\d+'
+            if not re.search(quantity_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should reference {quantity_column} column")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 5: Contains Chinese character "支" (for extracting pieces per box)
+            if '"支"' not in formula and "'支'" not in formula and '支' not in formula:
+                logger.error(f"Cell {check_column}{row_num} formula should contain '支' character")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 6: Contains Chinese character "盒" (for box unit)
+            if '"盒"' not in formula and "'盒'" not in formula and '盒' not in formula:
+                logger.error(f"Cell {check_column}{row_num} formula should contain '盒' character")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 7: Uses string concatenation (&)
+            if '&' not in formula:
+                logger.error(f"Cell {check_column}{row_num} formula should use & for string concatenation")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 8: Contains INT function (for calculating integer boxes)
+            int_pattern = r'\bINT\s*\('
+            if not re.search(int_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain INT function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 9: Contains MOD function (for calculating remainder)
+            mod_pattern = r'\bMOD\s*\('
+            if not re.search(mod_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain MOD function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 10: Contains IF function (for conditional formatting)
+            if_pattern = r'\bIF\s*\('
+            if not re.search(if_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain IF function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            logger.debug(f"✓ Row {row_num} formula passed all checks")
+        
+        if rows_checked == 0:
+            logger.error("No rows with data found to check")
+            return 0.0
+        
+        if all_checks_passed:
+            logger.info("=" * 60)
+            logger.info(f"✓ Shipping boxes calculation verification passed")
+            logger.info(f"  Rows checked: {rows_checked}")
+            logger.info(f"  Column: {check_column}")
+            logger.info(f"  Functions verified: {', '.join(expected_functions)}")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ Shipping boxes calculation verification failed")
+            logger.error(f"  Rows checked: {rows_checked}")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_split_content_formula(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if formulas exist to split content with line breaks into multiple rows.
+    
+    This function checks:
+    1. Whether cells in specified column contain formulas (not just values)
+    2. Whether formulas contain required functions: TRIM, MID, SUBSTITUTE, CHAR, REPT, ROW
+    3. Whether formulas reference the source column (A)
+    4. Whether formulas contain CHAR(10) for line break
+    5. Whether formulas contain REPT(" ",100) or similar pattern
+    6. Whether formulas use ROW function for position calculation
+    
+    The expected formula pattern:
+    =TRIM(MID(SUBSTITUTE(A2,CHAR(10),REPT(" ",100)),(ROW(A1)-1)*100+1,100))
+    
+    The function automatically detects the number of data rows by checking the data column
+    for non-empty cells. It stops checking after finding 3 consecutive empty rows.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_column: Column to check (e.g., "B")
+            - start_row: Starting row number (default: 2)
+            - source_column: Column containing source data (e.g., "A")
+            - expected_functions: List of expected function names (e.g., ["TRIM", "MID", "SUBSTITUTE", "CHAR", "REPT", "ROW"])
+            - data_column: Column to check for data to determine end_row (default: "A")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_column = options.get('check_column', 'B')
+        start_row = options.get('start_row', 2)
+        source_column = options.get('source_column', 'A')
+        expected_functions = options.get('expected_functions', ['TRIM', 'MID', 'SUBSTITUTE', 'CHAR', 'REPT', 'ROW'])
+        data_column = options.get('data_column', 'A')
+        
+        logger.info(f"Verifying split content formulas in file: {result}")
+        logger.info(f"Column to check: {check_column}")
+        logger.info(f"Start row: {start_row}")
+        logger.info(f"Source column: {source_column}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Auto-detect end_row by checking data_column for non-empty cells
+        logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+        max_row = ws.max_row
+        end_row = start_row  # Start from start_row
+        
+        # Find the last row with data in the data column
+        # Check up to max_row, but stop if we find 3 consecutive empty rows
+        empty_count = 0
+        for row_num in range(start_row, max_row + 1):
+            data_cell = ws[f"{data_column}{row_num}"]
+            if data_cell.value is None or (isinstance(data_cell.value, str) and data_cell.value.strip() == ""):
+                empty_count += 1
+                if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                    break
+            else:
+                empty_count = 0
+                end_row = row_num  # Update end_row to the last row with data
+        
+        logger.info(f"Auto-detected end row: {end_row}")
+        
+        if end_row < start_row:
+            logger.error(f"No data rows found starting from row {start_row}")
+            return 0.0
+        
+        # Check formulas in each row
+        all_checks_passed = True
+        rows_checked = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            check_cell = ws[f"{check_column}{row_num}"]
+            
+            # Skip if source cell is empty
+            source_cell = ws[f"{source_column}{row_num}"]
+            if source_cell.value is None:
+                continue
+            
+            rows_checked += 1
+            formula = check_cell.value
+            
+            # Check 1: Formula exists (not just a value)
+            if formula is None or not isinstance(formula, str) or not formula.startswith('='):
+                logger.error(f"Cell {check_column}{row_num} should contain a formula, but got: {formula}")
+                all_checks_passed = False
+                continue
+            
+            formula_upper = formula.upper()
+            logger.debug(f"Row {row_num} formula: {formula}")
+            
+            # Check 2: Contains all required functions
+            missing_functions = []
+            for func in expected_functions:
+                # Check for function name (with word boundary to avoid partial matches)
+                func_pattern = r'\b' + re.escape(func) + r'\s*\('
+                if not re.search(func_pattern, formula_upper, re.IGNORECASE):
+                    missing_functions.append(func)
+            
+            if missing_functions:
+                logger.error(f"Cell {check_column}{row_num} formula missing functions: {missing_functions}")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 3: References source column (A)
+            source_pattern = rf'{source_column}\d+'
+            if not re.search(source_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should reference {source_column} column")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 3.5: SUBSTITUTE function must reference A2 specifically
+            # Pattern: SUBSTITUTE(A2,...
+            substitute_a2_pattern = rf'SUBSTITUTE\s*\(\s*{source_column}2\s*,'
+            if not re.search(substitute_a2_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula SUBSTITUTE function must reference {source_column}2 (not {source_column}3, {source_column}4, etc.)")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 4: Contains CHAR(10) for line break
+            char_pattern = r'CHAR\s*\(\s*10\s*\)'
+            if not re.search(char_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain CHAR(10)")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 5: Contains REPT with space and 100
+            rept_pattern = r'REPT\s*\(\s*["\']?\s*["\']?\s*,\s*100\s*\)'
+            if not re.search(rept_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain REPT(\" \",100) or similar")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 6: Contains ROW function
+            row_pattern = r'\bROW\s*\('
+            if not re.search(row_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain ROW function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 7: Contains TRIM function (outermost)
+            trim_pattern = r'\bTRIM\s*\('
+            if not re.search(trim_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain TRIM function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 8: Contains MID function
+            mid_pattern = r'\bMID\s*\('
+            if not re.search(mid_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain MID function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            # Check 9: Contains SUBSTITUTE function
+            substitute_pattern = r'\bSUBSTITUTE\s*\('
+            if not re.search(substitute_pattern, formula_upper):
+                logger.error(f"Cell {check_column}{row_num} formula should contain SUBSTITUTE function")
+                logger.error(f"  Formula: {formula}")
+                all_checks_passed = False
+                continue
+            
+            logger.debug(f"✓ Row {row_num} formula passed all checks")
+        
+        if rows_checked == 0:
+            logger.error("No rows with data found to check")
+            return 0.0
+        
+        if all_checks_passed:
+            logger.info("=" * 60)
+            logger.info(f"✓ Split content formula verification passed")
+            logger.info(f"  Rows checked: {rows_checked}")
+            logger.info(f"  Column: {check_column}")
+            logger.info(f"  Functions verified: {', '.join(expected_functions)}")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ Split content formula verification failed")
+            logger.error(f"  Rows checked: {rows_checked}")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
