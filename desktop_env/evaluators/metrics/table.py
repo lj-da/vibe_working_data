@@ -2926,3 +2926,104 @@ def verify_id_extract_gender_age_birthday(result: str, expected: str = None, **o
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_line_chart(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a line chart exists in the Excel file.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart type is lineChart
+    3. Whether the chart has the expected number of series
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_chart_type: Expected chart type (default: "lineChart")
+            - min_series_count: Minimum number of series expected (default: 1)
+            - data_range: Data range used for chart (optional, for logging)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_chart_type = options.get('expected_chart_type', 'lineChart')
+        min_series_count = options.get('min_series_count', 1)
+        data_range = options.get('data_range', '')
+        
+        logger.info(f"Verifying line chart in file: {result}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        logger.info(f"Minimum series count: {min_series_count}")
+        if data_range:
+            logger.info(f"Data range: {data_range}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a line chart
+            if chart_type and expected_chart_type.lower() in chart_type.lower():
+                logger.info(f"✓ Chart {chart_idx + 1} is a line chart")
+                
+                # Check if it has series
+                if not hasattr(chart, 'series') or not chart.series:
+                    logger.warning(f"Chart {chart_idx + 1} has no series")
+                    continue
+                
+                series_count = len(chart.series)
+                logger.info(f"Chart {chart_idx + 1} has {series_count} series")
+                
+                # Verify series count
+                if series_count >= min_series_count:
+                    logger.info("=" * 60)
+                    logger.info(f"✓ Line chart verification passed")
+                    logger.info(f"  Chart type: {chart_type}")
+                    logger.info(f"  Series count: {series_count} (minimum required: {min_series_count})")
+                    logger.info("=" * 60)
+                    return 1.0
+                else:
+                    logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
+            else:
+                logger.warning(f"Chart {chart_idx + 1} is not a line chart (type: {chart_type})")
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Line chart verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum series count: {min_series_count}")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0

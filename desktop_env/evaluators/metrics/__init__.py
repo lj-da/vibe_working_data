@@ -131,7 +131,8 @@ from .table import (
     verify_networkdays_formula,
     verify_iferror_regex_extract,
     verify_rept_text_progress_bar,
-    verify_id_extract_gender_age_birthday
+    verify_id_extract_gender_age_birthday,
+    verify_line_chart
 )
 from .thunderbird import (
     check_thunderbird_prefs,

@@ -1,0 +1,78 @@
+{
+  "id": "6be492aa-28e7-4697-98b2-3ba91a743d66",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel创建一个折线图，显示在A1:D9的数据",
+  "method": "Select the entire data table (including headers), then go to Insert menu, select Chart option, choose Line Chart style from the chart type selection. The chart should display all data series from the selected table as line series.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/128.xlsx",
+            "path": "/home/user/score_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/score_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/6be492aa-28e7-4697-98b2-3ba91a743d66",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "score_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/score_data.xlsx",
+      "dest": "score_data.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "lineChart",
+      "min_series_count": 3,
+      "data_range": "A1:D9"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

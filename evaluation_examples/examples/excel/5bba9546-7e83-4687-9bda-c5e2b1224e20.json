@@ -1,0 +1,78 @@
+{
+  "id": "5bba9546-7e83-4687-9bda-c5e2b1224e20",
+  "snapshot": "libreoffice_calc",
+  "instruction": "Create a line chart in Excel by selecting all table data, clicking Insert in the toolbar, choosing Line Chart from recommended charts, and clicking the desired line chart style",
+  "method": "Select all table data (including headers), then click Insert in the toolbar, select Chart option from the recommended charts, choose Line Chart style, and click to generate the desired line chart. The chart should display all data series from the selected table as line series.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/347.xlsx",
+            "path": "/home/user/chart_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/chart_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/5bba9546-7e83-4687-9bda-c5e2b1224e20",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "chart_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/chart_data.xlsx",
+      "dest": "chart_data.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "lineChart",
+      "min_series_count": 1,
+      "data_range": ""
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
