@@ -136,7 +136,8 @@ from .table import (
     verify_salary_growth_chart,
     verify_project_completion_chart,
     verify_shipping_boxes_calculation,
-    verify_split_content_formula
+    verify_split_content_formula,
+    verify_quote_sheet_with_merged_cells
 )
 from .thunderbird import (
     check_thunderbird_prefs,

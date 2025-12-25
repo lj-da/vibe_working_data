@@ -1,0 +1,82 @@
+{
+  "id": "f7a27bce-5673-41f1-a3c5-0d55594dc7de",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请使用excel制作报价单模板，包含报价单标题、报价单位信息、产品明细表格、合计金额和备注条款等完整结构，并使用合并单元格美化格式",
+  "method": "Create a quote sheet template in Excel with merged cells for formatting. Step 1: Add the title '报价单' (Quote Sheet) at the top center, merge cells G15:H15 for the title. Step 2: Add header fields including '报价单位:' (Quote Unit), '联系人:' (Contact Person), '联系电话:' (Contact Phone), '客户名称:' (Customer Name), '报价日期:' (Quote Date), '邮箱:' (Email). Step 3: Create a product details table with column headers: '序号' (Serial No.), '产品名称' (Product Name), '产品类型' (Product Type), '规格' (Specification), '数量' (Quantity), '单价' (Unit Price), '金额' (Amount), '备注' (Remarks). Pre-fill serial numbers 1-6 in column C (rows 19-24). Step 4: Add summary section with '合计金额(小写)' (Total Amount in numbers) and '合计金额(大写)' (Total Amount in Chinese characters). Step 5: Add remarks/terms section with numbered points for validity period, delivery address, shipping method, payment method, and signature. Merge cells for the '备注' label. Step 6: Add footer fields for '报价人:' (Quoter) and '审批:' (Approval). Format the table with borders and proper alignment using merged cells where appropriate.",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/data/102.xlsx",
+            "path": "/home/user/quote_template.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/quote_template.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/f7a27bce-5673-41f1-a3c5-0d55594dc7de",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "quote_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_quote_sheet_with_merged_cells",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/quote_template.xlsx",
+      "dest": "quote_template.xlsx"
+    },
+    "options": {
+      "expected_title": "报价单",
+      "title_merged_range": "G15:H15",
+      "required_fields": ["报价单位", "联系人", "联系电话", "客户名称", "报价日期", "邮箱"],
+      "table_headers": ["序号", "产品名称", "产品类型", "规格", "数量", "单价", "金额", "备注"],
+      "summary_fields": ["合计金额(小写)", "合计金额(大写)"],
+      "footer_fields": ["报价人", "审批"],
+      "min_merged_cells": 22
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

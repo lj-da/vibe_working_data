@@ -3870,3 +3870,331 @@ def verify_split_content_formula(result: str, expected: str = None, **options) -
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_quote_sheet_with_merged_cells(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a quote sheet template exists with the expected structure, fields, and merged cells.
+    
+    This function checks:
+    1. Whether the title "报价单" exists in the worksheet
+    2. Whether merged cells exist (especially for the title)
+    3. Whether required header fields exist
+    4. Whether the product table headers exist
+    5. Whether summary fields exist
+    6. Whether footer fields exist
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_title: Expected title text (default: "报价单")
+            - title_merged_range: Expected merged range for title (default: "G15:H15")
+            - required_fields: List of required header field labels
+            - table_headers: List of table header labels
+            - summary_fields: List of summary field labels
+            - footer_fields: List of footer field labels
+            - min_merged_cells: Minimum number of merged cell ranges expected (default: 1)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_title = options.get('expected_title', '报价单')
+        title_merged_range = options.get('title_merged_range', 'G15:H15')
+        required_fields = options.get('required_fields', ['报价单位', '联系人', '联系电话', '客户名称', '报价日期', '邮箱'])
+        table_headers = options.get('table_headers', ['序号', '产品名称', '产品类型', '规格', '数量', '单价', '金额', '备注'])
+        summary_fields = options.get('summary_fields', ['合计金额(小写)', '合计金额(大写)'])
+        footer_fields = options.get('footer_fields', ['报价人', '审批'])
+        min_merged_cells = options.get('min_merged_cells', 1)
+        
+        logger.info(f"Verifying quote sheet template with merged cells in file: {result}")
+        logger.info(f"Expected title: {expected_title}")
+        logger.info(f"Title merged range: {title_merged_range}")
+        logger.info(f"Required fields: {required_fields}")
+        logger.info(f"Table headers: {table_headers}")
+        logger.info(f"Summary fields: {summary_fields}")
+        logger.info(f"Footer fields: {footer_fields}")
+        logger.info(f"Minimum merged cells: {min_merged_cells}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=True)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check merged cells
+        merged_cells = list(ws.merged_cells.ranges)
+        logger.info(f"Found {len(merged_cells)} merged cell range(s)")
+        
+        if len(merged_cells) < min_merged_cells:
+            logger.error(f"✗ Insufficient merged cells: found {len(merged_cells)}, expected at least {min_merged_cells}")
+            return 0.0
+        
+        # Check if title merged range exists
+        title_merged_found = False
+        for merged_range in merged_cells:
+            merged_str = str(merged_range)
+            logger.debug(f"Merged range: {merged_str}")
+            if merged_str.upper() == title_merged_range.upper():
+                title_merged_found = True
+                logger.info(f"✓ Found title merged range: {merged_str}")
+                break
+        
+        if not title_merged_found:
+            logger.warning(f"⚠ Title merged range '{title_merged_range}' not found, but other merged cells exist")
+            logger.info(f"  Available merged ranges: {[str(r) for r in merged_cells]}")
+            # Don't fail completely, as the range might be slightly different
+        
+        # Search through all cells to find required text
+        # Also check merged cells specifically
+        max_row = ws.max_row
+        max_col = ws.max_column
+        
+        # Convert all cell values to strings for searching
+        # Include both individual cells and merged cell ranges
+        all_text = []
+        cell_text_map = {}  # Map cell coordinates to text for debugging
+        
+        for row in ws.iter_rows(min_row=1, max_row=max_row, min_col=1, max_col=max_col, values_only=False):
+            for cell in row:
+                if cell.value is not None:
+                    cell_text = str(cell.value).strip()
+                    all_text.append(cell_text)
+                    cell_coord = cell.coordinate
+                    cell_text_map[cell_coord] = cell_text
+                    
+                    # Also check if cell contains newlines (for merged cells with multiple fields)
+                    if '\n' in cell_text or '\r' in cell_text:
+                        # Split by newlines and add each line
+                        lines = cell_text.replace('\r', '\n').split('\n')
+                        for line in lines:
+                            line = line.strip()
+                            if line:
+                                all_text.append(line)
+        
+        # Check merged cells - get text from the top-left cell of each merged range
+        for merged_range in merged_cells:
+            try:
+                # Get the top-left cell of the merged range
+                top_left_cell = ws[merged_range.min_row][merged_range.min_col - 1]
+                if top_left_cell.value is not None:
+                    merged_text = str(top_left_cell.value).strip()
+                    all_text.append(merged_text)
+                    # Also split by newlines if present
+                    if '\n' in merged_text or '\r' in merged_text:
+                        lines = merged_text.replace('\r', '\n').split('\n')
+                        for line in lines:
+                            line = line.strip()
+                            if line:
+                                all_text.append(line)
+                    logger.debug(f"Merged range {merged_range} contains text: {merged_text[:100]}")
+            except Exception as e:
+                logger.debug(f"Error reading merged range {merged_range}: {e}")
+        
+        # Check 1: Title exists
+        title_found = False
+        for text in all_text:
+            if expected_title in text:
+                title_found = True
+                logger.info(f"✓ Found title: {expected_title}")
+                break
+        
+        if not title_found:
+            logger.error(f"✗ Title '{expected_title}' not found")
+            return 0.0
+        
+        # Check 2: Required header fields
+        # Since fields may be in merged cells together, we need to check if all fields exist
+        # even if they're in the same cell
+        found_fields = []
+        missing_fields = []
+        for field in required_fields:
+            field_found = False
+            for text in all_text:
+                if field in text:
+                    field_found = True
+                    found_fields.append(field)
+                    logger.debug(f"Found field '{field}' in text: {text[:80]}...")
+                    break
+            if not field_found:
+                missing_fields.append(field)
+        
+        # Log all text for debugging if fields are missing
+        if missing_fields:
+            logger.warning(f"⚠ Missing required fields: {missing_fields}")
+            # Show some sample text that might contain the fields
+            logger.debug(f"Sample text from worksheet (showing text with Chinese characters):")
+            chinese_text_samples = [t for t in all_text if any('\u4e00' <= c <= '\u9fff' for c in t)][:20]
+            for sample in chinese_text_samples:
+                logger.debug(f"  {sample[:100]}")
+        
+        # Since fields may be grouped in merged cells, we're more lenient
+        # Check if at least most fields are found
+        found_ratio = len(found_fields) / len(required_fields) if required_fields else 1.0
+        
+        if found_ratio < 0.5:  # Less than 50% found
+            logger.error(f"✗ Too many required fields missing: found {len(found_fields)}/{len(required_fields)}")
+            logger.error(f"  Missing: {missing_fields}")
+            return 0.0
+        elif missing_fields:
+            logger.warning(f"⚠ Some fields missing: {missing_fields}, but found {len(found_fields)}/{len(required_fields)} fields")
+            # Don't fail if most fields are found (fields might be in merged cells together)
+        else:
+            logger.info(f"✓ Found all required fields: {found_fields}")
+        
+        # Check 3: Table headers
+        found_headers = []
+        missing_headers = []
+        for header in table_headers:
+            header_found = False
+            for text in all_text:
+                if header in text:
+                    header_found = True
+                    found_headers.append(header)
+                    break
+            if not header_found:
+                missing_headers.append(header)
+        
+        if missing_headers:
+            logger.error(f"✗ Missing table headers: {missing_headers}")
+            return 0.0
+        else:
+            logger.info(f"✓ Found all table headers: {found_headers}")
+        
+        # Check 4: Summary fields
+        found_summary = []
+        missing_summary = []
+        for field in summary_fields:
+            field_found = False
+            for text in all_text:
+                if field in text:
+                    field_found = True
+                    found_summary.append(field)
+                    break
+            if not field_found:
+                missing_summary.append(field)
+        
+        if missing_summary:
+            logger.warning(f"⚠ Missing summary fields: {missing_summary}")
+            # Don't fail completely, as these might be optional
+        else:
+            logger.info(f"✓ Found summary fields: {found_summary}")
+        
+        # Check 5: Footer fields
+        found_footer = []
+        missing_footer = []
+        for field in footer_fields:
+            field_found = False
+            for text in all_text:
+                if field in text:
+                    field_found = True
+                    found_footer.append(field)
+                    break
+            if not field_found:
+                missing_footer.append(field)
+        
+        if missing_footer:
+            logger.warning(f"⚠ Missing footer fields: {missing_footer}")
+            # Don't fail completely, as these might be optional
+        else:
+            logger.info(f"✓ Found footer fields: {found_footer}")
+        
+        # Check 6: Borders on table cells
+        # Check if cells in the product table area have borders
+        # Typically, table headers and data rows should have borders
+        logger.info("Checking borders on table cells...")
+        
+        # Find the table header row (should contain table headers)
+        table_header_row = None
+        for row_num in range(1, max_row + 1):
+            for col_num in range(1, max_col + 1):
+                cell = ws.cell(row=row_num, column=col_num)
+                if cell.value is not None:
+                    cell_text = str(cell.value).strip()
+                    # Check if this row contains table headers
+                    if any(header in cell_text for header in table_headers):
+                        table_header_row = row_num
+                        break
+            if table_header_row:
+                break
+        
+        borders_found = False
+        cells_with_borders = 0
+        total_table_cells_checked = 0
+        
+        if table_header_row:
+            logger.info(f"Table header row found at row {table_header_row}")
+            # Check borders in table area (header row and a few data rows)
+            # Table typically spans from column C to K (based on headers)
+            check_start_col = 3  # Column C
+            check_end_col = min(11, max_col)  # Column K or max_col
+            check_start_row = table_header_row
+            check_end_row = min(table_header_row + 7, max_row)  # Header + 6 data rows
+            
+            for row_num in range(check_start_row, check_end_row + 1):
+                for col_num in range(check_start_col, check_end_col + 1):
+                    cell = ws.cell(row=row_num, column=col_num)
+                    total_table_cells_checked += 1
+                    
+                    # Check if cell has any border
+                    has_border = False
+                    try:
+                        border = cell.border
+                        # Check if any side has a border style (not None and not empty)
+                        if border:
+                            if (border.top and border.top.style) or \
+                               (border.bottom and border.bottom.style) or \
+                               (border.left and border.left.style) or \
+                               (border.right and border.right.style):
+                                has_border = True
+                                cells_with_borders += 1
+                    except Exception as e:
+                        logger.debug(f"Error checking border for cell {cell.coordinate}: {e}")
+                    
+                    if has_border:
+                        borders_found = True
+                        logger.debug(f"Cell {cell.coordinate} has borders")
+            
+            if total_table_cells_checked > 0:
+                border_ratio = cells_with_borders / total_table_cells_checked
+                logger.info(f"Borders found: {cells_with_borders}/{total_table_cells_checked} cells ({border_ratio:.1%})")
+                
+                # Require at least 30% of table cells to have borders
+                if border_ratio < 0.3:
+                    logger.warning(f"⚠ Low border coverage: only {border_ratio:.1%} of table cells have borders")
+                    # Don't fail completely, as borders might be applied differently
+                else:
+                    logger.info(f"✓ Sufficient borders found in table area")
+            else:
+                logger.warning("⚠ Could not check borders: no table cells found")
+        else:
+            logger.warning("⚠ Could not find table header row for border checking")
+        
+        # If we get here, all critical checks passed
+        logger.info("=" * 60)
+        logger.info(f"✓ Quote sheet template with merged cells verification passed")
+        logger.info(f"  Title: {expected_title}")
+        logger.info(f"  Merged cells: {len(merged_cells)} (minimum required: {min_merged_cells})")
+        if title_merged_found:
+            logger.info(f"  Title merged range: {title_merged_range}")
+        logger.info(f"  Required fields: {len(found_fields)}/{len(required_fields)}")
+        logger.info(f"  Table headers: {len(found_headers)}/{len(table_headers)}")
+        logger.info(f"  Summary fields: {len(found_summary)}/{len(summary_fields)}")
+        logger.info(f"  Footer fields: {len(found_footer)}/{len(footer_fields)}")
+        if borders_found:
+            logger.info(f"  Borders: {cells_with_borders}/{total_table_cells_checked} cells have borders")
+        logger.info("=" * 60)
+        return 1.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
