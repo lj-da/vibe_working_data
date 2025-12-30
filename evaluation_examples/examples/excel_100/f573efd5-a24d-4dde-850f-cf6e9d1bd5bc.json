@@ -1,0 +1,81 @@
+{
+  "id": "f573efd5-a24d-4dde-850f-cf6e9d1bd5bc",
+  "snapshot": "libreoffice_calc",
+  "instruction": "我将20110413110803的原始记事本数据，分别粘贴到A2和A3单元格，A2单元格是常规格式，A3单元格我提前变的文本格式，现在的诉求：（1）在C2单元格输入函数，使复原A2的原始数据，这个能复原吗？（2）在C3单元格输入另一个函数，把A3的长串数字变成指定的日期时间格式。",
+  "method": "使用TEXT函数将数字转换为日期时间格式。在C2单元格中输入公式=TEXT(A2,\"0-00-00 00:00:00\")，在C3单元格中输入公式=TEXT(A3,\"0-00-00 00:00:00\")。TEXT函数的第一个参数是源单元格（A2或A3），第二个参数是格式字符串\"0-00-00 00:00:00\"，其中0表示数字占位符，-表示连字符分隔符，空格和冒号用于分隔日期和时间部分。对于A2单元格（常规格式，显示为科学计数法2.01104E+13），公式会将其转换为日期时间格式。对于A3单元格（文本格式，显示为完整数字20110413110803），公式会将其转换为日期时间格式。格式字符串\"0-00-00 00:00:00\"会将14位数字20110413110803解析为：年份2011，月份04，日期13，小时11，分钟08，秒03，最终显示为2011-04-13 11:08:03。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/126.xlsx",
+            "path": "/home/user/datetime_format.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/datetime_format.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/f573efd5-a24d-4dde-850f-cf6e9d1bd5bc",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "datetime_format.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_text_datetime_format",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/datetime_format.xlsx",
+      "dest": "datetime_format.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 3,
+      "source_column": "A",
+      "expected_functions": ["TEXT"],
+      "expected_format": "0-00-00 00:00:00",
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

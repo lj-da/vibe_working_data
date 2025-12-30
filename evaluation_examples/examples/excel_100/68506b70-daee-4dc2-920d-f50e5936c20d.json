@@ -1,0 +1,80 @@
+{
+  "id": "68506b70-daee-4dc2-920d-f50e5936c20d",
+  "snapshot": "libreoffice_calc",
+  "instruction": "正则表达式如何提取A1到A3格式混乱的价格",
+  "method": "使用嵌套的REGEX函数结合SUBSTITUTE函数来提取格式混乱的价格。在B1单元格中输入公式=REGEX(REGEX(SUBSTITUTE(A1,\" \",\"\"),\"[-，。]\",\".\"),\"[\\d.]+\")，然后复制公式到B2和B3（公式会自动调整单元格引用为A2和A3）。第一步：SUBSTITUTE(A1,\" \",\"\")移除A1单元格中的所有空格，第二个参数是空格\" \"，第三个参数是空字符串\"\"。第二步：内层REGEX函数使用模式\"[-，。]\"匹配连字符、中文逗号和中文句号，第二个参数是替换字符串\".\"，将匹配到的标点符号替换为英文句号。第三步：外层REGEX函数使用模式\"[\\d.]+\"提取所有数字和点号，得到最终的价格数值。对于A1的\"张三 5-9元\"，会先移除空格得到\"张三5-9元\"，然后替换连字符为句号得到\"张三5.9元\"，最后提取\"5.9\"。对于A2的\"李四6。9元\"，会先移除空格（无空格），然后替换中文句号为英文句号得到\"李四6.9元\"，最后提取\"6.9\"。对于A3的\"王五7,9元\"，会先移除空格（无空格），然后替换中文逗号为英文句号得到\"王五7.9元\"，最后提取\"7.9\"。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/123.xlsx",
+            "path": "/home/user/price_extract.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/price_extract.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/68506b70-daee-4dc2-920d-f50e5936c20d",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "price_extract.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_nested_regex_price_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/price_extract.xlsx",
+      "dest": "price_extract.xlsx"
+    },
+    "options": {
+      "check_column": "B",
+      "start_row": 1,
+      "source_column": "A",
+      "expected_functions": ["REGEX", "SUBSTITUTE"],
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

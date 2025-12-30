@@ -1,0 +1,82 @@
+{
+  "id": "154c66e7-2b45-46c0-ae2c-9c61aa1a613a",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何一次提取成功带有城市名称的机场（即：出发机场名称+到达机场名称）",
+  "method": "使用REGEX函数提取机场名称中的城市部分。第一步：在E2单元格中输入公式=REGEX(B2,\"\\\\p{Han}{2,4}\")，然后复制公式到E列的其他行。REGEX函数使用正则表达式\"\\\\p{Han}{2,4}\"从B列的出发地信息中提取2-4个汉字，即城市名称（如从\"杭州 萧山 T3\"中提取\"杭州\"）。第二步：在F2单元格中输入公式=REGEX(C2,\"\\\\p{Han}{2,4}\")，然后复制公式到F列的其他行。REGEX函数使用相同的正则表达式从C列的到达地信息中提取2-4个汉字，即城市名称（如从\"厦门 高崎 T4\"中提取\"厦门\"）。正则表达式\"\\\\p{Han}{2,4}\"的含义：\\\\p{Han}表示匹配任意一个汉字字符，{2,4}表示匹配2到4个连续的汉字字符。这样可以从包含机场名称、航站楼等信息的文本中准确提取城市名称部分。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/163.xlsx",
+            "path": "/home/user/airport_extract.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/airport_extract.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/154c66e7-2b45-46c0-ae2c-9c61aa1a613a",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "airport_extract.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_regex_airport_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/airport_extract.xlsx",
+      "dest": "airport_extract.xlsx"
+    },
+    "options": {
+      "departure_extract_column": "E",
+      "arrival_extract_column": "F",
+      "departure_source_column": "B",
+      "arrival_source_column": "C",
+      "start_row": 2,
+      "expected_pattern": "\\p{Han}{2,4}",
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

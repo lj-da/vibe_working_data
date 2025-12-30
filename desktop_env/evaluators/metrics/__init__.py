@@ -137,7 +137,23 @@ from .table import (
     verify_project_completion_chart,
     verify_shipping_boxes_calculation,
     verify_split_content_formula,
-    verify_quote_sheet_with_merged_cells
+    verify_quote_sheet_with_merged_cells,
+    verify_nested_regex_price_extract,
+    verify_text_datetime_format,
+    verify_if_counta_payment_receipt_numbering,
+    verify_if_or_row_check,
+    verify_counta_sort_amount,
+    verify_if_iferror_find_text_search,
+    verify_countif_if_household_sort,
+    verify_regex_airport_extract,
+    verify_sumproduct_cross_sheet_lookup,
+    verify_substitute_remove_spaces,
+    verify_maxifs_minifs_conditional,
+    verify_tocol_torow_merge,
+    verify_text_prefix_format,
+    verify_match_percentile_filter,
+    verify_sumproduct_month_customer_count,
+    verify_sum_value_text_conversion
 )
 from .thunderbird import (
     check_thunderbird_prefs,

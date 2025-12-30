@@ -1,0 +1,90 @@
+{
+  "id": "b67aa4f9-fc1c-4039-bc54-c3c87347dbd6",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求教一个工作表中数字格式转换的问题，如何将 A列股票代码转换为F列中\" '000002 \"这种格式",
+  "method": "使用文本连接公式在数字前添加单引号前缀。在F2单元格中输入公式=\"'\"&A2，然后复制公式到F列的其他行。公式的工作原理：第一步：=\"'\"表示公式以等号开始，后面跟一个单引号（用双引号括起来）。第二步：&是连接运算符，用于连接文本。第三步：A2是源单元格的引用，包含股票代码（如000002）。第四步：公式执行后，会将单引号和A2的值连接起来，得到'000002这样的格式。单引号前缀的作用是将数字强制转换为文本格式，这样即使数字以0开头（如000002），也会完整显示，而不会被Excel自动转换为数字2。公式向下复制时，相对引用会自动调整（A2变为A3、A4等），确保每行都处理对应行的A列数据。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "echo '=\"'\"&A3' > /home/user/Desktop/formula.txt"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/209.xlsx",
+            "path": "/home/user/text_prefix_format.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/text_prefix_format.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/b67aa4f9-fc1c-4039-bc54-c3c87347dbd6",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "text_prefix_format.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_text_prefix_format",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/text_prefix_format.xlsx",
+      "dest": "text_prefix_format.xlsx"
+    },
+    "options": {
+      "result_column": "F",
+      "source_column": "A",
+      "start_row": 2,
+      "prefix": "'",
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,82 @@
+{
+  "id": "4cd7d4a0-4d5b-4c79-880f-ef556e1ef21b",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何在一个区域内查找包含某字符？例如：要想在一区域内查找包含AB字符的行，不管是哪列只要包含AB就在这行后面显示1或AB",
+  "method": "使用IF、IFERROR和FIND函数组合的公式来在区域内查找包含特定字符的行。在C2单元格中输入公式=IF(IFERROR(FIND(\"AB\",A2&B2),)>0,1,)，然后复制公式到其他行。第一步：A2&B2将A2和B2单元格的文本连接起来，形成一个完整的字符串。第二步：FIND(\"AB\",A2&B2)在连接的字符串中查找\"AB\"字符，如果找到返回\"AB\"在字符串中的位置（从1开始），如果找不到返回错误值#VALUE!。第三步：IFERROR(...,)处理FIND函数可能返回的错误，如果FIND返回错误（即找不到\"AB\"），IFERROR返回空值或0；如果FIND返回位置数字，IFERROR返回该数字。第四步：IFERROR(...)>0判断IFERROR的结果是否大于0，如果大于0说明找到了\"AB\"，返回TRUE；否则返回FALSE。第五步：IF(...,1,)根据判断结果，如果为TRUE（找到\"AB\"），返回1；如果为FALSE（未找到），返回空字符串。公式向下复制时，行号会自动调整（A2&B2变为A3&B3、A4&B4等），确保每行都检查对应行的A列和B列。这样，如果A列或B列中包含\"AB\"字符，该行C列就会显示1，否则显示为空。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/150.xlsx",
+            "path": "/home/user/text_search.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/text_search.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/4cd7d4a0-4d5b-4c79-880f-ef556e1ef21b",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "text_search.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_iferror_find_text_search",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/text_search.xlsx",
+      "dest": "text_search.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 2,
+      "search_columns": ["A", "B"],
+      "search_text": "AB",
+      "return_value": "1",
+      "expected_functions": ["IF", "IFERROR", "FIND"],
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

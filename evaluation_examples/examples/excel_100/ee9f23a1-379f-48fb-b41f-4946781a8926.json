@@ -1,0 +1,79 @@
+{
+  "id": "ee9f23a1-379f-48fb-b41f-4946781a8926",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何把A、B两列同一行的两个单元格的内容合并到另一个单元格中",
+  "method": "使用字符串连接操作符（&）将两列内容合并。在C1单元格中输入公式=A1&\" \"&B1，这个公式会将A1和B1的内容用空格连接起来。然后选中C1单元格，将鼠标移到单元格右下角的填充柄（小方块），当鼠标变成黑色十字时，双击或向下拖动填充柄，公式会自动应用到下面所有有数据的行。公式中的&是文本连接符，\" \"表示在两个内容之间添加一个空格作为分隔符。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/193.xlsx",
+            "path": "/home/user/merge_columns_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/merge_columns_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/ee9f23a1-379f-48fb-b41f-4946781a8926",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "merge_columns_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_concatenate_columns_with_separator",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/merge_columns_data.xlsx",
+      "dest": "merge_columns_data.xlsx"
+    },
+    "options": {
+      "target_column": "C",
+      "source_columns": ["A", "B"],
+      "separator": " ",
+      "start_row": 1,
+      "header_row": 1
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

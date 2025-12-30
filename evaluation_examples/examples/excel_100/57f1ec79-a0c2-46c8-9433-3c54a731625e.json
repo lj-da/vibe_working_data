@@ -1,0 +1,83 @@
+{
+  "id": "57f1ec79-a0c2-46c8-9433-3c54a731625e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "说明：原表是每户人员从电脑下载的，比较杂乱，我想把每户的资料重新进行整理，以户为单位，户主排第一，妻子排第二，其它人员按年龄进行排序。求高手指教，方法越简单越好。多谢了",
+  "method": "使用COUNTIF和IF函数创建辅助列，然后对数据进行排序。第一步：在F1单元格中输入公式=COUNTIF($E$1:E1,\"户主\")*10+IF(E1=\"户主\",1,IF(E1=\"夫妻\",2,3))，然后复制公式到其他行。COUNTIF($E$1:E1,\"户主\")统计从E1到当前行的E列中\"户主\"的数量，乘以10后得到每户的基数（第一户为0，第二户为10，第三户为20等）。IF(E1=\"户主\",1,IF(E1=\"夫妻\",2,3))根据E列的关系类型分配值：户主为1，夫妻为2，其他为3。两者相加后，每户的户主值为11、21、31等，夫妻值为12、22、32等，其他人员值为13、23、33等。第二步：选择数据范围，使用数据排序功能，设置第一关键字为辅助列（F列）升序，第二关键字为出生日期列（D列）升序。排序后，数据会按户分组，每户内户主排第一（值最小），夫妻排第二，其他人员按出生日期升序排列（年龄从大到小）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/152.xlsx",
+            "path": "/home/user/household_sort.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/household_sort.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/57f1ec79-a0c2-46c8-9433-3c54a731625e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "household_sort.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_countif_if_household_sort",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/household_sort.xlsx",
+      "dest": "household_sort.xlsx"
+    },
+    "options": {
+      "helper_column": "F",
+      "start_row": 1,
+      "relationship_column": "E",
+      "birth_date_column": "D",
+      "expected_functions": ["COUNTIF", "IF"],
+      "household_head_text": "户主",
+      "spouse_text": "夫妻",
+      "data_column": "E"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

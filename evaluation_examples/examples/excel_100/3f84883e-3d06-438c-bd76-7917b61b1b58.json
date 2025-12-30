@@ -1,0 +1,108 @@
+{
+  "id": "3f84883e-3d06-438c-bd76-7917b61b1b58",
+  "snapshot": "libreoffice_calc",
+  "instruction": "查找出B列中正数和负数的最大值与最小值到右边表格的对应位置",
+  "method": "使用MAXIFS和MINIFS函数查找B列中正数和负数的最大值与最小值。第一步：在F3单元格中输入公式=MAXIFS(B2:B4771,B2:B4771,\"<0\")，这个公式查找B2:B4771范围内所有小于0的数值中的最大值，即负数的最大值。MAXIFS函数的第一个参数是数据范围（B2:B4771），第二个参数是条件范围（也是B2:B4771），第三个参数是条件（\"<0\"表示小于0）。第二步：在G3单元格中输入公式=MAXIFS(B2:B4771,B2:B4771,\">0\")，这个公式查找B2:B4771范围内所有大于0的数值中的最大值，即正数的最大值。第三步：在F4单元格中输入公式=MINIFS(B2:B4771,B2:B4771,\"<0\")，这个公式查找B2:B4771范围内所有小于0的数值中的最小值，即负数的最小值。第四步：在G4单元格中输入公式=MINIFS(B2:B4771,B2:B4771,\">0\")，这个公式查找B2:B4771范围内所有大于0的数值中的最小值，即正数的最小值。这样，F3显示负数的最大值，G3显示正数的最大值，F4显示负数的最小值，G4显示正数的最小值。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nF3=MAXIFS(B2:B4771,B2:B4771,\"<0\")\nG3=MAXIFS(B2:B4771,B2:B4771,\">0\")\nF4=MINIFS(B2:B4771,B2:B4771,\"<0\")\nG4=MINIFS(B2:B4771,B2:B4771,\">0\")\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/186.xlsx",
+            "path": "/home/user/maxifs_minifs.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/maxifs_minifs.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/3f84883e-3d06-438c-bd76-7917b61b1b58",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "maxifs_minifs.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_maxifs_minifs_conditional",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/maxifs_minifs.xlsx",
+      "dest": "maxifs_minifs.xlsx"
+    },
+    "options": {
+      "formulas": {
+        "F3": {
+          "function": "MAXIFS",
+          "condition": "<0",
+          "range": "B2:B4771"
+        },
+        "G3": {
+          "function": "MAXIFS",
+          "condition": ">0",
+          "range": "B2:B4771"
+        },
+        "F4": {
+          "function": "MINIFS",
+          "condition": "<0",
+          "range": "B2:B4771"
+        },
+        "G4": {
+          "function": "MINIFS",
+          "condition": ">0",
+          "range": "B2:B4771"
+        }
+      },
+      "data_range": "B2:B4771"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
