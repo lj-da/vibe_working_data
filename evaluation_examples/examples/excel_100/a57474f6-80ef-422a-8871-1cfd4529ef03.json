@@ -1,0 +1,92 @@
+{
+  "id": "a57474f6-80ef-422a-8871-1cfd4529ef03",
+  "snapshot": "libreoffice_calc",
+  "instruction": "按照表格里的多条件进行求和",
+  "method": "使用SUMPRODUCT函数结合多个条件进行求和。在H3单元格中输入公式=SUMPRODUCT(ISNUMBER(SEARCH(TRIM(F3),TRIM(LOOKUP(ROW(A$2:A$9),ROW(A$2:A$9)/($A$2:$A$9<>\"\"),$A$2:$A$9))))*(TRIM(B$2:B$9)=TRIM(G3))*C$2:C$9)。该公式通过以下步骤实现多条件求和：1)使用LOOKUP函数查找A列中最后一个非空值；2)使用SEARCH函数在查找结果中搜索F3单元格的内容；3)使用ISNUMBER判断是否找到匹配；4)使用TRIM函数去除空格进行比较；5)检查B列是否等于G3单元格的值；6)将满足所有条件的C列数值相乘并求和。然后将公式复制到H4单元格，确保每个单元格都填充了正确的公式。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/482.xlsx",
+            "path": "/home/user/multi_condition_sum.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/multi_condition_sum.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('H3:H4公式验证：\\n=SUMPRODUCT(ISNUMBER(SEARCH(TRIM(F3),TRIM(LOOKUP(ROW(A$2:A$9),ROW(A$2:A$9)/($A$2:$A$9<>\"\"),$A$2:$A$9))))*(TRIM(B$2:B$9)=TRIM(G3))*C$2:C$9)\\n\\n注意：每个单元格都需要填充公式，少一个都不行。')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/a57474f6-80ef-422a-8871-1cfd4529ef03",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "multi_condition_sum.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumpRODUCT_multi_condition_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/multi_condition_sum.xlsx",
+      "dest": "multi_condition_sum.xlsx"
+    },
+    "options": {
+      "check_range": "H3:H4",
+      "expected_functions": ["SUMPRODUCT", "ISNUMBER", "SEARCH", "TRIM", "LOOKUP", "ROW"],
+      "lookup_range": "A$2:A$9",
+      "search_col": "F",
+      "match_col": "B",
+      "match_col_ref": "G",
+      "sum_range": "C$2:C$9"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

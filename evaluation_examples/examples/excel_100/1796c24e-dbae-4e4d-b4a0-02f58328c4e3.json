@@ -1,0 +1,77 @@
+{
+  "id": "1796c24e-dbae-4e4d-b4a0-02f58328c4e3",
+  "snapshot": "libreoffice_calc",
+  "instruction": "A2-F2如何跨列居中？",
+  "method": "在LibreOffice Calc中实现A2到F2的跨列居中，需要执行以下步骤：1) 选中A2到F2的单元格范围；2) 在菜单栏中点击合并并居中，或者使用快捷键Ctrl+M；3) 这样会将A2到F2的单元格合并为一个单元格，并且内容会在合并后的单元格中水平居中显示。跨列居中实际上是将多个单元格合并后，使文本在合并后的单元格范围内水平居中对齐。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/74.xlsx",
+            "path": "/home/user/merge_center_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/merge_center_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/1796c24e-dbae-4e4d-b4a0-02f58328c4e3",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "merge_center_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_merge_center_cells",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/merge_center_data.xlsx",
+      "dest": "merge_center_data.xlsx"
+    },
+    "options": {
+      "check_range": "A2:F2",
+      "expected_horizontal": "center"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

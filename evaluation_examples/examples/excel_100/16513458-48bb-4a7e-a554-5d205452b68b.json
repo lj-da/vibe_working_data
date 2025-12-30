@@ -1,0 +1,78 @@
+{
+  "id": "16513458-48bb-4a7e-a554-5d205452b68b",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何将两个表格中，相对应的同一行有相同数据的单元格填充黄色？",
+  "method": "使用条件格式功能，结合COUNTIF函数来比较两个表格中同一行的数据。具体步骤：1) 选中目标范围（F2:O29）；2) 打开条件格式设置，选择使用公式；3) 输入条件公式=COUNTIF($A2:$D2,F2)>0，该公式会检查F2单元格的值是否在A2:D2范围内存在，如果存在则返回大于0的值；4) 设置格式为单元格填充黄色；5) 将条件格式应用到整个F2:O29范围。这样，当F2:O29范围内的单元格值与对应行的A2:D2范围内的值相同时，该单元格会被填充为黄色。公式中的$A2:$D2使用混合引用（列绝对引用，行相对引用），确保在应用到不同行时，每行都检查自己对应的A:D列范围；F2使用相对引用，确保每行检查当前列的单元格值。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/90.xlsx",
+            "path": "/home/user/countif_conditional_formatting.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/countif_conditional_formatting.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/16513458-48bb-4a7e-a554-5d205452b68b",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "countif_conditional_formatting.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_countif_conditional_formatting",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/countif_conditional_formatting.xlsx",
+      "dest": "countif_conditional_formatting.xlsx"
+    },
+    "options": {
+      "check_range": "F2:O29",
+      "expected_formula_pattern": "COUNTIF($A2:$D2,F2)>0",
+      "expected_color": "yellow"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

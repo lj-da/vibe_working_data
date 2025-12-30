@@ -1,0 +1,89 @@
+{
+  "id": "37031e9f-a659-4e89-9da9-85834ac26374",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请教一下大神们,如何可以快速把《》中的文字提取出来,请指教.谢谢",
+  "method": "使用REGEX函数来提取《》中的文字。在B1单元格中输入公式=REGEX(A1,\"[^《》]{5,}\")。该公式的工作原理：1) REGEX函数使用正则表达式模式\"[^《》]{5,}\"匹配A1单元格的内容，其中[^《》]表示匹配不是《或》的字符，{5,}表示至少匹配5个字符；2) 这个模式会提取《》之间的文字内容（排除《和》本身）。将公式复制到B1:B3范围，由于公式使用了相对引用（A1），在复制到不同行时，公式会自动调整为对应行的引用（如B2中的公式会变为=REGEX(A2,\"[^《》]{5,}\")，B3中的公式会变为=REGEX(A3,\"[^《》]{5,}\")）。这样就能为每一行数据提取《》中的文字。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/475.xlsx",
+            "path": "/home/user/regex_extract_brackets.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/regex_extract_brackets.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('B1:B3公式验证：\\n=REGEX(A1,\"[^《》]{5,}\")\\n\\n注意：每个单元格都需要填充公式，少一个都不行。')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/37031e9f-a659-4e89-9da9-85834ac26374",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "regex_extract_brackets.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_regex_extract_brackets",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/regex_extract_brackets.xlsx",
+      "dest": "regex_extract_brackets.xlsx"
+    },
+    "options": {
+      "check_range": "B1:B3",
+      "source_column": "A",
+      "expected_function": "REGEX",
+      "expected_pattern": "[^《》]{5,}"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

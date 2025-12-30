@@ -1,0 +1,80 @@
+{
+  "id": "dde01c20-9a44-4440-bd5f-3e402a521b3a",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么把C列的小写数字和后面的裤长前后换下顺序？",
+  "method": "使用REGEX函数来交换C列中数字和文本的顺序。在D1单元格中输入公式=REGEX(C1, \"(\\d+)(\\D+)\", \"$2$1\")。该公式的工作原理：1) REGEX函数使用正则表达式模式\"(\\d+)(\\D+)\"匹配C1单元格的内容，其中(\\d+)匹配开头的数字部分，(\\D+)匹配后面的非数字字符部分（裤长）；2) 替换字符串\"$2$1\"表示将匹配到的两部分交换顺序，$2代表第二个捕获组（非数字字符部分），$1代表第一个捕获组（数字部分），从而实现将数字和文本前后交换。将公式复制到D1:D17范围，由于公式使用了相对引用（C1），在复制到不同行时，公式会自动调整为对应行的引用（如D2中的公式会变为=REGEX(C2, \"(\\d+)(\\D+)\", \"$2$1\")）。这样就能为每一行数据交换数字和文本的顺序。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/60.xlsx",
+            "path": "/home/user/regexp_replace_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/regexp_replace_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/dde01c20-9a44-4440-bd5f-3e402a521b3a",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "regexp_replace_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_regexp_replace",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/regexp_replace_data.xlsx",
+      "dest": "regexp_replace_data.xlsx"
+    },
+    "options": {
+      "check_range": "D1:D17",
+      "source_column": "C",
+      "expected_function": "REGEX",
+      "expected_pattern": "(\\d+)(\\D+)",
+      "expected_replace_pattern": "$2$1"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

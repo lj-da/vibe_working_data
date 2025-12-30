@@ -1,0 +1,108 @@
+{
+  "id": "65983ffb-28b8-4686-a7c4-de33c84be1c4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何在图表中找出指定的信息。即：本科,财务部,性别为女。三个条件都要满足。",
+  "method": "有两种方法可以实现多条件筛选：方法1：使用IFERROR、INDEX、AGGREGATE、ROW函数组合。在G2单元格中输入数组公式=IFERROR(INDEX(A:A, AGGREGATE(15, 6, ROW($C$2:$C$7)/(($C$2:$C$7=\"女\")*($D$2:$D$7=\"财务部\")*($E$2:$E$7=\"本科\")), ROWS($G$2:G2))), \"\")。该公式的工作原理：1) 三个条件检查：($C$2:$C$7=\"女\")*($D$2:$D$7=\"财务部\")*($E$2:$E$7=\"本科\")，使用乘法(*)表示AND逻辑，只有三个条件都满足时返回TRUE(1)；2) ROW($C$2:$C$7)获取行号数组；3) ROW($C$2:$C$7)/(条件)中，当条件为TRUE(1)时，返回行号；当条件为FALSE(0)时，除以0会产生错误值；4) AGGREGATE(15, 6, ...)中，15表示SMALL函数，6表示忽略错误值，从符合条件的行号中提取第k小的值，k由ROWS($G$2:G2)决定，在G2中为1，在G3中为2，以此类推；5) INDEX(A:A, ...)根据行号返回A列对应行的值；6) IFERROR处理没有更多匹配项时的情况，返回空字符串；7) 将公式复制到G2:K3范围（或根据需要调整范围）。方法2：使用FILTER函数（适用于支持FILTER函数的Excel版本）。在G2单元格中输入公式=FILTER(A1:E7,(C1:C7=\"女\")*(D1:D7=\"财务部\")*(E1:E7=\"本科\"))。该公式的工作原理：1) FILTER函数的第一个参数A1:E7是要筛选的数据范围；2) 第二个参数是筛选条件：(C1:C7=\"女\")*(D1:D7=\"财务部\")*(E1:E7=\"本科\")，使用乘法(*)表示AND逻辑；3) FILTER函数会返回所有满足三个条件的行。两种方法实现的效果相同，任选其一即可。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/29.xlsx",
+            "path": "/home/user/multi_condition_filter.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/multi_condition_filter.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('方法1：=IFERROR(INDEX(A:A, AGGREGATE(15, 6, ROW($C$2:$C$7)/(($C$2:$C$7=\"女\")*($D$2:$D$7=\"财务部\")*($E$2:$E$7=\"本科\")), ROWS($G$2:G2))), \"\")\\n方法2：=FILTER(A1:E7,(C1:C7=\"女\")*(D1:D7=\"财务部\")*(E1:E7=\"本科\"))')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/65983ffb-28b8-4686-a7c4-de33c84be1c4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "multi_condition_filter.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_multi_condition_filter",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/multi_condition_filter.xlsx",
+      "dest": "multi_condition_filter.xlsx"
+    },
+    "options": {
+      "method1_range": "G2:K3",
+      "method1_expected_functions": ["IFERROR", "INDEX", "AGGREGATE", "ROW"],
+      "method1_condition_ranges": {
+        "gender_range": "$C$2:$C$7",
+        "gender_value": "女",
+        "dept_range": "$D$2:$D$7",
+        "dept_value": "财务部",
+        "edu_range": "$E$2:$E$7",
+        "edu_value": "本科"
+      },
+      "method1_index_range": "A:A",
+      "method1_row_range": "$C$2:$C$7",
+      "method2_cell": "G2",
+      "method2_expected_functions": ["FILTER"],
+      "method2_data_range": "A1:E7",
+      "method2_condition_ranges": {
+        "gender_range": "C1:C7",
+        "gender_value": "女",
+        "dept_range": "D1:D7",
+        "dept_value": "财务部",
+        "edu_range": "E1:E7",
+        "edu_value": "本科"
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

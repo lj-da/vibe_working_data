@@ -1,0 +1,91 @@
+{
+  "id": "915cf614-cd57-4d15-b40a-f5693cefb27c",
+  "snapshot": "libreoffice_calc",
+  "instruction": "一个单元格里面有两个或者更多，如何把每个人的工时进行求和计算。",
+  "method": "使用SUMPRODUCT函数结合MMULT、FIND、ISERR和ROW函数来对包含多个姓名的单元格进行工时求和。在C18单元格中输入公式=SUMPRODUCT(MMULT(1-ISERR(FIND(B18,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)。该公式的工作原理：FIND(B18,B$2:J$11)在B$2:J$11范围内查找B18单元格中的姓名，如果找到返回位置，找不到返回错误；ISERR函数判断是否为错误，返回TRUE或FALSE；1-ISERR(...)将TRUE转换为0，FALSE转换为1，得到一个0和1的矩阵，表示哪些单元格包含该姓名；ROW($1:$9)^0创建一个9行1列的单位向量（全为1）；MMULT函数将0/1矩阵与单位向量相乘，得到每行是否包含该姓名的结果（0或1）；最后SUMPRODUCT函数将这个结果与M$1:M$10的工时数据相乘并求和，得到该姓名的总工时。然后将此公式填充到C18:C22范围，每个单元格的B18会相应变化为B19、B20、B21、B22，实现每个姓名对应工时的求和计算。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/456.xlsx",
+            "path": "/home/user/sumpRODUCT_mmult_hours_sum.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/sumpRODUCT_mmult_hours_sum.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'sumpRODUCT_mmult_formula_check.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\nC18:C22范围内每个单元格的公式格式为：\\n=SUMPRODUCT(MMULT(1-ISERR(FIND(B{行号},B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\n\\n示例：\\nC18: =SUMPRODUCT(MMULT(1-ISERR(FIND(B18,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\nC19: =SUMPRODUCT(MMULT(1-ISERR(FIND(B19,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\nC20: =SUMPRODUCT(MMULT(1-ISERR(FIND(B20,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\nC21: =SUMPRODUCT(MMULT(1-ISERR(FIND(B21,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\nC22: =SUMPRODUCT(MMULT(1-ISERR(FIND(B22,B$2:J$11)),ROW($1:$9)^0),M$1:M$10)\\n\\n注意：\\n- B18、B19、B20、B21、B22是相对引用，会随行号变化\\n- B$2:J$11是绝对引用，查找范围固定\\n- ROW($1:$9)^0创建单位向量\\n- M$1:M$10是绝对引用，工时数据范围固定'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/915cf614-cd57-4d15-b40a-f5693cefb27c",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sumpRODUCT_mmult_hours_sum.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumpRODUCT_mmult_find_hours_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/sumpRODUCT_mmult_hours_sum.xlsx",
+      "dest": "sumpRODUCT_mmult_hours_sum.xlsx"
+    },
+    "options": {
+      "check_range": "C18:C22",
+      "expected_functions": ["SUMPRODUCT", "MMULT", "ISERR", "FIND", "ROW"],
+      "find_criteria_col": "B",
+      "find_search_range": "B$2:J$11",
+      "row_range": "$1:$9",
+      "sum_range": "M$1:M$10"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

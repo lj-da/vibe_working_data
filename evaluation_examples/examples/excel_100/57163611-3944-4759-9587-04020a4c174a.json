@@ -1,0 +1,87 @@
+{
+  "id": "57163611-3944-4759-9587-04020a4c174a",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么合并A1和B1单元格的内容",
+  "method": "使用&符号或CONCATENATE函数来合并A1和B1单元格的内容。方法一：在目标单元格（如C1）中输入公式=A1&B1，使用&符号直接连接两个单元格的内容。方法二：在目标单元格中输入公式=CONCATENATE(A1,B1)，使用CONCATENATE函数将A1和B1的内容合并。两种方法都能实现单元格内容的合并，&符号更简洁，CONCATENATE函数更易读。公式会返回A1和B1单元格内容的连接结果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/23.xlsx",
+            "path": "/home/user/concatenate_cells_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/concatenate_cells_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'concatenate_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n=A1&B1\\n或\\n=CONCATENATE(A1,B1)'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/57163611-3944-4759-9587-04020a4c174a",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "concatenate_cells_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_concatenate_cells",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/concatenate_cells_data.xlsx",
+      "dest": "concatenate_cells_data.xlsx"
+    },
+    "options": {
+      "source_cell1": "A1",
+      "source_cell2": "B1"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

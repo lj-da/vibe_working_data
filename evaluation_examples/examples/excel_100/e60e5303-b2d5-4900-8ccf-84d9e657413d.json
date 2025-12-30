@@ -1,0 +1,90 @@
+{
+  "id": "e60e5303-b2d5-4900-8ccf-84d9e657413d",
+  "snapshot": "libreoffice_calc",
+  "instruction": "要想让附件中的D列中的包含有\"罗江\"字样的单元格显示为红色，包含有\"中江\"字样的单元格显示为蓝色，请教高手，具体该怎么做呢？",
+  "method": "使用条件格式功能，在D1:D44范围内设置两个条件格式规则。条件1：公式为=COUNT(FIND(\"罗江\",D1))，当公式返回非零值时，设置字体颜色为红色；条件2：公式为=COUNT(FIND(\"中江\",D1))，当公式返回非零值时，设置字体颜色为蓝色。FIND函数用于在单元格中查找指定文本，如果找到则返回位置（大于0），如果未找到则返回错误值；COUNT函数用于统计数值个数，如果FIND找到文本则COUNT返回1，如果FIND返回错误则COUNT返回0。这样，包含\"罗江\"的单元格会显示红色字体，包含\"中江\"的单元格会显示蓝色字体。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/503.xlsx",
+            "path": "/home/user/conditional_formatting_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/conditional_formatting_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('条件1: =COUNT(FIND(\"罗江\",D1))\\n条件2: =COUNT(FIND(\"中江\",D1))')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/e60e5303-b2d5-4900-8ccf-84d9e657413d",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "conditional_formatting_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_count_find_conditional_formatting",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/conditional_formatting_data.xlsx",
+      "dest": "conditional_formatting_data.xlsx"
+    },
+    "options": {
+      "check_range": "D1:D44",
+      "condition1_formula_pattern": "COUNT(FIND(\"罗江\",D1))",
+      "condition1_font_color": "red",
+      "condition2_formula_pattern": "COUNT(FIND(\"中江\",D1))",
+      "condition2_font_color": "blue"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

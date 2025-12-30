@@ -1,0 +1,93 @@
+{
+  "id": "4db6235b-6d9a-4099-ad74-720de75c815d",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何快速计算表格中每个人的分数总分并判断这几个人的分数是否达标。达标值为：280",
+  "method": "使用IF函数结合SUMIF函数来判断每个人的分数是否达标。在F3单元格中输入公式=IF(SUMIF(A:A,E3,C:C)>=280,\"录取\",\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\")。该公式的工作原理：1) SUMIF(A:A,E3,C:C)在A列中查找E3单元格的值（姓名），并对匹配行在C列中的分数进行求和，得到该人的总分；2) IF函数判断总分是否>=280，如果满足条件则返回\"录取\"，否则返回\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\"，其中&符号用于字符串拼接，计算相差的分数并显示；3) 将公式复制到F3:F5范围，由于公式使用了相对引用（E3），在复制到不同行时，公式会自动调整为对应行的引用（如F4中的公式会变为=IF(SUMIF(A:A,E4,C:C)>=280,\"录取\",\"相差\"&280-SUMIF(A:A,E4,C:C)&\"分\")）。这样就能为每个人计算总分并判断是否达标。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/47.xlsx",
+            "path": "/home/user/score_check.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/score_check.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=IF(SUMIF(A:A,E3,C:C)>=280,\"录取\",\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\")')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/4db6235b-6d9a-4099-ad74-720de75c815d",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "score_check.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_sumif_pass_fail",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/score_check.xlsx",
+      "dest": "score_check.xlsx"
+    },
+    "options": {
+      "check_range": "F3:F5",
+      "expected_functions": ["IF", "SUMIF"],
+      "sumif_range": "A:A",
+      "sumif_criteria_col": "E",
+      "sumif_sum_range": "C:C",
+      "threshold": 280,
+      "pass_text": "录取",
+      "fail_text_pattern": "相差.*分"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

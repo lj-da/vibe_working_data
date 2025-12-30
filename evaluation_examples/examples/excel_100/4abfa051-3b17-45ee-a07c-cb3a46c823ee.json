@@ -1,0 +1,93 @@
+{
+  "id": "4abfa051-3b17-45ee-a07c-cb3a46c823ee",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何用vlookup函数调用客户1中的两个价税合计的值？",
+  "method": "使用SUM函数结合VLOOKUP和INDEX函数来查找客户1的两个价税合计值并求和。在B7单元格中输入公式=SUM(VLOOKUP(\"客户1\", B2:D3, 3, 0), INDEX(D2:D3, 2))。该公式的工作原理：1) VLOOKUP(\"客户1\", B2:D3, 3, 0)在B2:D3范围内查找\"客户1\"，返回第3列（D列）的值，0表示精确匹配；2) INDEX(D2:D3, 2)返回D2:D3范围中第2个值（即D3单元格的值）；3) SUM函数将VLOOKUP返回的值和INDEX返回的值相加，得到客户1的两个价税合计值的总和。这样就能通过VLOOKUP函数调用客户1中的两个价税合计的值并求和。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/28.xlsx",
+            "path": "/home/user/vlookup_groupby_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/vlookup_groupby_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=SUM(VLOOKUP(\"客户1\", B2:D3, 3, 0), INDEX(D2:D3, 2))')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/4abfa051-3b17-45ee-a07c-cb3a46c823ee",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "vlookup_groupby_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sum_vlookup_index",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/vlookup_groupby_data.xlsx",
+      "dest": "vlookup_groupby_data.xlsx"
+    },
+    "options": {
+      "check_cell": "B7",
+      "expected_functions": ["SUM", "VLOOKUP", "INDEX"],
+      "vlookup_lookup_value": "\"客户1\"",
+      "vlookup_table_array": "B2:D3",
+      "vlookup_col_index": 3,
+      "vlookup_range_lookup": 0,
+      "index_array": "D2:D3",
+      "index_row_num": 2
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

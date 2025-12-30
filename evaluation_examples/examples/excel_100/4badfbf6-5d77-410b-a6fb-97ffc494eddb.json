@@ -1,0 +1,95 @@
+{
+  "id": "4badfbf6-5d77-410b-a6fb-97ffc494eddb",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据原始数据，用I、J两列日期匹配，返回对应列的数字",
+  "method": "使用LOOKUP函数在A列中查找I列的值，然后返回对应列的数字。在K3单元格中输入公式=LOOKUP($I3,$A:$A,C:C)，该公式会在A列中查找I3单元格的值，如果找到匹配项，则返回C列对应位置的值。然后将此公式填充到K3:O217范围。公式中的$I3使用混合引用（列绝对引用，行相对引用），确保在复制到不同行时，每行都引用对应行的I列值；$A:$A使用绝对引用，确保查找范围始终是A列；C:C使用相对引用，确保在复制到不同列时，列号会相应变化（K列对应C列，L列对应D列，M列对应E列，N列对应F列，O列对应G列）。这样K3的公式为=LOOKUP($I3,$A:$A,C:C)，L3的公式为=LOOKUP($I3,$A:$A,D:D)，K4的公式为=LOOKUP($I4,$A:$A,C:C)，以此类推。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/548.xlsx",
+            "path": "/home/user/lookup_date_match.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/lookup_date_match.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'lookup_formula_check.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\nK3:O217范围内每个单元格的公式格式为：\\n=LOOKUP($I{行号},$A:$A,{对应列}:{对应列})\\n\\n示例：\\nK3: =LOOKUP($I3,$A:$A,C:C)\\nL3: =LOOKUP($I3,$A:$A,D:D)\\nM3: =LOOKUP($I3,$A:$A,E:E)\\nN3: =LOOKUP($I3,$A:$A,F:F)\\nO3: =LOOKUP($I3,$A:$A,G:G)\\nK4: =LOOKUP($I4,$A:$A,C:C)\\nL4: =LOOKUP($I4,$A:$A,D:D)\\n\\n列对应关系：\\nK列 -> C列\\nL列 -> D列\\nM列 -> E列\\nN列 -> F列\\nO列 -> G列'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/4badfbf6-5d77-410b-a6fb-97ffc494eddb",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "lookup_date_match.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_lookup_date_match",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/lookup_date_match.xlsx",
+      "dest": "lookup_date_match.xlsx"
+    },
+    "options": {
+      "check_range": "K3:O217",
+      "lookup_value_col": "I",
+      "lookup_array": "$A:$A",
+      "result_col_mapping": {
+        "K": "C",
+        "L": "D",
+        "M": "E",
+        "N": "F",
+        "O": "G"
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

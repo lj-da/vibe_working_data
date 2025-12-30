@@ -1,0 +1,88 @@
+{
+  "id": "6c5abe95-cd34-4f16-83dc-23cb604d0b29",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何批量删除A2到A4单元格的换行符",
+  "method": "使用CLEAN函数来删除单元格中的换行符。在B2单元格中输入公式=CLEAN(A2)，该公式会删除A2单元格中的所有不可打印字符，包括换行符。然后将公式复制到B3和B4单元格，分别对应A3和A4单元格。CLEAN函数会移除文本中的换行符（ASCII码10）、回车符（ASCII码13）以及其他不可打印字符，保留可打印的文本内容。这样就可以批量处理A2到A4单元格，将清理后的文本显示在B2到B4单元格中。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/32.xlsx",
+            "path": "/home/user/clean_newlines_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/clean_newlines_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/6c5abe95-cd34-4f16-83dc-23cb604d0b29",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "clean_newlines_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "with open('/home/user/Desktop/verify_formula.txt', 'w', encoding='utf-8') as f: f.write('验证公式：\\nB2: =CLEAN(A2)\\nB3: =CLEAN(A3)\\nB4: =CLEAN(A4)')"
+          ]
+        }
+      }
+    ],
+    "func": "verify_clean_remove_newlines",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/clean_newlines_data.xlsx",
+      "dest": "clean_newlines_data.xlsx"
+    },
+    "options": {
+      "check_range": "B2:B4",
+      "source_column": "A",
+      "expected_function": "CLEAN"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

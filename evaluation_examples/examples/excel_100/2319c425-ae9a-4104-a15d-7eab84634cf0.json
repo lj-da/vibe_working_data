@@ -1,0 +1,89 @@
+{
+  "id": "2319c425-ae9a-4104-a15d-7eab84634cf0",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何把左边A列的原始数据转为右边F、G列的形式，用什么公式",
+  "method": "使用INDEX函数结合COLUMN和ROW函数来将A列数据转换为F、G两列。在F2单元格中输入公式=INDEX($A:$A,COLUMN(A1)+ROW(A1)*2-1)&\"\"，然后将公式填充到F2:G25范围。公式工作原理：1) INDEX($A:$A, ...)从A列中提取数据；2) COLUMN(A1)返回当前单元格所在列的列号（F列为6，G列为7，但公式中A1是相对引用，所以F2中COLUMN(A1)=1，G2中COLUMN(B1)=2）；3) ROW(A1)返回当前单元格所在行的行号（F2中ROW(A1)=1，F3中ROW(A2)=2）；4) COLUMN(A1)+ROW(A1)*2-1计算索引值，F2为1+1*2-1=2（取A2），G2为2+1*2-1=3（取A3），F3为1+2*2-1=4（取A4），以此类推；5) &\"\"确保结果为文本格式。这样就能将A列的数据按顺序填充到F、G两列中，每两行A列数据对应一行F、G列数据。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/541.xlsx",
+            "path": "/home/user/index_column_row_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/index_column_row_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=INDEX($A:$A,COLUMN(A1)+ROW(A1)*2-1)&\"\"')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/2319c425-ae9a-4104-a15d-7eab84634cf0",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "index_column_row_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_index_column_row_transform",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/index_column_row_data.xlsx",
+      "dest": "index_column_row_data.xlsx"
+    },
+    "options": {
+      "formula_range": "F2:G25",
+      "source_column": "A",
+      "expected_formula_pattern": "=INDEX($A:$A,COLUMN(A1)+ROW(A1)*2-1)&\"\"",
+      "expected_functions": ["INDEX", "COLUMN", "ROW"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

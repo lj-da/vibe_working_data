@@ -1,0 +1,82 @@
+{
+  "id": "05805140-e73e-4f52-8a39-69bd65661666",
+  "snapshot": "libreoffice_calc",
+  "instruction": "成绩查询，某同学指定学科，诉求：因为原始成绩数据每次列顺序不一样，需要列出 同学1指定学科的成绩",
+  "method": "使用SUMIF函数结合OFFSET和MATCH函数来动态查找和汇总成绩数据。在R2单元格中输入公式=SUMIF($A:$A,$Q2,OFFSET($A$1,,MATCH(R$1,$B$1:$N$1,)))。该公式的工作原理：1) MATCH(R$1,$B$1:$N$1,)在表头行（B1:N1）中查找R1单元格的值（学科名称），返回该学科所在的列号；2) OFFSET($A$1,,MATCH(...))从A1单元格开始，向右偏移MATCH返回的列数，得到对应学科的成绩列；3) SUMIF($A:$A,$Q2,OFFSET(...))在A列中查找Q2单元格的值（同学1），并对匹配行在对应学科列中的成绩进行求和。将公式复制到R2:Y16区域，实现对所有同学和所有学科的成绩查询。由于使用了相对引用和绝对引用的组合，公式在复制时会自动调整行号和列号，适应不同的同学和学科。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/291.xlsx",
+            "path": "/home/user/grade_query.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/grade_query.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/05805140-e73e-4f52-8a39-69bd65661666",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "grade_query.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumif_offset_match",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/grade_query.xlsx",
+      "dest": "grade_query.xlsx"
+    },
+    "options": {
+      "check_range": "R2:Y16",
+      "expected_functions": ["SUMIF", "OFFSET", "MATCH"],
+      "sumif_range": "$A:$A",
+      "sumif_criteria_col": "Q",
+      "offset_base": "$A$1",
+      "match_lookup_value_row": 1,
+      "match_lookup_array": "$B$1:$N$1"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

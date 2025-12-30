@@ -1,0 +1,91 @@
+{
+  "id": "ded83158-3296-4873-8ace-609c07eb4cd4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "00001\n00001A\n00001B\nW0002\nW0002A\nW0002B\nW0002C\nSD5699\nSD5699A\nSD5699B\n像上面这种情况，我想把末尾为非字母的行筛选出来，弄成如下\n00001\nW0002\nSD5699\n应该要怎么做",
+  "method": "在B1:B10范围内填充公式：=N(ISERROR(N(INDIRECT(RIGHT($A2)&4^8))))，注意公式中的行号需要根据实际行数调整（B1对应$A2，B2对应$A3，以此类推）。该公式的工作原理：1) RIGHT($A2)获取A2单元格的最后一个字符；2) INDIRECT(RIGHT($A2)&4^8)尝试将最后一个字符与\"4^8\"（即65536）连接后作为单元格引用，如果最后一个字符是字母，INDIRECT会失败（无效的单元格引用），ISERROR返回TRUE，N函数将其转换为1；如果最后一个字符是数字，INDIRECT会成功，ISERROR返回FALSE，N函数将其转换为0；3) 因此公式返回1表示末尾是字母的行，返回0表示末尾是数字的行；4) 对B列应用筛选条件，筛选出等于1的行，即可筛选出末尾为字母的行（筛选掉），保留末尾为数字的行。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/117.xlsx",
+            "path": "/home/user/filter_non_letter_end.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/filter_non_letter_end.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/filter_formula.txt', 'w', encoding='utf-8') as f: f.write('=N(ISERROR(N(INDIRECT(RIGHT($A2)&4^8))))')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ded83158-3296-4873-8ace-609c07eb4cd4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "filter_non_letter_end.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_filter_non_letter_end",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/filter_non_letter_end.xlsx",
+      "dest": "filter_non_letter_end.xlsx"
+    },
+    "options": {
+      "formula_range": "B1:B10",
+      "source_column": "A",
+      "filter_column": "B",
+      "filter_value": "1",
+      "expected_formula": "=N(ISERROR(N(INDIRECT(RIGHT($A2)&4^8))))",
+      "expected_functions": ["N", "ISERROR", "INDIRECT", "RIGHT"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

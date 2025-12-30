@@ -1,0 +1,90 @@
+{
+  "id": "97e12bca-c825-478b-8b9a-5fce521c9217",
+  "snapshot": "libreoffice_calc",
+  "instruction": "用什么函数可以计算每类产品数量之和？",
+  "method": "使用SUMIF函数按类别计算产品数量之和。在E3单元格中输入公式=SUMIF($A$2:$A$13,D3,$B$2:$B$13)。该公式的工作原理：1) SUMIF函数的第一个参数$A$2:$A$13是条件范围（产品类别列），使用绝对引用确保在复制公式时范围不变；2) 第二个参数D3是条件值（当前行的产品类别），使用相对引用，在复制到不同行时会自动调整为D4、D5、D6等；3) 第三个参数$B$2:$B$13是求和范围（数量列），使用绝对引用确保范围不变；4) SUMIF函数会在A2:A13范围内查找与D3单元格值匹配的行，并对这些行在B2:B13范围内的数值求和；5) 将公式复制到E3:E6范围，由于使用了相对引用D3，在复制到不同行时，公式会自动调整为对应行的引用（如E4中的公式会变为=SUMIF($A$2:$A$13,D4,$B$2:$B$13)）。这样就能为每个产品类别计算数量之和。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/31.xlsx",
+            "path": "/home/user/product_category_sum.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/product_category_sum.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=SUMIF($A$2:$A$13,D3,$B$2:$B$13)')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/97e12bca-c825-478b-8b9a-5fce521c9217",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "product_category_sum.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumif_category_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/product_category_sum.xlsx",
+      "dest": "product_category_sum.xlsx"
+    },
+    "options": {
+      "check_range": "E3:E6",
+      "expected_functions": ["SUMIF"],
+      "sumif_range": "$A$2:$A$13",
+      "sumif_criteria_col": "D",
+      "sumif_sum_range": "$B$2:$B$13"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

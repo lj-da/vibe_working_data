@@ -1,0 +1,87 @@
+{
+  "id": "9fc2ffed-7c6d-428d-b94d-61ab5950a0b4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "我想让G列像E列一样，有相同的格式并加边框。",
+  "method": "使用格式刷或选择性粘贴功能将E列的格式复制到G列。具体步骤：1) 选中E6:E35范围；2) 复制该范围（Ctrl+C）；3) 选中G6单元格；4) 使用选择性粘贴功能，选择\"格式\"选项，或者使用格式刷工具；5) 确保G6:G35的格式与E6:E35完全一致，包括：合并单元格的位置和范围、边框样式（所有边框）、字体大小、字体颜色、字体样式（粗体、斜体等）、填充颜色、对齐方式、数字格式等所有格式属性。如果E列中有合并单元格，G列对应位置也需要有相同的合并单元格。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/173.xlsx",
+            "path": "/home/user/column_format_match.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/column_format_match.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/format_verification.txt', 'w', encoding='utf-8') as f: f.write('验证E6:E35与G6:G35格式完全一致，包括：合并单元格、边框样式、字体大小颜色、填充颜色、对齐方式、数字格式等所有格式属性。')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/9fc2ffed-7c6d-428d-b94d-61ab5950a0b4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "column_format_match.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_column_format_match",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/column_format_match.xlsx",
+      "dest": "column_format_match.xlsx"
+    },
+    "options": {
+      "source_range": "E6:E35",
+      "target_range": "G6:G35"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

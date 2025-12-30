@@ -1,0 +1,90 @@
+{
+  "id": "ea71985a-ad3a-4487-bada-27754e5f513e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么求出所有同学的成绩总分。",
+  "method": "使用SUM函数计算每个同学的成绩总分。具体步骤：1) 在E2单元格中输入公式=SUM(B2:D2)，计算第一个同学的总分（B2到D2的成绩之和）；2) 选中E2单元格，向下拖动填充柄或使用复制粘贴功能，将公式复制到E3:E10范围。由于公式使用了相对引用（B2:D2），在复制到不同行时，公式会自动调整为对应行的引用（如E3中的公式会变为=SUM(B3:D3)，E4中的公式会变为=SUM(B4:D4)）。这样就能为每个同学计算出对应的成绩总分。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/25.xlsx",
+            "path": "/home/user/student_grade_sum.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/student_grade_sum.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=SUM(B2:D2)')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ea71985a-ad3a-4487-bada-27754e5f513e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "student_grade_sum.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_student_grade_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/student_grade_sum.xlsx",
+      "dest": "student_grade_sum.xlsx"
+    },
+    "options": {
+      "sum_range": "E2:E10",
+      "source_range_start": "B2",
+      "source_range_end": "D2",
+      "start_row": 2,
+      "end_row": 10
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

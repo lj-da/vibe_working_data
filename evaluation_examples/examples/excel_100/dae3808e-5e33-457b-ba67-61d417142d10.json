@@ -1,0 +1,88 @@
+{
+  "id": "dae3808e-5e33-457b-ba67-61d417142d10",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么把表格列中，重复的名字单独提取出来",
+  "method": "使用IF函数嵌套结合COUNTIF、ISERROR和MATCH函数来提取重复的名字。在C2单元格中输入公式=IF(COUNTIF(B$2:B2, B2) > 1, IF(ISERROR(MATCH(B2, C$1:C1, 0)), B2, \"\"), \"\")。该公式的工作原理：1) COUNTIF(B$2:B2, B2) > 1会检查当前行之前（包括当前行）B列中是否有重复的名字，如果出现次数大于1则返回TRUE；2) 外层IF函数判断是否有重复，如果有重复则进入内层IF判断；3) MATCH(B2, C$1:C1, 0)会在C列的前一行中查找当前名字是否已经出现过，如果找到返回位置，找不到返回错误；4) ISERROR函数判断MATCH是否返回错误，如果返回错误（即名字未在C列出现过），则返回B2的值，否则返回空字符串；5) 如果没有重复，外层IF返回空字符串；6) 将公式复制到C2:C31范围，由于公式使用了混合引用（B$2:B2和C$1:C1），在复制到不同行时，公式会自动调整范围，确保每行都检查从第2行到当前行的数据，以及从第1行到当前行前一行的结果列。这样就能提取出所有重复的名字，且每个重复的名字只出现一次。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/40.xlsx",
+            "path": "/home/user/duplicate_names.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/duplicate_names.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/formula_check.txt', 'w', encoding='utf-8') as f: f.write('=IF(COUNTIF(B$2:B2, B2) > 1, IF(ISERROR(MATCH(B2, C$1:C1, 0)), B2, \"\"), \"\")')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/dae3808e-5e33-457b-ba67-61d417142d10",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "duplicate_names.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_countif_match_duplicate_names",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/duplicate_names.xlsx",
+      "dest": "duplicate_names.xlsx"
+    },
+    "options": {
+      "check_range": "C2:C31",
+      "source_column": "B",
+      "expected_functions": ["IF", "COUNTIF", "ISERROR", "MATCH"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
