@@ -1,0 +1,90 @@
+{
+  "id": "369df36f-881f-40fa-b13c-ee80e1a2d789",
+  "snapshot": "libreoffice_calc",
+  "instruction": "发票税收编码\"**\"里的文字怎么统一去掉",
+  "method": "使用RIGHT、MATCH、LEFT函数组合来提取最后一个\"*\"之后的文本。具体步骤：1) 在B2单元格中输入公式=RIGHT(A2,MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))=\"*\"),)-1)，该公式会从A2单元格中提取最后一个\"*\"之后的文本；2) RIGHT(A2, ...)函数从A2的右边提取指定数量的字符；3) MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))=\"*\"),)部分用于查找最后一个\"*\"的位置，其中LEFT(RIGHT(A2,ROW($1:$99)))从右边开始逐个字符检查，0/(...)=\"*\"将匹配的转换为0，不匹配的转换为错误值，MATCH查找第一个0的位置（即最后一个\"*\"的位置）；4) -1用于调整位置，以获取\"*\"之后的字符数；5) 将公式填充到B2:B33范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能统一去掉发票税收编码中\"**\"里的文字，只保留最后一个\"*\"之后的内容。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/427.xlsx",
+            "path": "/home/user/invoice_tax_code_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/invoice_tax_code_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'invoice_tax_code_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=RIGHT(A2,MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))=\"*\"),)-1)\\n\\n该公式的工作原理：\\n- RIGHT(A2, ...)从A2单元格的右边提取指定数量的字符\\n- MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))=\"*\"),)用于查找最后一个\"*\"的位置\\n  * LEFT(RIGHT(A2,ROW($1:$99)))从右边开始逐个字符检查（ROW($1:$99)生成1到99的数组）\\n  * 0/(LEFT(RIGHT(A2,ROW($1:$99)))=\"*\")将匹配\"*\"的转换为0，不匹配的转换为错误值\\n  * MATCH查找第一个0的位置，即最后一个\"*\"的位置\\n- -1用于调整位置，以获取\"*\"之后的字符数\\n\\n验证结果要求：\\n- B2:B33范围内的所有单元格必须包含上述公式\\n- 每个单元格的公式必须引用对应的A列单元格（B2引用A2，B3引用A3，以此类推）\\n- 公式必须包含RIGHT、MATCH、LEFT函数\\n- 公式必须包含ROW($1:$99)或类似的数组引用\\n- 公式必须包含\"*\"字符的匹配逻辑\\n- 所有32个单元格（B2到B33）都必须填充公式，少一个都不行\\n\\n注意：\\n- 公式中的单元格引用应该是相对引用（如A2），不是绝对引用（如$A$2）\\n- 公式结构必须正确，包含所有必要的函数和参数'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/369df36f-881f-40fa-b13c-ee80e1a2d789",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "invoice_tax_code_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_right_match_left_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/invoice_tax_code_data.xlsx",
+      "dest": "invoice_tax_code_data.xlsx"
+    },
+    "options": {
+      "formula_range": "B2:B33",
+      "source_column": "A",
+      "expected_functions": ["RIGHT", "MATCH", "LEFT"],
+      "expected_pattern": "*",
+      "row_array_pattern": "ROW($1:$99)"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

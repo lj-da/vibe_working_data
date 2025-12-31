@@ -1,0 +1,92 @@
+{
+  "id": "b29c3a4b-33bb-4225-83d5-7f11232ea0f5",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据F1：J7的价格表，帮我将价格按等级提取到c列",
+  "method": "使用SUMPRODUCT函数根据价格表按等级提取价格。在C2单元格中输入公式=SUMPRODUCT(($F$2:$F$7=$A2)*($G$1:$J$1=$B2)*$G$2:$J$7)，然后将该公式填充到C2:C10范围内的所有单元格。公式的工作原理：1) ($F$2:$F$7=$A2)检查F2:F7范围内的值是否等于A2单元格的值（等级），返回TRUE/FALSE数组；2) ($G$1:$J$1=$B2)检查G1:J1范围内的值是否等于B2单元格的值（类别），返回TRUE/FALSE数组；3) $G$2:$J$7是价格数据范围；4) 通过乘法运算符(*)将两个条件数组相乘，再与价格数据相乘，最后SUMPRODUCT函数对所有结果求和。这样就能根据A列和B列的条件从价格表中提取对应的价格。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/455.xlsx",
+            "path": "/home/user/price_extract_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/price_extract_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'price_extract_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\nC2:C10范围内每个单元格的公式格式为：\\n=SUMPRODUCT(($F$2:$F$7=$A{行号})*($G$1:$J$1=$B{行号})*$G$2:$J$7)\\n\\n示例：\\nC2: =SUMPRODUCT(($F$2:$F$7=$A2)*($G$1:$J$1=$B2)*$G$2:$J$7)\\nC3: =SUMPRODUCT(($F$2:$F$7=$A3)*($G$1:$J$1=$B3)*$G$2:$J$7)\\nC4: =SUMPRODUCT(($F$2:$F$7=$A4)*($G$1:$J$1=$B4)*$G$2:$J$7)\\nC5: =SUMPRODUCT(($F$2:$F$7=$A5)*($G$1:$J$1=$B5)*$G$2:$J$7)\\nC6: =SUMPRODUCT(($F$2:$F$7=$A6)*($G$1:$J$1=$B6)*$G$2:$J$7)\\nC7: =SUMPRODUCT(($F$2:$F$7=$A7)*($G$1:$J$1=$B7)*$G$2:$J$7)\\nC8: =SUMPRODUCT(($F$2:$F$7=$A8)*($G$1:$J$1=$B8)*$G$2:$J$7)\\nC9: =SUMPRODUCT(($F$2:$F$7=$A9)*($G$1:$J$1=$B9)*$G$2:$J$7)\\nC10: =SUMPRODUCT(($F$2:$F$7=$A10)*($G$1:$J$1=$B10)*$G$2:$J$7)\\n\\n注意：\\n- $F$2:$F$7是绝对引用，价格表的等级列范围固定\\n- $A2、$A3等是相对引用，会随行号变化，对应A列的等级值\\n- $G$1:$J$1是绝对引用，价格表的类别行范围固定\\n- $B2、$B3等是相对引用，会随行号变化，对应B列的类别值\\n- $G$2:$J$7是绝对引用，价格数据范围固定\\n- 每个单元格都必须填充公式，少一个都不行'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b29c3a4b-33bb-4225-83d5-7f11232ea0f5",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "price_extract_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumpRODUCT_price_extract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/price_extract_data.xlsx",
+      "dest": "price_extract_data.xlsx"
+    },
+    "options": {
+      "check_range": "C2:C10",
+      "expected_functions": ["SUMPRODUCT"],
+      "condition1_range": "$F$2:$F$7",
+      "condition1_col": "A",
+      "condition2_range": "$G$1:$J$1",
+      "condition2_col": "B",
+      "sum_range": "$G$2:$J$7"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

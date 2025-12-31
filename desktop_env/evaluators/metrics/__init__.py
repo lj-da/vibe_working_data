@@ -177,7 +177,18 @@ from .table import (
     verify_index_column_row_transform,
     verify_count_find_conditional_formatting,
     verify_sumpRODUCT_multi_condition_sum,
-    verify_sumpRODUCT_mmult_find_hours_sum
+    verify_sumpRODUCT_mmult_find_hours_sum,
+    verify_sumpRODUCT_price_extract,
+    verify_name_count_summary,
+    verify_sort_choose_person_contract,
+    verify_right_match_left_extract,
+    verify_if_mod_date_calculate,
+    verify_financial_month_convert,
+    verify_sortby_letter_number_sort,
+    verify_irr_profit_calculation,
+    verify_remove_empty_rows,
+    verify_and_not_conditional_formatting,
+    verify_text_sumpRODUCT_mmult_match_win_lose
 )
 from .thunderbird import (
     check_thunderbird_prefs,

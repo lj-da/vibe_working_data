@@ -1,0 +1,89 @@
+{
+  "id": "d574fbb2-6cd9-4e11-9cca-755ed05ff0c3",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求用银行理财产品irr 的函数公式算出F列的IRR，请各位帮忙，谢谢！",
+  "method": "使用IRR函数计算银行理财产品的内部收益率。具体步骤：1) 在G列添加一列\"收益\"，用于计算每期的收益；2) 在G2单元格中输入公式=E2-D2，计算第一期的收益（E列减去D列）；3) 将G2的公式填充到G2:G20范围内的所有单元格，确保每个单元格都包含正确的公式（G2=E2-D2，G3=E3-D3，以此类推），少一个都不行；4) 在F2单元格中输入公式=IRR(G2:G20)，使用IRR函数计算G2:G20范围内所有收益的内部收益率；5) IRR函数会基于G2:G20的现金流数据计算出内部收益率，这是银行理财产品常用的收益率计算方法。所有指定单元格必须严格填充指定公式，一个不能少。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/417.xlsx",
+            "path": "/home/user/irr_profit_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/irr_profit_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'irr_profit_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n1. 收益列（G列）公式：\\n   G2单元格：=E2-D2\\n   G3单元格：=E3-D3\\n   ...\\n   G20单元格：=E20-D20\\n\\n   要求：G2:G20范围内的所有19个单元格（G2到G20）都必须填充公式，每个单元格的公式都是对应的E列减去D列，少一个都不行。\\n\\n2. IRR计算公式（F列）：\\n   F2单元格：=IRR(G2:G20)\\n\\n   要求：F2单元格必须包含IRR函数公式，引用G2:G20范围来计算内部收益率。\\n\\n验证结果要求：\\n- G2:G20范围内的所有19个单元格必须包含=E-D类型的公式（E列减去D列）\\n- 每个单元格的公式必须引用对应的E列和D列单元格（G2引用E2和D2，G3引用E3和D3，以此类推）\\n- 公式必须使用减法运算符（-）\\n- F2单元格必须包含=IRR(G2:G20)公式\\n- IRR公式必须引用G2:G20范围\\n- 所有20个单元格（G2:G20共19个，F2共1个）都必须填充公式，一个不能少\\n\\n注意：\\n- 公式中的单元格引用应该是相对引用（如E2、D2），不是绝对引用（如$E$2、$D$2）\\n- 公式结构必须正确，包含所有必要的函数和参数\\n- IRR函数用于计算一系列现金流的内部收益率，是银行理财产品常用的收益率计算方法'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/d574fbb2-6cd9-4e11-9cca-755ed05ff0c3",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "irr_profit_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_irr_profit_calculation",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/irr_profit_data.xlsx",
+      "dest": "irr_profit_data.xlsx"
+    },
+    "options": {
+      "profit_range": "G2:G20",
+      "irr_cell": "F2",
+      "source_col_e": "E",
+      "source_col_d": "D"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

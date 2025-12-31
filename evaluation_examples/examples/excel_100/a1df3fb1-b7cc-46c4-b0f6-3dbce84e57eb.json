@@ -1,0 +1,89 @@
+{
+  "id": "a1df3fb1-b7cc-46c4-b0f6-3dbce84e57eb",
+  "snapshot": "libreoffice_calc",
+  "instruction": "需求：需要在黄色区域中用函数公式，先按人员(即同一人员依次排在一起，再在同一人员内按合同额降序)。如果用函数能实现人员排序按每个人合同额汇总数降序，更好。",
+  "method": "使用SORT函数结合CHOOSE函数来实现按人员分组并按合同额降序排序。在M11单元格中输入公式=SORT(CHOOSE({1,2,3},F11:F25,G11:G25,I11:I25),{1,2},{-1,-1})。公式的工作原理：1) CHOOSE({1,2,3},F11:F25,G11:G25,I11:I25)从三列数据中选择并组合成新的数组，{1,2,3}表示选择第1、2、3个参数对应的列（F列、G列、I列），F11:F25是人员列，G11:G25是其他数据列，I11:I25是合同额列；2) SORT函数的第一个参数是CHOOSE返回的数组，第二个参数{1,2}表示按第1列（人员）和第2列进行排序，第三个参数{-1,-1}表示两列都按降序排序（-1表示降序，1表示升序）。这样就能实现先按人员分组（同一人员排在一起），然后在同一人员内按合同额降序排列。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/447.xlsx",
+            "path": "/home/user/sort_choose_person_contract.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/sort_choose_person_contract.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'sort_choose_person_contract_formula.txt'), 'w', encoding='utf-8'); f.write('验证要求：\\n\\n在M11单元格中应填入以下公式：\\n=SORT(CHOOSE({1,2,3},F11:F25,G11:G25,I11:I25),{1,2},{-1,-1})\\n\\n公式说明：\\n1. CHOOSE({1,2,3},F11:F25,G11:G25,I11:I25)\\n   - {1,2,3}表示选择第1、2、3个参数对应的列\\n   - F11:F25是人员列（姓名）\\n   - G11:G25是合同额列\\n   - I11:I25是合同地点列\\n   - CHOOSE函数将这三列组合成一个新的数组\\n\\n2. SORT(...,{1,2},{-1,-1})\\n   - 第一个参数是CHOOSE返回的数组\\n   - {1,2}表示按第1列（姓名）和第2列（合同额）进行排序\\n   - {-1,-1}表示两列都按降序排序（-1表示降序，1表示升序）\\n\\n排序逻辑：\\n- 先按第1列（姓名）降序排序，使同一人员排在一起\\n- 在同一人员内，按第2列（合同额）降序排序\\n\\n验证条件：\\n- M10:O25范围内的数据必须与排序后的源数据完全一致\\n- 每个单元格必须一一对应，不能有偏差\\n- 源数据范围：F11:F25（姓名）、G11:G25（合同额）、I11:I25（合同地点）\\n- 结果范围：M10:O25（包含16行3列，M10可能是标题行）\\n\\n注意：\\n- 验证会检查M10:O25范围内的每个单元格是否与排序后的源数据匹配\\n- 如果M10是标题行，则从M11开始比较数据\\n- 如果M10是数据行，则从M10开始比较数据\\n- 所有单元格必须完全匹配，不允许任何偏差'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/a1df3fb1-b7cc-46c4-b0f6-3dbce84e57eb",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sort_choose_person_contract.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sort_choose_person_contract",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/sort_choose_person_contract.xlsx",
+      "dest": "sort_choose_person_contract.xlsx"
+    },
+    "options": {
+      "result_range": "M10:O25",
+      "source_name_range": "F11:F25",
+      "source_amount_range": "G11:G25",
+      "source_location_range": "I11:I25"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

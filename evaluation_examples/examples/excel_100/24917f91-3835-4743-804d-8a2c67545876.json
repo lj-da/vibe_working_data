@@ -1,0 +1,89 @@
+{
+  "id": "24917f91-3835-4743-804d-8a2c67545876",
+  "snapshot": "libreoffice_calc",
+  "instruction": "表格中只有A、B两列数据，而且数据很长，如何用公式计算出D列的日期，表中D列的日期，是我通过口算得出C列的数据，再用公式计算出来的。",
+  "method": "使用IF、MOD、DATE、YEAR、INT、RIGHT、LEN、FIND、MONTH函数组合来根据B列数据计算日期。具体步骤：1) 在D2单元格中输入公式=IF(MOD(B2,1),DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(\".\",B2))),DATE(YEAR(A2),MONTH(A2),B2))，该公式会根据B2是否有小数部分来选择不同的日期构造方式；2) MOD(B2,1)用于判断B2是否有小数部分，如果有小数部分则返回非0值（真值），否则返回0（假值）；3) 如果B2有小数部分（MOD(B2,1)为真），则使用DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(\".\",B2)))，其中YEAR(A2)获取A2的年份，INT(B2)获取B2的整数部分作为月份，RIGHT(B2,LEN(B2)-FIND(\".\",B2))提取B2小数部分作为日期；4) 如果B2是整数（MOD(B2,1)为假），则使用DATE(YEAR(A2),MONTH(A2),B2)，其中YEAR(A2)获取A2的年份，MONTH(A2)获取A2的月份，B2作为日期；5) 将公式填充到D2:D43范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能根据B列数据的不同格式（有小数或整数）来正确计算日期。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/425.xlsx",
+            "path": "/home/user/date_calculation_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/date_calculation_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'date_calculation_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=IF(MOD(B2,1),DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(\".\",B2))),DATE(YEAR(A2),MONTH(A2),B2))\\n\\n该公式的工作原理：\\n- IF(MOD(B2,1), ...)用于判断B2是否有小数部分\\n  * MOD(B2,1)返回B2除以1的余数，如果有小数部分则返回非0值（真值），否则返回0（假值）\\n- 如果B2有小数部分（MOD(B2,1)为真）：\\n  * DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(\".\",B2)))\\n  * YEAR(A2)获取A2的年份\\n  * INT(B2)获取B2的整数部分作为月份\\n  * RIGHT(B2,LEN(B2)-FIND(\".\",B2))提取B2小数部分作为日期\\n    - FIND(\".\",B2)找到小数点的位置\\n    - LEN(B2)-FIND(\".\",B2)计算小数点后的字符数\\n    - RIGHT(B2,...)提取小数点后的部分\\n- 如果B2是整数（MOD(B2,1)为假）：\\n  * DATE(YEAR(A2),MONTH(A2),B2)\\n  * YEAR(A2)获取A2的年份\\n  * MONTH(A2)获取A2的月份\\n  * B2作为日期\\n\\n验证结果要求：\\n- D2:D43范围内的所有单元格必须包含上述公式\\n- 每个单元格的公式必须引用对应的A列和B列单元格（D2引用A2和B2，D3引用A3和B3，以此类推）\\n- 公式必须包含IF、MOD、DATE、YEAR函数\\n- 公式必须包含INT、RIGHT、LEN、FIND函数（用于处理小数部分）\\n- 公式必须包含MONTH函数（用于处理整数情况）\\n- 所有42个单元格（D2到D43）都必须填充公式，少一个都不行\\n\\n注意：\\n- 公式中的单元格引用应该是相对引用（如A2、B2），不是绝对引用（如$A$2、$B$2）\\n- 公式结构必须正确，包含所有必要的函数和参数\\n- MOD函数用于判断是否有小数部分，这是关键逻辑'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/24917f91-3835-4743-804d-8a2c67545876",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "date_calculation_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_mod_date_calculate",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/date_calculation_data.xlsx",
+      "dest": "date_calculation_data.xlsx"
+    },
+    "options": {
+      "formula_range": "D2:D43",
+      "source_column_a": "A",
+      "source_column_b": "B",
+      "expected_functions": ["IF", "MOD", "DATE", "YEAR", "INT", "RIGHT", "LEN", "FIND", "MONTH"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

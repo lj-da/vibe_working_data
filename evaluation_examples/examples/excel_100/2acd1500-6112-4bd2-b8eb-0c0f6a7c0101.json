@@ -1,0 +1,92 @@
+{
+  "id": "2acd1500-6112-4bd2-b8eb-0c0f6a7c0101",
+  "snapshot": "libreoffice_calc",
+  "instruction": "\"金木水火土\"五张牌,四个人玩,每人随机抽一张,然后看相克。被克的输、克他人的赢,有克人与被克的平。每局中只有一人赢牌,也只有一人输牌。请用公式在F列计算这20局每人的输赢结果。",
+  "method": "使用TEXT函数结合SUMPRODUCT、MMULT、MATCH、OFFSET、MOD、N函数来计算五行相克游戏的输赢结果。具体步骤：1) 在I12单元格中输入公式=TEXT(SUMPRODUCT(MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H12,B$1:E$1,),20),H$2:L$2,),5)+1=MATCH(B$2:E$21,H$2:L$2,)),{1;1;1;1})-MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H12,B$1:E$1,),20),H$2:L$2,)+4,5)=MOD(MATCH(B$2:E$21,H$2:L$2,),5)),{1;1;1;1})),\"贏0;輸0;平\")；2) 该公式通过OFFSET和MATCH函数获取当前玩家的牌（H12对应玩家名，B$1:E$1是玩家列，A$2是起始位置，20是20局数据）；3) MATCH函数将牌名（金木水火土）转换为在H$2:L$2中的位置；4) MOD(...,5)用于实现五行相克循环逻辑（金克木、木克土、土克水、水克火、火克金）；5) 第一个MMULT计算当前玩家克其他玩家的次数（MOD(MATCH(...),5)+1=MATCH(...)表示相克关系）；6) 第二个MMULT计算当前玩家被其他玩家克的次数（MOD(MATCH(...)+4,5)=MOD(MATCH(...),5)表示被克关系）；7) 两个MMULT结果相减得到净胜场次；8) SUMPRODUCT对20局的结果求和；9) TEXT函数将数值转换为\"贏\"、\"輸\"、\"平\"文本；10) 将公式填充到I12:I15范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能根据五行相克规则计算每人的输赢结果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/376.xlsx",
+            "path": "/home/user/five_element_game.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/five_element_game.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'five_element_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=TEXT(SUMPRODUCT(MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H12,B$1:E$1,),20),H$2:L$2,),5)+1=MATCH(B$2:E$21,H$2:L$2,)),{1;1;1;1})-MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H12,B$1:E$1,),20),H$2:L$2,)+4,5)=MOD(MATCH(B$2:E$21,H$2:L$2,),5)),{1;1;1;1})),\"贏0;輸0;平\")\\n\\n该公式的工作原理：\\n- OFFSET(A$2,,MATCH(H12,B$1:E$1,),20)获取当前玩家（H12对应玩家名）在20局中的牌数据\\n  * A$2是起始位置\\n  * MATCH(H12,B$1:E$1,)找到玩家在B$1:E$1中的列位置\\n  * 20表示20局数据\\n- MATCH(OFFSET(...),H$2:L$2,)将牌名（金木水火土）转换为在H$2:L$2中的位置（1-5）\\n- MATCH(B$2:E$21,H$2:L$2,)将其他玩家的牌转换为位置\\n- MOD(...,5)用于实现五行相克循环逻辑：\\n  * 金(1)克木(2)、木(2)克土(3)、土(3)克水(4)、水(4)克火(5)、火(5)克金(1)\\n  * MOD(MATCH(...),5)+1=MATCH(...)表示相克关系\\n  * MOD(MATCH(...)+4,5)=MOD(MATCH(...),5)表示被克关系\\n- N()函数将逻辑值转换为数值（TRUE=1, FALSE=0）\\n- 第一个MMULT计算当前玩家克其他玩家的次数\\n- 第二个MMULT计算当前玩家被其他玩家克的次数\\n- 两个MMULT结果相减得到净胜场次\\n- SUMPRODUCT对20局的结果求和\\n- TEXT函数将数值转换为\"贏\"（正数）、\"輸\"（负数）、\"平\"（零）文本\\n\\n验证结果要求：\\n- I12:I15范围内的所有单元格必须包含上述公式\\n- 每个单元格的公式必须引用对应的H列单元格（I12引用H12，I13引用H12，以此类推）\\n- 公式必须包含TEXT、SUMPRODUCT、MMULT、MATCH、OFFSET、MOD、N函数\\n- 公式必须包含两个MMULT操作（一个计算克他人，一个计算被克）\\n- 公式必须包含MOD(...,5)模式（五行循环）\\n- 公式必须包含数组常量{1;1;1;1}\\n- 公式必须包含TEXT格式字符串\"贏0;輸0;平\"\\n- 所有4个单元格（I12到I15）都必须填充公式，少一个都不行\\n\\n注意：\\n- 公式中的单元格引用应该使用绝对引用（如A$2、B$1:E$1、H$2:L$2、B$2:E$21）\\n- H列的引用应该是相对引用（如H12、H12等）\\n- 公式结构必须正确，包含所有必要的函数和参数'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/2acd1500-6112-4bd2-b8eb-0c0f6a7c0101",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "five_element_game.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_text_sumpRODUCT_mmult_match_win_lose",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/five_element_game.xlsx",
+      "dest": "five_element_game.xlsx"
+    },
+    "options": {
+      "check_range": "I12:I15",
+      "expected_functions": ["TEXT", "SUMPRODUCT", "MMULT", "MATCH", "OFFSET", "MOD", "N"],
+      "offset_match_ref": "MATCH(H12,B$1:E$1,)",
+      "match_range": "B$2:E$21",
+      "match_lookup": "H$2:L$2",
+      "text_format": "贏0;輸0;平",
+      "array_constant": "{1;1;1;1}"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
