@@ -1,0 +1,92 @@
+{
+  "id": "b7d58bac-527f-4d83-a10f-a37711646ee7",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么查看每个员工是否在出勤日期当日没有进行投保",
+  "method": "使用COUNTIFS函数结合条件格式和INT函数来检查每个员工是否在出勤日期当日没有进行投保。具体步骤：1) 在\"投保日期\"工作表中，选择C2:C79范围，填充公式=INT(B2)，该公式将B列的日期转换为整数（日期序列号），每个单元格都需要检查，不能少；2) 在\"出勤日期\"工作表中，选择A2:A73范围，打开条件格式设置，选择使用公式，输入公式=COUNTIFS($投保日期.$A:$A,$A2,$投保日期.$C:$C,$C2)>0；3) 该公式通过COUNTIFS函数检查两个条件：第一个条件检查$投保日期.$A:$A列中是否有与当前行A列（$A2）相同的值（员工信息），第二个条件检查$投保日期.$C:$C列中是否有与当前行C列（$C2）相同的值（出勤日期）；4) 如果COUNTIFS返回大于0，表示在投保日期表中找到了匹配的记录（即有投保），否则表示没有投保；5) 设置条件格式样式（样式随意，可以是填充颜色、字体颜色等）；6) 将条件格式应用到A2:A73范围内的所有单元格，确保每个单元格都包含条件格式，不能少；7) 在\"出勤日期\"工作表中，选择C2:C79范围，填充公式=INT(B2)，该公式将B列的日期转换为整数（日期序列号），每个单元格都需要检查，不能少。这样就能通过条件格式直观地看到哪些员工在出勤日期当日没有进行投保（没有条件格式标记的单元格表示没有投保记录）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/361.xlsx",
+            "path": "/home/user/employee_insurance_check.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/employee_insurance_check.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'countifs_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n1. 条件格式公式（出勤日期工作表A2:A73）：\\n=COUNTIFS($投保日期.$A:$A,$A2,$投保日期.$C:$C,$C2)>0\\n\\n2. INT公式（投保日期工作表C2:C79和出勤日期工作表C2:C79）：\\n=INT(B2)\\n\\n条件格式公式的工作原理：\\n- COUNTIFS函数用于多条件计数\\n- 第一个条件：$投保日期.$A:$A（投保日期工作表的A列）中是否有与当前行A列（$A2）相同的值\\n  * $投保日期.$A:$A是绝对引用，指向投保日期工作表的A列全部数据\\n  * $A2是混合引用，列绝对行相对，确保在A2:A73范围内应用时，每行引用对应的A列单元格\\n- 第二个条件：$投保日期.$C:$C（投保日期工作表的C列）中是否有与当前行C列（$C2）相同的值\\n  * $投保日期.$C:$C是绝对引用，指向投保日期工作表的C列全部数据\\n  * $C2是混合引用，列绝对行相对，确保在A2:A73范围内应用时，每行引用对应的C列单元格\\n- COUNTIFS函数返回满足两个条件的记录数量\\n- >0表示如果找到匹配记录（即有投保），条件为真，应用条件格式\\n\\nINT公式的工作原理：\\n- INT函数将数值向下取整为最接近的整数\\n- INT(B2)将B2单元格的日期值转换为整数（日期序列号）\\n- 当公式填充到C2:C79范围时，每行会自动引用对应的B列单元格（B2、B3、B4等）\\n\\n验证结果要求：\\n1. \"投保日期\"工作表：\\n   - C2:C79范围内的所有单元格必须包含公式=INT(B2)\\n   - 每个单元格都需要检查，不能少\\n\\n2. \"出勤日期\"工作表：\\n   - A2:A73范围内的所有单元格必须包含条件格式\\n   - 条件格式公式必须为=COUNTIFS($投保日期.$A:$A,$A2,$投保日期.$C:$C,$C2)>0\\n   - 公式中的$A2和$C2必须是混合引用（列绝对行相对），确保每行引用对应的单元格\\n   - 公式必须引用投保日期工作表的A列和C列（$投保日期.$A:$A和$投保日期.$C:$C）\\n   - 公式必须包含>0比较运算符\\n   - 每个单元格都需要检查，不能少\\n   - 样式随意（可以是填充颜色、字体颜色等），不强制要求特定样式\\n   - C2:C79范围内的所有单元格必须包含公式=INT(B2)\\n   - 每个单元格都需要检查，不能少\\n\\n注意：\\n- 条件格式公式中的单元格引用应该使用混合引用（$A2、$C2），这样在应用到不同行时会自动调整行号\\n- 工作表引用（$投保日期）和列引用（$A:$A、$C:$C）应该使用绝对引用\\n- INT公式中的B2引用应该是相对引用，这样在填充时会自动调整\\n- 验证时会检查每个单元格的公式和条件格式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b7d58bac-527f-4d83-a10f-a37711646ee7",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "employee_insurance_check.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_countifs_conditional_formatting",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/employee_insurance_check.xlsx",
+      "dest": "employee_insurance_check.xlsx"
+    },
+    "options": {
+      "insurance_sheet_name": "投保日期",
+      "insurance_formula_range": "C2:C79",
+      "attendance_sheet_name": "出勤日期",
+      "attendance_cf_range": "A2:A73",
+      "attendance_formula_range": "C2:C73",
+      "expected_cf_formula_pattern": "COUNTIFS($投保日期.$A:$A,$A2,$投保日期.$C:$C,$C2)>0",
+      "expected_int_formula_pattern": "INT(B2)"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,93 @@
+{
+  "id": "fb43134e-9b68-47bd-8223-627915b5e83e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "有一个月5个周的excel排班表，第一排为姓名，每周顺序不一样。需要统计Sheet6里面4个人五周的夜班次数。怎么用countif和 vlookup或是filter和 vlookup获取？",
+  "method": "使用COUNT、FIND、LET、VSTACK、FILTER和CHOOSECOLS函数组合来统计跨多个工作表的夜班次数。具体步骤：1) 在Sheet6工作表中，选择B3:B6范围，填充公式=COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet1.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet2.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet3.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet4.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet5.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))；2) 公式的工作原理：对于每个工作表（Sheet1-Sheet5），使用VSTACK函数将A$1:H$17范围的数据堆叠；使用LET函数将堆叠的数据赋值给变量x；使用FILTER函数结合CHOOSECOLS(x,1)=A3来筛选出第一列（姓名列）等于A3单元格（对应人员姓名）的所有行；使用FIND函数在筛选后的数据中查找\"夜\"字符，如果找到返回位置，否则返回错误；使用COUNT函数统计FIND函数返回数值（非错误）的次数，即统计包含\"夜\"字符的单元格数量；最后将5个工作表的统计结果相加，得到该人员五周的夜班总次数；3) 当公式填充到B4、B5、B6时，A3会自动调整为A4、A5、A6，分别对应不同的人员姓名；4) 每个单元格都需要检查，不能少。这样就能统计出Sheet6中4个人在5个工作表中的夜班总次数。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/343.xlsx",
+            "path": "/home/user/night_shift_schedule.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/night_shift_schedule.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'night_shift_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet1.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet2.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet3.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet4.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))+COUNT(FIND(\"夜\",LET(x,VSTACK($Sheet5.A$1:H$17),FILTER(x,CHOOSECOLS(x,1)=A3))))\\n\\n公式说明：\\n- COUNT函数：统计FIND函数返回数值（非错误）的次数\\n- FIND函数：在数据中查找\"夜\"字符，如果找到返回位置，否则返回错误\\n- LET函数：将表达式的结果赋值给变量x，便于后续引用\\n- VSTACK函数：将多个工作表的数据垂直堆叠成一个数组\\n  * $Sheet1.A$1:H$17：Sheet1工作表的A1到H17范围（绝对引用）\\n  * $Sheet2.A$1:H$17：Sheet2工作表的A1到H17范围（绝对引用）\\n  * $Sheet3.A$1:H$17：Sheet3工作表的A1到H17范围（绝对引用）\\n  * $Sheet4.A$1:H$17：Sheet4工作表的A1到H17范围（绝对引用）\\n  * $Sheet5.A$1:H$17：Sheet5工作表的A1到H17范围（绝对引用）\\n- FILTER函数：根据条件筛选数据\\n  * x：要筛选的数据（来自VSTACK的结果）\\n  * CHOOSECOLS(x,1)=A3：筛选条件，选择x的第一列（姓名列）等于A3单元格的行\\n    * CHOOSECOLS(x,1)：选择x的第一列\\n    * =A3：等于A3单元格的值（对应人员姓名）\\n    * 当公式填充到B4、B5、B6时，A3会自动调整为A4、A5、A6\\n\\n公式结构：\\n对于每个工作表（Sheet1-Sheet5），公式执行以下步骤：\\n1. VSTACK($Sheet1.A$1:H$17)：将Sheet1的A1:H17范围堆叠\\n2. LET(x,VSTACK(...))：将堆叠的数据赋值给变量x\\n3. FILTER(x,CHOOSECOLS(x,1)=A3)：筛选出姓名列等于A3的行\\n4. FIND(\"夜\",...)：在筛选后的数据中查找\"夜\"字符\\n5. COUNT(FIND(...))：统计找到\"夜\"字符的次数\\n6. 将5个工作表的结果相加：+COUNT(...)+COUNT(...)+COUNT(...)+COUNT(...)+COUNT(...)\\n\\n验证结果要求：\\n1. Sheet6工作表：\\n   - B3:B6范围内的所有单元格必须包含公式\\n   - 每个单元格都需要检查，不能少\\n2. 公式必须包含以下函数：\\n   - COUNT：统计函数\\n   - FIND：查找函数\\n   - LET：变量赋值函数\\n   - VSTACK：垂直堆叠函数\\n   - FILTER：筛选函数\\n   - CHOOSECOLS：列选择函数\\n3. 公式必须引用所有5个工作表：\\n   - Sheet1、Sheet2、Sheet3、Sheet4、Sheet5\\n4. 每个工作表的引用格式：$Sheet1.A$1:H$17（或Sheet1.A$1:H$17）\\n5. 公式必须包含5个COUNT(FIND(...))部分，分别对应5个工作表\\n6. FILTER条件必须使用CHOOSECOLS(x,1)=A3（或A4、A5、A6）\\n7. FIND函数必须搜索\"夜\"字符\\n8. B3单元格的公式中，FILTER条件必须引用A3\\n9. B4单元格的公式中，FILTER条件必须引用A4\\n10. B5单元格的公式中，FILTER条件必须引用A5\\n11. B6单元格的公式中，FILTER条件必须引用A6\\n\\n注意：\\n- 公式中的工作表引用（$Sheet1、$Sheet2等）应该使用绝对引用或相对引用\\n- 范围引用（A$1:H$17）应该使用混合引用，行绝对列相对\\n- FILTER条件中的A3、A4、A5、A6应该使用相对引用，确保在填充时自动调整\\n- 验证时会检查每个单元格的公式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fb43134e-9b68-47bd-8223-627915b5e83e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "night_shift_schedule.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_count_find_vstack_filter_night_shift",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/night_shift_schedule.xlsx",
+      "dest": "night_shift_schedule.xlsx"
+    },
+    "options": {
+      "check_range": "B3:B6",
+      "name_col": "A",
+      "name_start_row": 3,
+      "expected_functions": ["COUNT", "FIND", "LET", "VSTACK", "FILTER", "CHOOSECOLS"],
+      "sheet_names": ["Sheet1", "Sheet2", "Sheet3", "Sheet4", "Sheet5"],
+      "sheet_range": "A$1:H$17",
+      "search_text": "夜",
+      "result_sheet_name": "Sheet6"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

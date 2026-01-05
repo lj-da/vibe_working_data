@@ -1,0 +1,90 @@
+{
+  "id": "521a4b78-28ea-4f60-9cde-dbd612e55218",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问如何填入开始日期和结束日期后，右边对应日期下面能显示\"1\"，非常感谢！",
+  "method": "使用IF函数结合数组乘法运算来检查日期是否在开始日期和结束日期之间。具体步骤：1) 在D2单元格中输入公式=IF(($D$1:$L$1>=$A2)*($D$1:$L$1<=$B2),1,\"\")，该公式检查第一行的日期（$D$1:$L$1）是否在A2（开始日期）和B2（结束日期）之间；2) 公式的工作原理：($D$1:$L$1>=$A2)返回一个数组，表示第一行每个日期是否大于等于A2；($D$1:$L$1<=$B2)返回另一个数组，表示第一行每个日期是否小于等于B2；两个数组相乘（*）得到一个新的数组，只有当两个条件都为真时，对应位置才为1，否则为0；IF函数根据这个结果，如果为真（非零），返回1，否则返回空字符串；3) 将公式填充到D2:L5范围内的所有单元格，每个单元格都需要检查，不能少；4) 当公式填充到不同行时，$A2和$B2会自动调整为$A3、$A4、$A5和$B3、$B4、$B5，而$D$1:$L$1保持绝对引用不变。这样就能在填入开始日期和结束日期后，右边对应日期下面显示\"1\"。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/344.xlsx",
+            "path": "/home/user/date_range_display.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/date_range_display.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'date_range_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=IF(($D$1:$L$1>=$A2)*($D$1:$L$1<=$B2),1,\"\")\\n\\n公式说明：\\n- IF函数：根据条件返回不同的值\\n- ($D$1:$L$1>=$A2)：检查第一行的日期（D1到L1）是否大于等于A2（开始日期）\\n  * $D$1:$L$1是绝对引用，指向第一行的D到L列\\n  * $A2是混合引用，列绝对行相对，确保在D2:L5范围内应用时，每行引用对应的A列单元格\\n- ($D$1:$L$1<=$B2)：检查第一行的日期（D1到L1）是否小于等于B2（结束日期）\\n  * $D$1:$L$1是绝对引用，指向第一行的D到L列\\n  * $B2是混合引用，列绝对行相对，确保在D2:L5范围内应用时，每行引用对应的B列单元格\\n- 两个数组相乘（*）：只有当两个条件都为真时，对应位置才为1，否则为0\\n- IF(条件, 1, \"\")：如果条件为真（非零），返回1，否则返回空字符串\\n\\n验证结果要求：\\n1. D2:L5范围内的所有单元格必须包含公式\\n2. 每个单元格都需要检查，不能少\\n3. 公式必须包含IF函数\\n4. 公式必须包含数组乘法运算：($D$1:$L$1>=$A2)*($D$1:$L$1<=$B2)\\n5. 公式必须引用$D$1:$L$1（绝对引用的日期范围）\\n6. 公式必须引用$A2和$B2（混合引用，列绝对行相对）\\n7. IF的true值必须返回1\\n8. IF的false值必须返回空字符串\"\"\\n\\n注意：\\n- 公式中的单元格引用应该使用混合引用（$A2、$B2），这样在应用到不同行时会自动调整行号\\n- 日期范围引用（$D$1:$L$1）应该使用绝对引用，确保始终引用第一行的日期\\n- 验证时会检查每个单元格的公式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/521a4b78-28ea-4f60-9cde-dbd612e55218",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "date_range_display.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_date_range_display",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/date_range_display.xlsx",
+      "dest": "date_range_display.xlsx"
+    },
+    "options": {
+      "formula_range": "D2:L5",
+      "date_range": "$D$1:$L$1",
+      "start_date_col": "A",
+      "end_date_col": "B",
+      "expected_functions": ["IF"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

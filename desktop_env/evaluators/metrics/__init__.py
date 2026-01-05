@@ -202,7 +202,19 @@ from .table import (
     verify_irr_profit_calculation,
     verify_remove_empty_rows,
     verify_and_not_conditional_formatting,
-    verify_text_sumpRODUCT_mmult_match_win_lose
+    verify_text_sumpRODUCT_mmult_match_win_lose,
+    verify_countifs_conditional_formatting,
+    verify_if_date_range_display,
+    verify_count_find_vstack_filter_night_shift,
+    verify_sumpRODUCT_text_month_sum,
+    verify_index_row_column_transpose,
+    verify_unique_sumif_sumifs_formulas,
+    verify_drop_sort_hstack_len_substitute,
+    verify_left_mid_right_date_format,
+    verify_vlookup_sheet2,
+    verify_index_match_small_transform,
+    verify_tv_episode_range_calculate,
+    verify_seat_number_arrangement
 )
 from .thunderbird import (
     check_thunderbird_prefs,

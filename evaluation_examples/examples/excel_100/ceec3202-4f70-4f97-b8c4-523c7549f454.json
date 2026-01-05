@@ -1,0 +1,99 @@
+{
+  "id": "ceec3202-4f70-4f97-b8c4-523c7549f454",
+  "snapshot": "libreoffice_calc",
+  "instruction": "对每天的商品数量求总和，并计算最近3天的总和",
+  "method": "使用IFERROR+INDEX+MATCH+COUNTIF组合提取唯一编码，然后使用SUMIFS和SUMIF函数分别计算3天销量和总销量。具体步骤：1) 在Sheet2工作表中，A1、B1、C1分别输入表头\"编码\"、\"3天销量\"、\"总销量\"；2) 在A2单元格中输入公式=IFERROR(INDEX(商品销售统计.$B$2:$B$1000, MATCH(0, COUNTIF($A$1:A1, 商品销售统计.$B$2:$B$1000), 0)), \"\")，该公式使用COUNTIF函数统计$A$1:A1范围内已出现的编码数量，MATCH函数查找第一个计数为0的编码（即未出现的编码），INDEX函数从商品销售统计.$B$2:$B$1000中提取该编码，IFERROR函数处理超出范围的情况返回空字符串；3) 将A2的公式填充到A2:A188范围内的所有单元格，当公式填充到不同行时，$A$1:A1会自动调整为$A$1:A2、$A$1:A3等，实现动态去重提取唯一编码；4) 在B2单元格中输入公式=SUMIFS(商品销售统计.C:C, 商品销售统计.B:B, A2, 商品销售统计.A:A, \">=\"&TODAY()-3)，该公式使用SUMIFS函数进行多条件求和，第一个条件：商品销售统计.B:B等于A2（编码匹配），第二个条件：商品销售统计.A:A大于等于TODAY()-3（最近3天的日期），对商品销售统计.C:C（数量列）求和；5) 将B2的公式填充到B2:B188范围内的所有单元格，当公式填充到不同行时，A2会自动调整为A3、A4等，分别对应不同行的编码；6) 在C2单元格中输入公式=SUMIF(商品销售统计.B:B, A2, 商品销售统计.C:C)，该公式使用SUMIF函数进行单条件求和，条件：商品销售统计.B:B等于A2（编码匹配），对商品销售统计.C:C（数量列）求和；7) 将C2的公式填充到C2:C188范围内的所有单元格，当公式填充到不同行时，A2会自动调整为A3、A4等；8) 每个单元格都需要检查，不能少。这样就能提取唯一编码，并分别计算每个编码的3天销量和总销量。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/303.xlsx",
+            "path": "/home/user/product_sales_summary.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/product_sales_summary.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'product_sales_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n1. 唯一编码公式（A2:A188）：\\n=IFERROR(INDEX(商品销售统计.$B$2:$B$1000, MATCH(0, COUNTIF($A$1:A1, 商品销售统计.$B$2:$B$1000), 0)), \"\")\\n\\n2. 3天销量公式（B2:B188）：\\n=SUMIFS(商品销售统计.C:C, 商品销售统计.B:B, A2, 商品销售统计.A:A, \">=\"&TODAY()-3)\\n\\n3. 总销量公式（C2:C188）：\\n=SUMIF(商品销售统计.B:B, A2, 商品销售统计.C:C)\\n\\n公式说明：\\n\\n唯一编码公式的工作原理：\\n- COUNTIF($A$1:A1, 商品销售统计.$B$2:$B$1000)：统计$A$1:A1范围内每个编码出现的次数\\n  * $A$1:A1是混合引用，$A$1是绝对引用（固定起始位置），A1是相对引用（随行变化）\\n  * 当公式填充到A2时，范围是$A$1:A1；填充到A3时，范围是$A$1:A2；以此类推\\n  * 商品销售统计.$B$2:$B$1000是源数据范围（绝对引用）\\n  * COUNTIF返回一个数组，表示每个编码在已提取列表中的出现次数\\n- MATCH(0, COUNTIF(...), 0)：查找第一个计数为0的编码位置\\n  * 0：查找值（计数为0表示未出现）\\n  * COUNTIF(...)：查找范围（编码计数数组）\\n  * 0：精确匹配\\n  * 返回第一个未出现编码在源数据中的位置\\n- INDEX(商品销售统计.$B$2:$B$1000, MATCH(...))：根据位置提取编码\\n  * 商品销售统计.$B$2:$B$1000：源数据范围（绝对引用）\\n  * MATCH(...)：要提取的编码在源数据中的位置\\n  * 返回对应的编码值\\n- IFERROR(..., \"\")：如果出错（如所有编码都已提取），返回空字符串\\n\\n3天销量公式的工作原理：\\n- SUMIFS函数：多条件求和\\n  * 商品销售统计.C:C：求和范围（数量列，绝对引用）\\n  * 商品销售统计.B:B：第一个条件范围（编码列，绝对引用）\\n  * A2：第一个条件值（当前行的编码，相对引用，填充时自动调整）\\n  * 商品销售统计.A:A：第二个条件范围（日期列，绝对引用）\\n  * \">=\"&TODAY()-3：第二个条件值（大于等于今天减3天）\\n    * TODAY()-3：今天减3天（相对引用，每天自动更新）\\n    * \">=\"&：字符串连接，形成条件表达式\\n  * 返回满足两个条件的数量总和\\n\\n总销量公式的工作原理：\\n- SUMIF函数：单条件求和\\n  * 商品销售统计.B:B：条件范围（编码列，绝对引用）\\n  * A2：条件值（当前行的编码，相对引用，填充时自动调整）\\n  * 商品销售统计.C:C：求和范围（数量列，绝对引用）\\n  * 返回满足条件的数量总和（所有日期的总和）\\n\\n验证结果要求：\\n1. Sheet2工作表：\\n   - A1单元格：表头\"编码\"\\n   - B1单元格：表头\"3天销量\"\\n   - C1单元格：表头\"总销量\"\\n\\n2. A2:A188范围内的所有单元格必须包含唯一编码公式\\n   - 公式必须包含IFERROR、INDEX、MATCH、COUNTIF函数\\n   - 公式必须引用源工作表\"商品销售统计\"\\n   - 公式必须引用源范围$B$2:$B$1000\\n   - 公式必须包含COUNTIF范围$A$1:A1（或$A$1:A2、$A$1:A3等，随行变化）\\n   - 公式必须包含IFERROR的错误值空字符串\"\"\\n   - 每个单元格都需要检查，不能少\\n\\n3. B2:B188范围内的所有单元格必须包含3天销量公式\\n   - 公式必须包含SUMIFS函数\\n   - 公式必须引用源工作表\"商品销售统计\"\\n   - 公式必须引用求和范围C:C\\n   - 公式必须引用条件范围B:B和A:A\\n   - 公式必须包含条件值A2（或A3、A4等，随行变化）\\n   - 公式必须包含日期条件TODAY()-3\\n   - 公式必须包含\">=\"&连接符\\n   - 每个单元格都需要检查，不能少\\n\\n4. C2:C188范围内的所有单元格必须包含总销量公式\\n   - 公式必须包含SUMIF函数\\n   - 公式必须引用源工作表\"商品销售统计\"\\n   - 公式必须引用条件范围B:B和求和范围C:C\\n   - 公式必须包含条件值A2（或A3、A4等，随行变化）\\n   - 每个单元格都需要检查，不能少\\n\\n填充规律：\\n- A列公式：\\n  * $A$1:A1：混合引用，$A$1固定，A1随行变化（A2行→$A$1:A1，A3行→$A$1:A2）\\n  * 商品销售统计.$B$2:$B$1000：绝对引用，不变化\\n  * 其他部分：不变化\\n\\n- B列公式：\\n  * A2：相对引用，随行变化（B2行→A2，B3行→A3）\\n  * 商品销售统计.C:C、商品销售统计.B:B、商品销售统计.A:A：绝对引用，不变化\\n  * TODAY()-3：相对引用，每天自动更新\\n  * \">=\"&：常量，不变化\\n\\n- C列公式：\\n  * A2：相对引用，随行变化（C2行→A2，C3行→A3）\\n  * 商品销售统计.B:B、商品销售统计.C:C：绝对引用，不变化\\n\\n注意：\\n- 所有公式中的工作表引用（商品销售统计）应该使用绝对引用或相对引用\\n- COUNTIF范围中的$A$1应该使用绝对引用，A1应该使用相对引用\\n- SUMIFS和SUMIF中的条件值（A2）应该使用相对引用，确保在填充时自动调整\\n- 验证时会检查每个单元格的公式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ceec3202-4f70-4f97-b8c4-523c7549f454",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "product_sales_summary.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_unique_sumif_sumifs_formulas",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/product_sales_summary.xlsx",
+      "dest": "product_sales_summary.xlsx"
+    },
+    "options": {
+      "result_sheet_name": "Sheet2",
+      "source_sheet_name": "商品销售统计",
+      "unique_range": "A2:A188",
+      "sumifs_range": "B2:B188",
+      "sumif_range": "C2:C188",
+      "header_row": 1,
+      "expected_headers": {
+        "A": "编码",
+        "B": "3天销量",
+        "C": "总销量"
+      },
+      "source_range_b": "$B$2:$B$1000",
+      "source_range_a": "A:A",
+      "source_range_c": "C:C"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

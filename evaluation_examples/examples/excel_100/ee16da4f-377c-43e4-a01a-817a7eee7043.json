@@ -1,0 +1,90 @@
+{
+  "id": "ee16da4f-377c-43e4-a01a-817a7eee7043",
+  "snapshot": "libreoffice_calc",
+  "instruction": "excel中a列的单元格中，既有单词，也有词组，如何按照字符多少升序排列（空格计算进去放b列，不计算进去放c列）",
+  "method": "使用动态数组函数DROP、SORT、HSTACK、LEN和SUBSTITUTE来对文本进行排序。具体步骤：1) 在C1单元格中输入公式=DROP(SORT(HSTACK(LEN(A1:A49),A1:A49),1),,1)，该公式使用HSTACK函数将LEN(A1:A49)计算的长度列和A1:A49的原始数据列水平堆叠成一个两列数组；使用SORT函数按第一列（长度列）升序排序；使用DROP函数删除第一列（长度列），只保留第二列（原始数据列），实现按文本长度排序；2) 在D1单元格中输入公式=DROP(SORT(HSTACK(LEN(SUBSTITUTE(A1:A49,\" \",\"\")),A1:A49),1),,1)，该公式与C1类似，但使用SUBSTITUTE函数先删除A1:A49中的所有空格，然后计算删除空格后的文本长度，再按长度排序；3) 这两个公式都是动态数组公式，会自动填充到多个单元格，但只需要在C1和D1输入即可；4) 每个单元格都需要检查，不能少。这样就能分别得到按原始文本长度排序和按删除空格后文本长度排序的结果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/297.xlsx",
+            "path": "/home/user/drop_sort_hstack_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/drop_sort_hstack_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'drop_sort_hstack_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n1. C1单元格公式：\\n=DROP(SORT(HSTACK(LEN(A1:A49),A1:A49),1),,1)\\n\\n2. D1单元格公式：\\n=DROP(SORT(HSTACK(LEN(SUBSTITUTE(A1:A49,\" \",\"\")),A1:A49),1),,1)\\n\\n公式说明：\\n\\nC1公式的工作原理：\\n- HSTACK(LEN(A1:A49),A1:A49)：水平堆叠函数\\n  * LEN(A1:A49)：计算A1:A49范围内每个单元格的文本长度，返回一个数组\\n  * A1:A49：原始数据范围\\n  * HSTACK将长度数组和原始数据数组水平堆叠，形成两列数组\\n    * 第一列：文本长度\\n    * 第二列：原始文本\\n- SORT(...,1)：排序函数\\n  * 第一个参数：要排序的数组（来自HSTACK的结果）\\n  * 第二个参数1：按第一列（长度列）升序排序\\n  * 返回按长度排序后的两列数组\\n- DROP(...,,1)：删除列函数\\n  * 第一个参数：要处理的数组（来自SORT的结果）\\n  * 第二个参数（空）：不删除行\\n  * 第三个参数1：删除第一列（长度列）\\n  * 返回只包含原始数据列（已排序）的数组\\n\\nD1公式的工作原理：\\n- SUBSTITUTE(A1:A49,\" \",\"\")：替换函数\\n  * A1:A49：要处理的文本范围\\n  * \" \"：要查找的文本（空格）\\n  * \"\"：替换为的文本（空字符串，即删除空格）\\n  * 返回删除所有空格后的文本数组\\n- LEN(SUBSTITUTE(...))：计算删除空格后的文本长度\\n  * 返回删除空格后每个单元格的文本长度数组\\n- HSTACK(LEN(SUBSTITUTE(...)),A1:A49)：水平堆叠\\n  * 第一列：删除空格后的文本长度\\n  * 第二列：原始文本（未删除空格）\\n- SORT(...,1)：按第一列（删除空格后的长度）升序排序\\n- DROP(...,,1)：删除第一列（长度列），只保留原始数据列\\n\\n验证结果要求：\\n1. C1单元格必须包含公式：\\n   - 公式必须包含DROP、SORT、HSTACK、LEN函数\\n   - 公式必须引用源范围A1:A49\\n   - 公式必须包含SORT参数1（按第一列排序）\\n   - 公式必须包含DROP参数,,1（删除第一列）\\n   - 公式结构：DROP(SORT(HSTACK(LEN(A1:A49),A1:A49),1),,1)\\n\\n2. D1单元格必须包含公式：\\n   - 公式必须包含DROP、SORT、HSTACK、LEN、SUBSTITUTE函数\\n   - 公式必须引用源范围A1:A49\\n   - 公式必须包含SUBSTITUTE参数\" \",\"\"（删除空格）\\n   - 公式必须包含SORT参数1（按第一列排序）\\n   - 公式必须包含DROP参数,,1（删除第一列）\\n   - 公式结构：DROP(SORT(HSTACK(LEN(SUBSTITUTE(A1:A49,\" \",\"\")),A1:A49),1),,1)\\n\\n3. 每个单元格都需要检查，不能少\\n\\n填充规律：\\n- C1和D1都是动态数组公式，会自动填充到多个单元格\\n- 但验证时只需要检查C1和D1两个单元格的公式\\n- 公式中的A1:A49是绝对引用或相对引用，不随填充变化\\n\\n注意：\\n- 动态数组公式在Excel中会自动溢出到多个单元格\\n- 但在LibreOffice Calc中可能需要手动填充或使用不同的语法\\n- 验证时会检查C1和D1单元格的公式是否完整且正确\\n- 缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ee16da4f-377c-43e4-a01a-817a7eee7043",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "drop_sort_hstack_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_drop_sort_hstack_len_substitute",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/drop_sort_hstack_data.xlsx",
+      "dest": "drop_sort_hstack_data.xlsx"
+    },
+    "options": {
+      "c1_cell": "C1",
+      "d1_cell": "D1",
+      "source_range": "A1:A49",
+      "expected_functions_c1": ["DROP", "SORT", "HSTACK", "LEN"],
+      "expected_functions_d1": ["DROP", "SORT", "HSTACK", "LEN", "SUBSTITUTE"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

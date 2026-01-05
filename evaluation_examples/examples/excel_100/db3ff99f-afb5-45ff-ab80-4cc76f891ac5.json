@@ -1,0 +1,97 @@
+{
+  "id": "db3ff99f-afb5-45ff-ab80-4cc76f891ac5",
+  "snapshot": "libreoffice_calc",
+  "instruction": "各个月份的行数是不固定的，客户不同,各月行数按客户提货量的多少而增减，各月的行数是自动生成，月和月之间没有断开，所以怎样能设置一个公式自动求和出上述三个月提货笔数(按提货行数计算)、提货数量、金额及回款金额",
+  "method": "使用SUMPRODUCT函数结合TEXT函数来按月份条件求和，然后使用简单公式计算和汇总。具体步骤：1) 在B22:D24范围内，填充公式=SUMPRODUCT((TEXT($A$3:$A$17,\"yyyymm\")=TEXT($A22,\"yyyymm\"))*B$3:B$17)，该公式使用TEXT函数将A3:A17的日期转换为\"yyyymm\"格式（如202401），然后与A22的日期格式化结果进行比较，如果月份相同则返回1，否则返回0，SUMPRODUCT函数将这些条件结果与B3:B17的数值相乘并求和，从而得到该月份的提货笔数、提货数量或金额；2) 当公式填充到不同行时，$A22会自动调整为$A23、$A24，分别对应不同月份的日期；3) 当公式填充到不同列时，B$3:B$17会自动调整为C$3:C$17、D$3:D$17，分别对应提货数量、金额等不同列；4) 在E22:E24范围内，填充公式=E21+C22-D22，该公式计算回款金额，等于上期余额（E21）加上本期金额（C22）减去本期回款（D22），当公式填充到不同行时，C22和D22会自动调整为C23、C24和D23、D24；5) 在B25:D25范围内，填充公式=B22+B23+B24，该公式将三个月的数值相加得到总计，当公式填充到不同列时，B22+B23+B24会自动调整为C22+C23+C24、D22+D23+D24；6) 每个单元格都需要检查，不能少。这样就能自动计算出三个月的提货笔数、提货数量、金额及回款金额。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/342.xlsx",
+            "path": "/home/user/monthly_delivery_summary.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/monthly_delivery_summary.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'monthly_summary_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n1. SUMPRODUCT公式（B22:D24）：\\n=SUMPRODUCT((TEXT($A$3:$A$17,\"yyyymm\")=TEXT($A22,\"yyyymm\"))*B$3:B$17)\\n\\n2. 计算公式（E22:E24）：\\n=E21+C22-D22\\n\\n3. 汇总公式（B25:D25）：\\n=B22+B23+B24\\n\\n公式说明：\\n\\nSUMPRODUCT公式的工作原理：\\n- TEXT($A$3:$A$17,\"yyyymm\")：将A3:A17范围内的日期转换为\"yyyymm\"格式（如202401、202402等）\\n  * $A$3:$A$17是绝对引用，指向日期数据范围\\n  * \"yyyymm\"是日期格式字符串，将日期转换为年月格式\\n- TEXT($A22,\"yyyymm\")：将A22单元格的日期转换为\"yyyymm\"格式\\n  * $A22是混合引用，列绝对行相对，确保在B22:D24范围内应用时，每行引用对应的A列单元格\\n  * 当公式填充到B23、B24时，$A22会自动调整为$A23、$A24\\n- (TEXT($A$3:$A$17,\"yyyymm\")=TEXT($A22,\"yyyymm\"))：比较两个TEXT函数的结果，如果月份相同返回TRUE（1），否则返回FALSE（0）\\n- *B$3:B$17：将条件结果与B3:B17的数值相乘\\n  * B$3:B$17是混合引用，行绝对列相对，确保在B22:D24范围内应用时，每列引用对应的数据列\\n  * 当公式填充到C22、D22时，B$3:B$17会自动调整为C$3:C$17、D$3:D$17\\n- SUMPRODUCT函数：将条件结果与数值相乘后求和，得到该月份对应列的合计值\\n\\n计算公式的工作原理：\\n- E21：上期余额（绝对引用，所有行都引用E21）\\n- C22：本期金额（相对引用，当公式填充到E23、E24时，会自动调整为C23、C24）\\n- D22：本期回款（相对引用，当公式填充到E23、E24时，会自动调整为D23、D24）\\n- =E21+C22-D22：回款金额 = 上期余额 + 本期金额 - 本期回款\\n\\n汇总公式的工作原理：\\n- B22+B23+B24：将三个月的数值相加\\n  * 当公式填充到C25、D25时，会自动调整为C22+C23+C24、D22+D23+D24\\n\\n验证结果要求：\\n1. B22:D24范围内的所有单元格必须包含SUMPRODUCT公式\\n   - 公式必须包含SUMPRODUCT函数\\n   - 公式必须包含两个TEXT函数\\n   - 公式必须引用日期范围$A$3:$A$17\\n   - 公式必须引用日期单元格$A22（或$A23、$A24）\\n   - 公式必须包含TEXT格式\"yyyymm\"\\n   - 公式必须引用对应的数据列（B$3:B$17、C$3:C$17、D$3:D$17）\\n   - 每个单元格都需要检查，不能少\\n\\n2. E22:E24范围内的所有单元格必须包含计算公式\\n   - 公式必须引用E21（上期余额）\\n   - 公式必须引用对应的C列单元格（C22、C23、C24）\\n   - 公式必须引用对应的D列单元格（D22、D23、D24）\\n   - 公式结构为：E21+C22-D22（或E21+C23-D23、E21+C24-D24）\\n   - 每个单元格都需要检查，不能少\\n\\n3. B25:D25范围内的所有单元格必须包含汇总公式\\n   - 公式必须包含对应列的三个单元格相加（B22+B23+B24、C22+C23+C24、D22+D23+D24）\\n   - 每个单元格都需要检查，不能少\\n\\n注意：\\n- SUMPRODUCT公式中的日期引用应该使用混合引用（$A22），确保在填充时自动调整行号\\n- SUMPRODUCT公式中的数据列引用应该使用混合引用（B$3:B$17），确保在填充时自动调整列号\\n- 计算公式中的C和D列引用应该使用相对引用，确保在填充时自动调整行号\\n- 汇总公式中的单元格引用应该使用相对引用，确保在填充时自动调整列号\\n- 验证时会检查每个单元格的公式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/db3ff99f-afb5-45ff-ab80-4cc76f891ac5",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "monthly_delivery_summary.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumpRODUCT_text_month_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/monthly_delivery_summary.xlsx",
+      "dest": "monthly_delivery_summary.xlsx"
+    },
+    "options": {
+      "sumproduct_range": "B22:D24",
+      "sumproduct_date_range": "$A$3:$A$17",
+      "sumproduct_date_cell": "$A22",
+      "sumproduct_sum_range": "B$3:B$17",
+      "sumproduct_text_format": "yyyymm",
+      "calculation_range": "E22:E24",
+      "calculation_base_cell": "E21",
+      "calculation_add_col": "C",
+      "calculation_sub_col": "D",
+      "total_range": "B25:D25",
+      "total_start_row": 22,
+      "total_end_row": 24
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

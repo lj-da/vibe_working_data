@@ -1,0 +1,88 @@
+{
+  "id": "fdc5f536-23e4-4656-9904-869199718516",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何将日期格式转换成黄色区域的形式",
+  "method": "使用LEFT、MID、RIGHT函数和连接符&来转换日期格式。在B11单元格中输入公式=LEFT(A11,4)&\"/\"&MID(A11,5,2)&\"/\"&RIGHT(A11,2)，该公式使用LEFT(A11,4)提取A11的前4个字符（年份），使用MID(A11,5,2)提取从第5个字符开始的2个字符（月份），使用RIGHT(A11,2)提取后2个字符（日期），然后用&连接符和\"/\"组合成YYYY/MM/DD格式。然后将B11的公式向下填充到B240，填充时行号会随行变化（A11变为A12、A13等），但LEFT、MID、RIGHT的参数（4、5、2、2）和连接符保持不变。需要验证B11:B240范围内的所有单元格都包含正确的公式，不能遗漏任何单元格。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/296.xlsx",
+            "path": "/home/user/date_format_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/date_format_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'date_format_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\nB11:B240范围内所有单元格应填充公式：\\n=LEFT(A11,4)&\\\"/\\\"&MID(A11,5,2)&\\\"/\\\"&RIGHT(A11,2)\\n\\n公式说明：\\n- LEFT(A11,4)：提取A11的前4个字符（年份）\\n- MID(A11,5,2)：提取A11从第5个字符开始的2个字符（月份）\\n- RIGHT(A11,2)：提取A11的后2个字符（日期）\\n- &：连接符，用于连接文本\\n- \\\"/\\\"：日期分隔符\\n\\n填充规律：\\n- B11中引用A11\\n- B12中引用A12（行号随行变化）\\n- B13中引用A13（行号随行变化）\\n- ...\\n- B240中引用A240（行号随行变化）\\n- 列A保持不变，行号会随填充变化\\n- LEFT、MID、RIGHT的参数（4、5、2、2）保持不变\\n- 连接符&和分隔符\\\"/\\\"保持不变\\n\\n验证要求：\\n1. B11:B240范围内的所有单元格（共230个单元格）都必须包含公式\\n2. 每个单元格的公式必须包含LEFT、MID、RIGHT函数\\n3. 每个单元格的公式必须引用对应行的A列单元格（B11引用A11，B12引用A12，以此类推）\\n4. LEFT函数的参数必须是4\\n5. MID函数的参数必须是5和2\\n6. RIGHT函数的参数必须是2\\n7. 公式必须包含连接符&和分隔符\\\"/\\\"\\n8. 不能遗漏任何单元格'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fdc5f536-23e4-4656-9904-869199718516",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "date_format_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_left_mid_right_date_format",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/date_format_data.xlsx",
+      "dest": "date_format_data.xlsx"
+    },
+    "options": {
+      "formula_range": "B11:B240",
+      "source_column": "A",
+      "expected_functions": ["LEFT", "MID", "RIGHT"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

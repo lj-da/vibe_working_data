@@ -1,0 +1,90 @@
+{
+  "id": "36132ce5-ce60-48c9-b38a-778fa8065053",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么把A列的数据，按固定行数转置，A列数据每4行就在D列转置，能批量操作吗，请大神帮忙",
+  "method": "使用IFERROR函数结合INDEX、ROW和COLUMN函数来实现按固定行数转置数据。具体步骤：1) 在D1单元格中输入公式=IFERROR(INDEX($A:$A, (ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1), \"\")，该公式使用INDEX函数从A列提取数据，使用ROW()函数获取当前行号，使用COLUMN()函数获取当前列号，通过计算(ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1来确定要提取的A列数据的行号，IFERROR函数用于处理超出数据范围的情况，返回空字符串；2) 公式的工作原理：ROW()返回当前单元格的行号（D1返回1，D2返回2，以此类推），COLUMN()返回当前单元格的列号（D列返回4，E列返回5，F列返回6，G列返回7），COLUMN($D:$D)返回目标列的列号（固定为4），(ROW()-1)*4计算当前行对应的A列起始行号（D1行：(1-1)*4=0，对应A1；D2行：(2-1)*4=4，对应A5；D3行：(3-1)*4=8，对应A9），COLUMN()-COLUMN($D:$D)计算当前列相对于D列的偏移量（D列：4-4=0，E列：5-4=1，F列：6-4=2，G列：7-4=3），最终索引 = (ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1，例如D1：(1-1)*4 + (4-4) + 1 = 1（A1），E1：(1-1)*4 + (5-4) + 1 = 2（A2），F1：(1-1)*4 + (6-4) + 1 = 3（A3），G1：(1-1)*4 + (7-4) + 1 = 4（A4），D2：(2-1)*4 + (4-4) + 1 = 5（A5），以此类推；3) 将公式填充到D1:G98范围内的所有单元格，每个单元格都需要检查，不能少；4) 当公式填充到不同行时，ROW()会自动调整为对应的行号；5) 当公式填充到不同列时，COLUMN()会自动调整为对应的列号，而COLUMN($D:$D)保持固定（绝对引用）；6) $A:$A使用绝对引用，确保始终引用A列；7) 每个单元格都需要检查，不能少。这样就能将A列的数据按每4行转置到D列及后续列中。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/322.xlsx",
+            "path": "/home/user/transpose_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/transpose_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'transpose_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=IFERROR(INDEX($A:$A, (ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1), \"\")\\n\\n公式说明：\\n- IFERROR函数：如果公式计算结果出错，返回空字符串\"\"\\n- INDEX函数：从指定范围中提取数据\\n  * $A:$A：源数据列（A列），使用绝对引用，确保始终引用A列\\n  * 第二个参数：要提取的数据在A列中的行号\\n- ROW()函数：返回当前单元格的行号\\n  * D1单元格：ROW()返回1\\n  * D2单元格：ROW()返回2\\n  * 当公式填充到不同行时，ROW()会自动调整为对应的行号\\n- COLUMN()函数：返回当前单元格的列号\\n  * D列：COLUMN()返回4\\n  * E列：COLUMN()返回5\\n  * F列：COLUMN()返回6\\n  * G列：COLUMN()返回7\\n  * 当公式填充到不同列时，COLUMN()会自动调整为对应的列号\\n- COLUMN($D:$D)函数：返回目标列的列号（固定为4）\\n  * $D:$D使用绝对引用，确保始终返回4（D列的列号）\\n  * 当公式填充到不同列时，COLUMN($D:$D)保持固定\\n\\n公式计算逻辑：\\n索引 = (ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1\\n\\n示例计算：\\n- D1单元格：\\n  * ROW() = 1\\n  * COLUMN() = 4（D列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (1-1)*4 + (4-4) + 1 = 0 + 0 + 1 = 1\\n  * 提取A1的数据\\n\\n- E1单元格：\\n  * ROW() = 1\\n  * COLUMN() = 5（E列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (1-1)*4 + (5-4) + 1 = 0 + 1 + 1 = 2\\n  * 提取A2的数据\\n\\n- F1单元格：\\n  * ROW() = 1\\n  * COLUMN() = 6（F列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (1-1)*4 + (6-4) + 1 = 0 + 2 + 1 = 3\\n  * 提取A3的数据\\n\\n- G1单元格：\\n  * ROW() = 1\\n  * COLUMN() = 7（G列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (1-1)*4 + (7-4) + 1 = 0 + 3 + 1 = 4\\n  * 提取A4的数据\\n\\n- D2单元格：\\n  * ROW() = 2\\n  * COLUMN() = 4（D列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (2-1)*4 + (4-4) + 1 = 4 + 0 + 1 = 5\\n  * 提取A5的数据\\n\\n- E2单元格：\\n  * ROW() = 2\\n  * COLUMN() = 5（E列）\\n  * COLUMN($D:$D) = 4\\n  * 索引 = (2-1)*4 + (5-4) + 1 = 4 + 1 + 1 = 6\\n  * 提取A6的数据\\n\\n以此类推，每4行A列数据转置为一行（D到G列）\\n\\n验证结果要求：\\n1. D1:G98范围内的所有单元格必须包含公式\\n   - 每个单元格都需要检查，不能少\\n2. 公式必须包含以下函数：\\n   - IFERROR：错误处理函数\\n   - INDEX：数据提取函数\\n   - ROW：行号函数\\n   - COLUMN：列号函数\\n3. 公式必须引用源数据列：\\n   - $A:$A（绝对引用，确保始终引用A列）\\n4. 公式必须包含目标列引用：\\n   - COLUMN($D:$D)（绝对引用，确保始终返回D列的列号4）\\n5. 公式必须包含行数倍数：\\n   - (ROW()-1)*4（每4行转置一次）\\n6. 公式必须包含IFERROR的错误值：\\n   - 空字符串\"\"（当索引超出范围时返回空）\\n7. 公式结构必须正确：\\n   - IFERROR(INDEX($A:$A, (ROW()-1)*4 + COLUMN()-COLUMN($D:$D) + 1), \"\")\\n\\n填充规律：\\n- ROW()：相对引用，随行变化（D1→1, D2→2, D3→3）\\n- COLUMN()：相对引用，随列变化（D列→4, E列→5, F列→6, G列→7）\\n- $A:$A：绝对引用，不变化（始终引用A列）\\n- COLUMN($D:$D)：绝对引用，不变化（始终返回4）\\n- 数字4：常量，不变化（每4行转置一次）\\n- 数字1：常量，不变化（索引偏移量）\\n\\n注意：\\n- 公式中的$A:$A应该使用绝对引用，确保始终引用A列\\n- 公式中的COLUMN($D:$D)应该使用绝对引用，确保始终返回D列的列号\\n- ROW()和COLUMN()应该使用相对引用（无$符号），确保在填充时自动调整\\n- 验证时会检查每个单元格的公式是否完整且正确，缺少任何一个单元格都会导致验证失败'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/36132ce5-ce60-48c9-b38a-778fa8065053",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "transpose_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_index_row_column_transpose",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/transpose_data.xlsx",
+      "dest": "transpose_data.xlsx"
+    },
+    "options": {
+      "check_range": "D1:G98",
+      "source_column": "A",
+      "target_column": "D",
+      "rows_per_group": 4,
+      "expected_functions": ["IFERROR", "INDEX", "ROW", "COLUMN"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

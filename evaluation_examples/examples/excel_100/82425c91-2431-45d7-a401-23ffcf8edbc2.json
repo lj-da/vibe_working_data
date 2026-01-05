@@ -1,0 +1,92 @@
+{
+  "id": "82425c91-2431-45d7-a401-23ffcf8edbc2",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何将A列和B列数据快速排列成横竖行对应的表格？",
+  "method": "使用INDEX、UNIQUE、FILTER、COLUMN、SMALL、IF和ROW函数将A列和B列数据转换为横竖行对应的表格。具体步骤：1) 在E1单元格中输入公式=INDEX(UNIQUE(FILTER($A$2:$A$25, $A$2:$A$25<>\"\")), COLUMN(A1))，该公式使用FILTER过滤掉A2:A25中的空值，UNIQUE提取唯一值，INDEX结合COLUMN(A1)根据列号提取对应的唯一值，COLUMN(A1)在E1返回1，F1返回2，G1返回3，H1返回4；2) 将E1的公式填充到F1、G1、H1，这样第一行会显示A列的所有唯一值；3) 在E2单元格中输入公式=IFERROR(INDEX($B:$B, SMALL(IF($A$2:$A$25=E$1, ROW($A$2:$A$25), \"\"), ROW(A1))), \"\")，该公式使用INDEX和SMALL结合IF和ROW来提取与E1匹配的A列值对应的B列值，IF($A$2:$A$25=E$1, ROW($A$2:$A$25), \"\")返回匹配行的行号，SMALL提取第N小的行号，INDEX从B列提取对应值；4) 将E2的公式填充到E2:H25区域，这样每个唯一值对应的B列数据会显示在对应的列中；5) 所有指定单元格（E1:H1和E2:H25）都需要验证，确保公式正确。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/290.xlsx",
+            "path": "/home/user/index_match_small_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/index_match_small_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'index_match_small_formula.txt'), 'w', encoding='utf-8'); f.write('=INDEX(UNIQUE(FILTER($A$2:$A$25, $A$2:$A$25<>\\\"\\\")), COLUMN(A1))\\n=IFERROR(INDEX($B:$B, SMALL(IF($A$2:$A$25=E$1, ROW($A$2:$A$25), \\\"\\\"), ROW(A1))), \\\"\\\")'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/82425c91-2431-45d7-a401-23ffcf8edbc2",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "index_match_small_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_index_match_small_transform",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/index_match_small_data.xlsx",
+      "dest": "index_match_small_data.xlsx"
+    },
+    "options": {
+      "header_range": "E1:H1",
+      "data_range": "E2:H25",
+      "source_column_a": "A",
+      "source_column_b": "B",
+      "source_range_a": "$A$2:$A$25",
+      "expected_functions_header": ["INDEX", "UNIQUE", "FILTER", "COLUMN"],
+      "expected_functions_data": ["IFERROR", "INDEX", "SMALL", "IF", "ROW"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

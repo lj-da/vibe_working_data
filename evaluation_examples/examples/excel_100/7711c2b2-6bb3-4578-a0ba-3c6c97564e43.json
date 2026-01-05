@@ -1,0 +1,91 @@
+{
+  "id": "7711c2b2-6bb3-4578-a0ba-3c6c97564e43",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何求出b列的各电视剧集数",
+  "method": "使用MIDB、FINDB、SUMPRODUCT、MID、FIND等函数来提取和累计电视剧集数。具体步骤：1) 在B1单元格中输入公式=1&\"-\"&MIDB(A1,FINDB(\"共\",A1)+2,2)，该公式使用FINDB(\"共\",A1)+2定位到\"共\"字后的位置，MIDB提取2个字节（中文占2个字节），然后与\"1-\"连接，得到第一集的集数范围；2) 在B2单元格中输入公式=SUMPRODUCT(--MID(A$1:A1, FIND(\"共\",A$1:A1)+1, FIND(\"集\",A$1:A1)-FIND(\"共\",A$1:A1)-1)) + 1 & \"-\" & SUMPRODUCT(--MID(A$1:A1, FIND(\"共\",A$1:A1)+1, FIND(\"集\",A$1:A1)-FIND(\"共\",A$1:A1)-1)) + --MID(A2, FIND(\"共\",A2)+1, FIND(\"集\",A2)-FIND(\"共\",A2)-1)，该公式使用SUMPRODUCT累计前面所有行的集数，然后加上当前行的集数，形成累计集数范围；3) 将B2的公式填充到B2:B25区域，这样每行都会显示累计的集数范围；4) 所有指定单元格（B1和B2:B25）都需要验证，确保公式正确。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/287.xlsx",
+            "path": "/home/user/tv_episode_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/tv_episode_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'tv_episode_formula.txt'), 'w', encoding='utf-8'); f.write('=1&\"-\"&MIDB(A1,FINDB(\"共\",A1)+2,2)\\n=SUMPRODUCT(--MID(A$1:A1, FIND(\"共\",A$1:A1)+1, FIND(\"集\",A$1:A1)-FIND(\"共\",A$1:A1)-1)) + 1 & \"-\" & SUMPRODUCT(--MID(A$1:A1, FIND(\"共\",A$1:A1)+1, FIND(\"集\",A$1:A1)-FIND(\"共\",A$1:A1)-1)) + --MID(A2, FIND(\"共\",A2)+1, FIND(\"集\",A2)-FIND(\"共\",A2)-1)'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/7711c2b2-6bb3-4578-a0ba-3c6c97564e43",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "tv_episode_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_tv_episode_range_calculate",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/tv_episode_data.xlsx",
+      "dest": "tv_episode_data.xlsx"
+    },
+    "options": {
+      "b1_cell": "B1",
+      "b1_formula_range": "B1",
+      "b2_b25_range": "B2:B25",
+      "source_column": "A",
+      "expected_functions_b1": ["MIDB", "FINDB"],
+      "expected_functions_b2": ["SUMPRODUCT", "MID", "FIND"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
