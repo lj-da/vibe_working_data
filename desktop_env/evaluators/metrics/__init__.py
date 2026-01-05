@@ -116,7 +116,7 @@ from .slides import (
     check_left_panel,
     check_transition,
     check_page_number_colors,
-    check_auto_saving_time
+    check_auto_saving_time,
 )
 from .table import (
     compare_table,
@@ -178,7 +178,6 @@ from .table import (
     verify_count_find_conditional_formatting,
     verify_sumpRODUCT_multi_condition_sum,
     verify_sumpRODUCT_mmult_find_hours_sum,
-<<<<<<< HEAD
     verify_sumproduct_condition_count,
     verify_cell_text_format,
     verify_sumproduct_mid_class_size_sum,
@@ -192,8 +191,7 @@ from .table import (
     verify_text_sort_filter_date,
     verify_unique_sumif_material_summary,
     verify_multi_column_formulas,
-    verify_sumproduct_value_regex
-=======
+    verify_sumproduct_value_regex,
     verify_sumpRODUCT_price_extract,
     verify_name_count_summary,
     verify_sort_choose_person_contract,
@@ -205,7 +203,6 @@ from .table import (
     verify_remove_empty_rows,
     verify_and_not_conditional_formatting,
     verify_text_sumpRODUCT_mmult_match_win_lose
->>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
 )
 from .thunderbird import (
     check_thunderbird_prefs,
