@@ -1,0 +1,90 @@
+{
+  "id": "6db104d5-b4fd-456b-8937-026ed7d0dc76",
+  "snapshot": "libreoffice_calc",
+  "instruction": "汇总各个姓名出现的总次数",
+  "method": "使用INDEX、MATCH、NOT、ISBLANK和COUNTIF函数组合来汇总各个姓名出现的总次数。具体步骤：1) 使用INDEX和MATCH函数结合NOT(ISBLANK)来提取不重复的姓名，公式如=INDEX(F:F, MATCH(1, NOT(ISBLANK(F:F))*NOT(COUNTIF(G$1:G1, F:F)), 0))，该公式会在F列中查找第一个非空且未在G列中出现过的姓名；2) 使用COUNTIF函数统计每个姓名出现的次数，公式如=COUNTIF(F:F, G1)，该公式会在F列中统计G1单元格中姓名出现的总次数；3) 将提取姓名的公式和统计次数的公式分别填充到相应列中，确保每个姓名及其对应的出现次数正确显示；4) 最终结果应显示为：冯文荣对应52次，王伟荣对应77次，单瓞绵对应51次，董水军对应51次，张无忌对应25次。这样就能实现汇总各个姓名出现总次数的功能。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/449.xlsx",
+            "path": "/home/user/name_count_summary_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/name_count_summary_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'name_count_summary_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n可能使用的公式：\\n\\n1. 提取不重复姓名的公式（示例）：\\n=INDEX(F:F, MATCH(1, NOT(ISBLANK(F:F))*NOT(COUNTIF(G$1:G1, F:F)), 0))\\n\\n该公式的工作原理：\\n- NOT(ISBLANK(F:F))检查F列中哪些单元格非空，返回TRUE/FALSE数组\\n- NOT(COUNTIF(G$1:G1, F:F))检查F列中的姓名是否已在G列的前一行中出现过，返回TRUE/FALSE数组\\n- 两个数组相乘得到同时满足两个条件的数组\\n- MATCH(1, ...)查找第一个满足条件的位置\\n- INDEX(F:F, ...)返回对应位置的姓名\\n\\n2. 统计姓名出现次数的公式（示例）：\\n=COUNTIF(F:F, G1)\\n\\n该公式的工作原理：\\n- COUNTIF(F:F, G1)在F列中统计G1单元格中姓名出现的总次数\\n\\n3. 其他可能使用的公式：\\n=IF(ROW()<=2*186, INDEX(C:D, INT((ROW()-1)/2)+1, MOD(ROW()-1, 2)+1), \"\")\\n=INDEX(F:F, MATCH(1, NOT(ISBLANK(F:F)), 0))\\n\\n验证结果要求：\\n- 除ACBD列外，任意连续五个单元格包含五个名字：冯文荣、王伟荣、单瓞绵、董水军、张无忌\\n- 每个名字右边相邻的单元格为其名字出现的数量\\n- 冯文荣对应52次\\n- 王伟荣对应77次\\n- 单瓞绵对应51次\\n- 董水军对应51次\\n- 张无忌对应25次\\n\\n注意：\\n- 姓名和次数必须相邻显示\\n- 五个姓名必须连续出现在同一列中\\n- 每个姓名右边必须是其对应的出现次数'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6db104d5-b4fd-456b-8937-026ed7d0dc76",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "name_count_summary_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_name_count_summary",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/name_count_summary_data.xlsx",
+      "dest": "name_count_summary_data.xlsx"
+    },
+    "options": {
+      "expected_names": ["冯文荣", "王伟荣", "单瓞绵", "董水军", "张无忌"],
+      "expected_counts": [52, 77, 51, 51, 25],
+      "exclude_columns": ["A", "C", "B", "D"],
+      "search_start_row": 1,
+      "search_end_row": 1000
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

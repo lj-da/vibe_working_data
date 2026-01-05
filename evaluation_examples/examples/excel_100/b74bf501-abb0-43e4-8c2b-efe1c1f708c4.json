@@ -1,0 +1,88 @@
+{
+  "id": "b74bf501-abb0-43e4-8c2b-efe1c1f708c4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮我看看怎么样一次性的删除所有的空白行吧，谢谢",
+  "method": "使用LibreOffice Calc的筛选功能或手动选择来删除所有空白行。具体步骤：1) 选中整个数据区域或使用Ctrl+A全选；2) 使用数据菜单中的自动筛选功能，或者手动检查每一行；3) 对于空白行（所有单元格都为空的行），可以通过右键菜单选择\"删除行\"来删除；4) 也可以使用筛选功能筛选出空白行，然后批量删除；5) 重复操作直到所有空白行都被删除；6) 最终结果应确保表格中每一行都至少包含一个非空单元格，不存在完全空白的行。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/397.xlsx",
+            "path": "/home/user/remove_empty_rows_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/remove_empty_rows_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'remove_empty_rows_verification.txt'), 'w', encoding='utf-8'); f.write('验证方法：\\n\\n删除空白行任务验证说明：\\n\\n1. 验证目标：\\n   - 验证整个表格中每一行都有内容，不存在空行\\n   - 空行定义：该行所有单元格都为空（None、空字符串或仅包含空白字符）\\n\\n2. 验证步骤：\\n   - 打开结果Excel文件\\n   - 检查从第1行到最大行的每一行\\n   - 对于每一行，检查是否至少有一个单元格包含非空内容\\n   - 如果所有单元格都为空，则该行被认为是空行\\n\\n3. 验证标准：\\n   - 如果所有行都包含至少一个非空单元格，验证通过（返回1.0）\\n   - 如果发现任何空行，验证失败（返回0.0）\\n\\n4. 注意事项：\\n   - 字符串类型的单元格如果只包含空白字符（空格、制表符等），也被视为空\\n   - 数字、日期等非字符串类型的值被视为有内容\\n   - 验证会扫描所有行，确保没有遗漏的空行'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b74bf501-abb0-43e4-8c2b-efe1c1f708c4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "remove_empty_rows_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_remove_empty_rows",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/remove_empty_rows_data.xlsx",
+      "dest": "remove_empty_rows_data.xlsx"
+    },
+    "options": {
+      "start_row": 1,
+      "end_row": null,
+      "ignore_header": false
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

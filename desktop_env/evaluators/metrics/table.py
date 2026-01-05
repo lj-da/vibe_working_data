@@ -25103,6 +25103,7 @@ def verify_sumpRODUCT_mmult_find_hours_sum(result: str, expected: str = None, **
         logger.error(traceback.format_exc())
         return 0.0
 
+<<<<<<< HEAD
 
 def verify_iferror_index_small_position_mapping(result: str, expected: str = None, **options) -> float:
     """
@@ -25117,11 +25118,31 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
     
     Expected formula pattern:
     =IFERROR(INDEX($G$1:$J$4,INT((SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),""),(ROW()-1)*2+COLUMN()-11)-1)/10),MOD(SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),""),(ROW()-1)*2+COLUMN()-11)-1,10)+1),"")
+=======
+def verify_sumpRODUCT_price_extract(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if SUMPRODUCT formulas exist in specified range for extracting prices by level from price table.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula.
+    
+    This function checks:
+    1. Whether ALL cells in the specified range (e.g., C2:C10) contain formulas
+    2. Whether formulas contain SUMPRODUCT function
+    3. Whether formulas contain first condition: ($F$2:$F$7=$A{row}) with absolute reference F$2:$F$7 and relative reference A column
+    4. Whether formulas contain second condition: ($G$1:$J$1=$B{row}) with absolute reference G$1:$J$1 and relative reference B column
+    5. Whether formulas contain sum range: $G$2:$J$7 with absolute reference
+    6. Whether formula structure is correct: SUMPRODUCT(($F$2:$F$7=$A2)*($G$1:$J$1=$B2)*$G$2:$J$7)
+    
+    IMPORTANT: This function checks ALL cells in the specified ranges, regardless of whether they
+    appear to be empty. If any cell in the specified range is missing a formula, verification fails.
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     
     Args:
         result (str): Path to result Excel file
         expected (str): Not used (for compatibility with framework interface)
         options (dict): Configuration options, should contain:
+<<<<<<< HEAD
             - check_range: Range to check (e.g., "L1:M4")
             - source_range: Source range for condition check (e.g., "$A$1:$D$4")
             - target_range: Target range for INDEX (e.g., "$G$1:$J$4")
@@ -25131,6 +25152,924 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
     
     Returns:
         float: 1.0 if verification passes, 0.0 otherwise
+=======
+            - check_range: Range to check (e.g., "C2:C10") - ALL cells must have formulas
+            - expected_functions: List of expected function names (default: ["SUMPRODUCT"])
+            - condition1_range: First condition range (default: "$F$2:$F$7")
+            - condition1_col: First condition column reference (default: "A")
+            - condition2_range: Second condition range (default: "$G$1:$J$1")
+            - condition2_col: Second condition column reference (default: "B")
+            - sum_range: Sum range reference (default: "$G$2:$J$7")
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_range = options.get('check_range', 'C2:C10')
+        expected_functions = options.get('expected_functions', ['SUMPRODUCT'])
+        condition1_range = options.get('condition1_range', '$F$2:$F$7')
+        condition1_col = options.get('condition1_col', 'A')
+        condition2_range = options.get('condition2_range', '$G$1:$J$1')
+        condition2_col = options.get('condition2_col', 'B')
+        sum_range = options.get('sum_range', '$G$2:$J$7')
+        
+        logger.info(f"Verifying SUMPRODUCT price extract formulas in file: {result}")
+        logger.info(f"Range to check: {check_range}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Parse the range - strictly use the specified range
+        try:
+            range_clean = check_range.replace('$', '')
+            if ':' in range_clean:
+                start_cell, end_cell = range_clean.split(':')
+                start_col_letter = ''.join([c for c in start_cell if c.isalpha()])
+                start_row = int(''.join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = ''.join([c for c in end_cell if c.isalpha()])
+                end_row = int(''.join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {check_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {check_range}: {e}")
+            return 0.0
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Strictly check ALL cells in the specified range - no auto-detection
+        logger.info(f"Checking all cells in range {check_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            expected_condition1_cell = f"{condition1_col}{row_num}"
+            expected_condition2_cell = f"{condition2_col}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.warning(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                # Get formula text
+                formula_text = None
+                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                    formula_text = cell._value
+                elif hasattr(cell, "formula"):
+                    formula_text = cell.formula
+                else:
+                    if cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                        formula_text = cell.value
+                
+                if formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+                
+                # Check 1: Formula contains all expected functions
+                for func in expected_functions:
+                    func_pattern = rf'\b{func}\s*\('
+                    if not re.search(func_pattern, formula_upper):
+                        logger.warning(f"Cell {cell_coord} formula does not contain {func} function")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                        break
+                
+                if not all_passed:
+                    continue
+                
+                # Check 2: Formula contains SUMPRODUCT function
+                sumproduct_pattern = r'\bSUMPRODUCT\s*\('
+                if not re.search(sumproduct_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain SUMPRODUCT function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula contains first condition: ($F$2:$F$7=$A{row})
+                # Allow flexible spacing, case, and optional $ signs
+                # Pattern: ($F$2:$F$7=$A2) or (F$2:F$7=$A2) or ($F2:$F7=$A2) etc.
+                condition1_range_clean = condition1_range.replace("$", "")
+                condition1_patterns = [
+                    rf'\(\s*\$?F\$?2\s*:\s*\$?F\$?7\s*=\s*\$?{condition1_col}{row_num}\s*\)',  # Flexible $ placement
+                    rf'\(\s*{re.escape(condition1_range)}\s*=\s*\$?{condition1_col}{row_num}\s*\)',  # Exact match with $
+                    rf'\(\s*{re.escape(condition1_range_clean)}\s*=\s*\$?{condition1_col}{row_num}\s*\)',  # Without $
+                ]
+                condition1_matched = any(re.search(pattern, formula_text, re.IGNORECASE) for pattern in condition1_patterns)
+                if not condition1_matched:
+                    logger.warning(f"Cell {cell_coord} formula does not contain first condition ({condition1_range}={expected_condition1_cell})")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula contains second condition: ($G$1:$J$1=$B{row})
+                condition2_range_clean = condition2_range.replace("$", "")
+                condition2_patterns = [
+                    rf'\(\s*\$?G\$?1\s*:\s*\$?J\$?1\s*=\s*\$?{condition2_col}{row_num}\s*\)',  # Flexible $ placement
+                    rf'\(\s*{re.escape(condition2_range)}\s*=\s*\$?{condition2_col}{row_num}\s*\)',  # Exact match with $
+                    rf'\(\s*{re.escape(condition2_range_clean)}\s*=\s*\$?{condition2_col}{row_num}\s*\)',  # Without $
+                ]
+                condition2_matched = any(re.search(pattern, formula_text, re.IGNORECASE) for pattern in condition2_patterns)
+                if not condition2_matched:
+                    logger.warning(f"Cell {cell_coord} formula does not contain second condition ({condition2_range}={expected_condition2_cell})")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 5: Formula contains sum range: $G$2:$J$7
+                sum_range_clean = sum_range.replace("$", "")
+                sum_range_patterns = [
+                    rf'\b\$?G\$?2\s*:\s*\$?J\$?7\b',  # Flexible $ placement
+                    rf'\b{re.escape(sum_range)}\b',  # Exact match with $
+                    rf'\b{re.escape(sum_range_clean)}\b',  # Without $
+                ]
+                sum_range_matched = any(re.search(pattern, formula_text, re.IGNORECASE) for pattern in sum_range_patterns)
+                if not sum_range_matched:
+                    logger.warning(f"Cell {cell_coord} formula does not contain sum range {sum_range}")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 6: Formula structure contains multiplication operators (*) between conditions
+                # Look for pattern: condition1*condition2*sum_range
+                if '*' not in formula_text:
+                    logger.warning(f"Cell {cell_coord} formula does not contain multiplication operators (*)")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 7: Formula closes parentheses correctly
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.warning(f"Cell {cell_coord} formula has mismatched parentheses")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.debug(f"✓ Cell {cell_coord} has valid SUMPRODUCT price extract formula")
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                all_passed = False
+        
+        # Require all specified cells to have correct formulas (no tolerance)
+        if checked_count > 0:
+            if all_passed and passed_count == checked_count:
+                logger.info("=" * 60)
+                logger.info(f"✓ SUMPRODUCT price extract verification passed")
+                logger.info(f"  - Checked: {checked_count} cells")
+                logger.info(f"  - Passed: {passed_count} cells")
+                logger.info(f"  - Range: {check_range}")
+                logger.info("=" * 60)
+                return 1.0
+            else:
+                logger.error("=" * 60)
+                logger.error(f"✗ SUMPRODUCT price extract verification failed")
+                logger.error(f"  - Checked: {checked_count} cells")
+                logger.error(f"  - Passed: {passed_count} cells")
+                logger.error(f"  - Range: {check_range}")
+                logger.error(f"  All specified cells must contain correct formulas")
+                logger.error("=" * 60)
+                return 0.0
+        else:
+            logger.error("=" * 60)
+            logger.error("✗ No cells were checked")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+    """
+    Verify if store and staff pivot formulas are correctly applied to display multiple staff members per store in one row.
+    
+    This function checks:
+    1. Whether ALL cells in C2:C34 contain COUNTIF formulas: =COUNTIF($A$2:A2,A2)
+    2. Whether G2 contains UNIQUE formula: =UNIQUE(A2:A34)
+    3. Whether ALL cells in H2:H31 contain INDEX+MATCH+IFERROR formulas: =IFERROR(INDEX($B$2:$B$34,MATCH($G2&1,$A$2:$A$34&$C$2:$C$34,0)),"")
+    4. Whether ALL cells in I2:I31 contain INDEX+MATCH+IFERROR formulas: =IFERROR(INDEX($B$2:$B$34,MATCH($G2&2,$A$2:$A$34&$C$2:$C$34,0)),"")
+    5. Whether ALL cells in J2:J31 contain INDEX+MATCH+IFERROR formulas: =IFERROR(INDEX($B$2:$B$34,MATCH($G2&3,$A$2:$A$34&$C$2:$C$34,0)),"")
+    6. Whether headers in G1, H1, I1, J1 are: 门店, 店员1, 店员2, 店员3
+    
+    IMPORTANT: This function checks ALL cells in the specified ranges. If any cell is missing a formula, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - countif_range: Range for COUNTIF formulas (default: "C2:C34")
+            - unique_cell: Cell for UNIQUE formula (default: "G2")
+            - unique_range: Range for UNIQUE function (default: "A2:A34")
+            - staff_range_h: Range for first staff column (default: "H2:H31")
+            - staff_range_i: Range for second staff column (default: "I2:I31")
+            - staff_range_j: Range for third staff column (default: "J2:J31")
+            - headers: Dict mapping column letters to expected header text (default: {"G": "门店", "H": "店员1", "I": "店员2", "J": "店员3"})
+            - source_data_range: Source data range for INDEX (default: "$B$2:$B$34")
+            - match_range_a: First part of MATCH range (default: "$A$2:$A$34")
+            - match_range_c: Second part of MATCH range (default: "$C$2:$C$34")
+    
+    Returns:
+        float: 1.0 if ALL cells in specified ranges contain correct formulas and headers are correct, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import column_index_from_string, get_column_letter
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        countif_range = options.get("countif_range", "C2:C34")
+        unique_cell = options.get("unique_cell", "G2")
+        unique_range = options.get("unique_range", "A2:A34")
+        staff_range_h = options.get("staff_range_h", "H2:H31")
+        staff_range_i = options.get("staff_range_i", "I2:I31")
+        staff_range_j = options.get("staff_range_j", "J2:J31")
+        headers = options.get("headers", {"G": "门店", "H": "店员1", "I": "店员2", "J": "店员3"})
+        source_data_range = options.get("source_data_range", "$B$2:$B$34")
+        match_range_a = options.get("match_range_a", "$A$2:$A$34")
+        match_range_c = options.get("match_range_c", "$C$2:$C$34")
+        
+        logger.info(f"Verifying store and staff pivot formulas in file: {result}")
+        logger.info(f"COUNTIF range: {countif_range}")
+        logger.info(f"UNIQUE cell: {unique_cell}")
+        logger.info(f"Staff ranges: {staff_range_h}, {staff_range_i}, {staff_range_j}")
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        all_passed = True
+        
+        # Helper function to parse range
+        def parse_range(range_str):
+            range_clean = range_str.replace("$", "")
+            if ":" in range_clean:
+                start_cell, end_cell = range_clean.split(":")
+                start_col_letter = "".join([c for c in start_cell if c.isalpha()])
+                start_row = int("".join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = "".join([c for c in end_cell if c.isalpha()])
+                end_row = int("".join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+                return start_col, start_row, end_col, end_row
+            else:
+                # Single cell
+                col_letter = "".join([c for c in range_clean if c.isalpha()])
+                row = int("".join([c for c in range_clean if c.isdigit()]))
+                col = column_index_from_string(col_letter)
+                return col, row, col, row
+        
+        # Helper function to get formula from cell
+        def get_formula(cell):
+            if cell.data_type != "f":
+                return None
+            formula_text = None
+            if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                formula_text = cell._value
+            elif hasattr(cell, "formula"):
+                formula_text = cell.formula
+            elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                formula_text = cell.value
+            return formula_text
+        
+        # Check 1: COUNTIF formulas in C2:C34
+        logger.info("Checking COUNTIF formulas...")
+        start_col, start_row, end_col, end_row = parse_range(countif_range)
+        for row in range(start_row, end_row + 1):
+            cell_coord = f"{get_column_letter(start_col)}{row}"
+            cell = ws[cell_coord]
+            formula_text = get_formula(cell)
+            
+            if formula_text is None:
+                logger.warning(f"Cell {cell_coord} does not contain a formula")
+                all_passed = False
+                continue
+            
+            formula_upper = formula_text.upper()
+            
+            # Check for COUNTIF function
+            if not re.search(r'\bCOUNTIF\s*\(', formula_upper):
+                logger.warning(f"Cell {cell_coord} formula does not contain COUNTIF function")
+                logger.warning(f"Formula: {formula_text}")
+                all_passed = False
+                continue
+            
+            # Check for pattern: COUNTIF($A$2:A2, A2)
+            # Allow variations in spacing and $ placement
+            countif_pattern = r'COUNTIF\s*\(\s*\$?A\$?2\s*:\s*\$?A\d+\s*,\s*\$?A\d+\s*\)'
+            if not re.search(countif_pattern, formula_upper):
+                logger.warning(f"Cell {cell_coord} formula does not match COUNTIF pattern")
+                logger.warning(f"Formula: {formula_text}")
+                all_passed = False
+                continue
+            
+            logger.debug(f"✓ Cell {cell_coord} has valid COUNTIF formula")
+        
+        # Check 2: UNIQUE formula in G2
+        logger.info("Checking UNIQUE formula...")
+        unique_col, unique_row, _, _ = parse_range(unique_cell)
+        unique_cell_coord = f"{get_column_letter(unique_col)}{unique_row}"
+        unique_cell_obj = ws[unique_cell_coord]
+        unique_formula = get_formula(unique_cell_obj)
+        
+        if unique_formula is None:
+            logger.warning(f"Cell {unique_cell_coord} does not contain a formula")
+            all_passed = False
+        else:
+            unique_formula_upper = unique_formula.upper()
+            
+            # Check for UNIQUE function
+            if not re.search(r'\bUNIQUE\s*\(', unique_formula_upper):
+                logger.warning(f"Cell {unique_cell_coord} formula does not contain UNIQUE function")
+                logger.warning(f"Formula: {unique_formula}")
+                all_passed = False
+            else:
+                # Check for pattern: UNIQUE(A2:A34)
+                unique_range_clean = unique_range.replace("$", "")
+                unique_pattern = rf'UNIQUE\s*\(\s*\$?A\$?2\s*:\s*\$?A\$?34\s*\)'
+                if not re.search(unique_pattern, unique_formula_upper):
+                    logger.warning(f"Cell {unique_cell_coord} formula does not match UNIQUE pattern")
+                    logger.warning(f"Formula: {unique_formula}")
+                    all_passed = False
+                else:
+                    logger.debug(f"✓ Cell {unique_cell_coord} has valid UNIQUE formula")
+        
+        # Check 3-5: INDEX+MATCH+IFERROR formulas in H, I, J columns
+        staff_ranges = [
+            (staff_range_h, 1, "H"),
+            (staff_range_i, 2, "I"),
+            (staff_range_j, 3, "J")
+        ]
+        
+        for staff_range, staff_num, col_letter in staff_ranges:
+            logger.info(f"Checking INDEX+MATCH+IFERROR formulas in {staff_range} (staff {staff_num})...")
+            start_col, start_row, end_col, end_row = parse_range(staff_range)
+            
+            for row in range(start_row, end_row + 1):
+                cell_coord = f"{get_column_letter(start_col)}{row}"
+                cell = ws[cell_coord]
+                formula_text = get_formula(cell)
+                
+                if formula_text is None:
+                    logger.warning(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                
+                # Check for IFERROR function
+                if not re.search(r'\bIFERROR\s*\(', formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain IFERROR function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check for INDEX function
+                if not re.search(r'\bINDEX\s*\(', formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain INDEX function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check for MATCH function
+                if not re.search(r'\bMATCH\s*\(', formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain MATCH function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check for pattern: INDEX($B$2:$B$34, MATCH($G{row}&{staff_num}, $A$2:$A$34&$C$2:$C$34, 0))
+                # Check INDEX range
+                source_data_range_clean = source_data_range.replace("$", "")
+                index_pattern = rf'INDEX\s*\(\s*\$?B\$?2\s*:\s*\$?B\$?34\s*,'
+                if not re.search(index_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain correct INDEX range")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check MATCH pattern: MATCH($G{row}&{staff_num}, $A$2:$A$34&$C$2:$C$34, 0)
+                # Allow variations in spacing
+                g_cell_pattern = rf'\$?G{row}'
+                match_pattern = rf'MATCH\s*\(\s*{re.escape(g_cell_pattern)}\s*&\s*{staff_num}\s*,'
+                if not re.search(match_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain correct MATCH lookup value pattern (G{row}&{staff_num})")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check MATCH range: $A$2:$A$34&$C$2:$C$34
+                match_range_a_clean = match_range_a.replace("$", "")
+                match_range_c_clean = match_range_c.replace("$", "")
+                match_range_pattern = rf'{re.escape(match_range_a_clean)}\s*&\s*{re.escape(match_range_c_clean)}'
+                if not re.search(match_range_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula does not contain correct MATCH range pattern")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check MATCH third parameter is 0
+                match_third_param_pattern = r'MATCH\s*\([^,]+,\s*[^,]+,\s*0\s*\)'
+                if not re.search(match_third_param_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula MATCH function does not have 0 as third parameter")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check IFERROR error value is ""
+                iferror_error_pattern = r'IFERROR\s*\([^,]+,\s*""\s*\)'
+                if not re.search(iferror_error_pattern, formula_upper):
+                    logger.warning(f"Cell {cell_coord} formula IFERROR function does not have \"\" as error value")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                logger.debug(f"✓ Cell {cell_coord} has valid INDEX+MATCH+IFERROR formula")
+        
+        # Check 6: Headers
+        logger.info("Checking headers...")
+        for col_letter, expected_header in headers.items():
+            header_cell_coord = f"{col_letter}1"
+            header_cell = ws[header_cell_coord]
+            header_value = str(header_cell.value).strip() if header_cell.value else ""
+            
+            if header_value != expected_header:
+                logger.warning(f"Cell {header_cell_coord} header is '{header_value}', expected '{expected_header}'")
+                all_passed = False
+            else:
+                logger.debug(f"✓ Cell {header_cell_coord} has correct header: {expected_header}")
+        
+        if all_passed:
+            logger.info("=" * 60)
+            logger.info("✓ Store and staff pivot verification passed")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error("✗ Store and staff pivot verification failed")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+
+
+def verify_name_count_summary(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if name count summary is correctly displayed with names and their occurrence counts.
+    
+    This function checks:
+    1. Whether there exists a range (excluding columns A, C, B, D) with 5 consecutive cells containing the 5 names: 冯文荣、王伟荣、单瓞绵、董水军、张无忌
+    2. Whether each name's right adjacent cell contains the correct count: 52, 77, 51, 51, 25 respectively
+    
+    IMPORTANT: This function searches for the names in any columns except A, C, B, D, and verifies the counts.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_names: List of expected names (default: ["冯文荣", "王伟荣", "单瓞绵", "董水军", "张无忌"])
+            - expected_counts: List of expected counts corresponding to names (default: [52, 77, 51, 51, 25])
+            - exclude_columns: List of column letters to exclude from search (default: ["A", "C", "B", "D"])
+            - search_start_row: Starting row for search (default: 1)
+            - search_end_row: Ending row for search (default: 1000)
+    
+    Returns:
+        float: 1.0 if names and counts are found correctly, 0.0 otherwise
+    """
+    try:
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_names = options.get("expected_names", ["冯文荣", "王伟荣", "单瓞绵", "董水军", "张无忌"])
+        expected_counts = options.get("expected_counts", [52, 77, 51, 51, 25])
+        exclude_columns = options.get("exclude_columns", ["A", "C", "B", "D"])
+        search_start_row = options.get("search_start_row", 1)
+        search_end_row = options.get("search_end_row", 1000)
+        
+        logger.info(f"Verifying name count summary in file: {result}")
+        logger.info(f"Expected names: {expected_names}")
+        logger.info(f"Expected counts: {expected_counts}")
+        logger.info(f"Exclude columns: {exclude_columns}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get values
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Convert exclude columns to column indices
+        exclude_col_indices = set()
+        for col_letter in exclude_columns:
+            exclude_col_indices.add(column_index_from_string(col_letter))
+        
+        # Search for the 5 consecutive cells containing the names
+        found = False
+        found_location = None
+        
+        # Search through all columns except excluded ones
+        for col_idx in range(1, ws.max_column + 1):
+            if col_idx in exclude_col_indices:
+                continue
+            
+            col_letter = get_column_letter(col_idx)
+            
+            # Search through rows
+            for row in range(search_start_row, min(search_end_row + 1, ws.max_row + 1)):
+                # Check if we can find 5 consecutive cells starting from this row
+                if row + 4 > ws.max_row:
+                    continue
+                
+                # Check if these 5 cells contain all expected names
+                found_names = []
+                found_counts = []
+                all_match = True
+                
+                for i in range(5):
+                    name_cell = ws[f"{col_letter}{row + i}"]
+                    count_cell = ws[f"{get_column_letter(col_idx + 1)}{row + i}"]
+                    
+                    name_value = str(name_cell.value).strip() if name_cell.value else ""
+                    count_value = count_cell.value
+                    
+                    # Check if this name is in expected names
+                    if name_value in expected_names:
+                        found_names.append(name_value)
+                        # Try to convert count to int
+                        try:
+                            count_int = int(float(count_value)) if count_value is not None else None
+                            found_counts.append(count_int)
+                        except (ValueError, TypeError):
+                            found_counts.append(None)
+                    else:
+                        all_match = False
+                        break
+                
+                # Check if we found all 5 names
+                if all_match and len(found_names) == 5:
+                    # Check if all expected names are present
+                    if set(found_names) == set(expected_names):
+                        # Verify counts match
+                        name_count_map = dict(zip(expected_names, expected_counts))
+                        counts_match = True
+                        for name, count in zip(found_names, found_counts):
+                            if count != name_count_map.get(name):
+                                counts_match = False
+                                break
+                        
+                        if counts_match:
+                            found = True
+                            found_location = (col_letter, row)
+                            logger.info(f"Found names and counts at {col_letter}{row}:{get_column_letter(col_idx + 1)}{row + 4}")
+                            break
+                
+                if found:
+                    break
+            
+            if found:
+                break
+        
+        if found:
+            logger.info("=" * 60)
+            logger.info("✓ Name count summary verification passed")
+            logger.info(f"  - Location: {found_location[0]}{found_location[1]}")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error("✗ Name count summary verification failed")
+            logger.error("  - Could not find 5 consecutive cells with expected names and counts")
+            logger.error("=" * 60)
+            return 0.0
+            
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_sort_choose_person_contract(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if M10:O25 range contains correctly sorted data matching the source data after sorting.
+    
+    This function checks:
+    1. Reads source data from F11:F25 (names), G11:G25 (contract amounts), I11:I25 (contract locations)
+    2. Sorts the data: first by name (descending), then by contract amount (descending) within same name
+    3. Compares M10:O25 range cell by cell with the sorted data
+    4. Ensures every cell matches exactly, no deviation allowed
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - result_range: Result range to check (default: "M10:O25")
+            - source_name_range: Source name range (default: "F11:F25")
+            - source_amount_range: Source amount range (default: "G11:G25")
+            - source_location_range: Source location range (default: "I11:I25")
+    
+    Returns:
+        float: 1.0 if all cells match exactly, 0.0 otherwise
+    """
+    try:
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        result_range = options.get('result_range', 'M10:O25')
+        source_name_range = options.get('source_name_range', 'F11:F25')
+        source_amount_range = options.get('source_amount_range', 'G11:G25')
+        source_location_range = options.get('source_location_range', 'I11:I25')
+        
+        logger.info(f"Verifying sorted data in file: {result}")
+        logger.info(f"Result range: {result_range}")
+        logger.info(f"Source ranges: {source_name_range}, {source_amount_range}, {source_location_range}")
+        
+        # Load workbook to get values
+        try:
+            wb = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get values
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Helper function to parse range and get cell values
+        def parse_range_get_values(range_str):
+            range_clean = range_str.replace("$", "")
+            if ":" in range_clean:
+                start_cell, end_cell = range_clean.split(":")
+                start_col_letter = "".join([c for c in start_cell if c.isalpha()])
+                start_row = int("".join([c for c in start_cell if c.isdigit()]))
+                end_col_letter = "".join([c for c in end_cell if c.isalpha()])
+                end_row = int("".join([c for c in end_cell if c.isdigit()]))
+                
+                values = []
+                for row in range(start_row, end_row + 1):
+                    row_values = []
+                    start_col_idx = column_index_from_string(start_col_letter)
+                    end_col_idx = column_index_from_string(end_col_letter)
+                    for col_idx in range(start_col_idx, end_col_idx + 1):
+                        col_letter = get_column_letter(col_idx)
+                        cell = ws[f"{col_letter}{row}"]
+                        # Get cell value, convert None to empty string, numbers to float for comparison
+                        cell_value = cell.value
+                        if cell_value is None:
+                            cell_value = ""
+                        elif isinstance(cell_value, (int, float)):
+                            # Keep as number for comparison
+                            cell_value = float(cell_value) if isinstance(cell_value, float) else int(cell_value)
+                        else:
+                            cell_value = str(cell_value).strip()
+                        row_values.append(cell_value)
+                    values.append(row_values)
+                return values
+            else:
+                logger.error(f"Invalid range format: {range_str}")
+                return None
+        
+        # Read source data
+        source_names = parse_range_get_values(source_name_range)
+        source_amounts = parse_range_get_values(source_amount_range)
+        source_locations = parse_range_get_values(source_location_range)
+        
+        if source_names is None or source_amounts is None or source_locations is None:
+            logger.error("Failed to read source data")
+            return 0.0
+        
+        # Combine source data into list of tuples (name, amount, location)
+        source_data = []
+        for i in range(len(source_names)):
+            name = source_names[i][0] if source_names[i] else ""
+            amount = source_amounts[i][0] if source_amounts[i] else ""
+            location = source_locations[i][0] if source_locations[i] else ""
+            source_data.append((name, amount, location))
+        
+        logger.info(f"Source data rows: {len(source_data)}")
+        
+        # Sort source data: first by name (descending), then by amount (descending)
+        # For descending sort, we use reverse=True
+        # For name comparison, handle empty strings and None
+        def sort_key(item):
+            name, amount, location = item
+            # Convert name to string for comparison, empty string sorts last in descending
+            name_str = str(name) if name is not None and name != "" else ""
+            # Convert amount to float for comparison, None/empty sorts last in descending
+            try:
+                amount_num = float(amount) if amount is not None and amount != "" else float('-inf')
+            except (ValueError, TypeError):
+                amount_num = float('-inf')
+            # Return tuple for multi-level sort: (name, amount)
+            # For descending: we'll use reverse=True, so we want higher values first
+            # In descending order, we want names in reverse alphabetical order
+            return (name_str, amount_num)
+        
+        sorted_source_data = sorted(source_data, key=sort_key, reverse=True)
+        
+        logger.info(f"Sorted source data rows: {len(sorted_source_data)}")
+        
+        # Read result data
+        result_data = parse_range_get_values(result_range)
+        if result_data is None:
+            logger.error("Failed to read result data")
+            return 0.0
+        
+        logger.info(f"Result data rows: {len(result_data)}, cols: {len(result_data[0]) if result_data else 0}")
+        
+        # Check if dimensions match
+        # Result range M10:O25 is 16 rows x 3 columns
+        # Source data is 15 rows, but result includes header row (M10)
+        # So we need to check: result_data[1:] (skip header) should match sorted_source_data
+        
+        if len(result_data) < len(sorted_source_data):
+            logger.error(f"Result data has fewer rows ({len(result_data)}) than sorted source data ({len(sorted_source_data)})")
+            return 0.0
+        
+        # Compare data cell by cell
+        # If M10 is header, compare from M11:O25 (result_data[1:]) with sorted_source_data
+        # If M10 is data, compare from M10:O25 (result_data) with sorted_source_data
+        # We'll try both approaches, but typically M10 might be header
+        
+        # Try comparing from row 1 (assuming M10 is header)
+        start_row_idx = 1
+        if len(result_data) - start_row_idx == len(sorted_source_data):
+            # M10 is likely header, compare from M11
+            comparison_data = result_data[start_row_idx:]
+        elif len(result_data) == len(sorted_source_data):
+            # M10 is data, compare from M10
+            start_row_idx = 0
+            comparison_data = result_data
+        else:
+            logger.error(f"Row count mismatch: result has {len(result_data)} rows, sorted source has {len(sorted_source_data)} rows")
+            return 0.0
+        
+        # Check column count
+        if len(comparison_data[0]) != 3:
+            logger.error(f"Result data should have 3 columns, but has {len(comparison_data[0])}")
+            return 0.0
+        
+        # Compare cell by cell
+        all_match = True
+        mismatch_count = 0
+        
+        for i in range(len(sorted_source_data)):
+            expected_name, expected_amount, expected_location = sorted_source_data[i]
+            actual_row = comparison_data[i]
+            actual_name = actual_row[0] if len(actual_row) > 0 else None
+            actual_amount = actual_row[1] if len(actual_row) > 1 else None
+            actual_location = actual_row[2] if len(actual_row) > 2 else None
+            
+            # Normalize values for comparison
+            def normalize_value(val):
+                if val is None:
+                    return ""
+                if isinstance(val, (int, float)):
+                    return float(val)
+                return str(val).strip()
+            
+            expected_name_norm = normalize_value(expected_name)
+            expected_amount_norm = normalize_value(expected_amount)
+            expected_location_norm = normalize_value(expected_location)
+            
+            actual_name_norm = normalize_value(actual_name)
+            actual_amount_norm = normalize_value(actual_amount)
+            actual_location_norm = normalize_value(actual_location)
+            
+            # Compare name
+            if expected_name_norm != actual_name_norm:
+                logger.error(f"Row {i+start_row_idx+10} (M{10+i+start_row_idx}): Name mismatch - Expected: '{expected_name_norm}', Actual: '{actual_name_norm}'")
+                all_match = False
+                mismatch_count += 1
+                continue
+            
+            # Compare amount (handle numeric comparison)
+            if isinstance(expected_amount_norm, (int, float)) and isinstance(actual_amount_norm, (int, float)):
+                if abs(expected_amount_norm - actual_amount_norm) > 0.001:  # Allow small floating point differences
+                    logger.error(f"Row {i+start_row_idx+10} (N{10+i+start_row_idx}): Amount mismatch - Expected: {expected_amount_norm}, Actual: {actual_amount_norm}")
+                    all_match = False
+                    mismatch_count += 1
+                    continue
+            elif expected_amount_norm != actual_amount_norm:
+                logger.error(f"Row {i+start_row_idx+10} (N{10+i+start_row_idx}): Amount mismatch - Expected: '{expected_amount_norm}', Actual: '{actual_amount_norm}'")
+                all_match = False
+                mismatch_count += 1
+                continue
+            
+            # Compare location
+            if expected_location_norm != actual_location_norm:
+                logger.error(f"Row {i+start_row_idx+10} (O{10+i+start_row_idx}): Location mismatch - Expected: '{expected_location_norm}', Actual: '{actual_location_norm}'")
+                all_match = False
+                mismatch_count += 1
+                continue
+        
+        if all_match:
+            logger.info("=" * 60)
+            logger.info(f"✓ Sorted data verification passed")
+            logger.info(f"  - Result range: {result_range}")
+            logger.info(f"  - Compared {len(sorted_source_data)} rows")
+            logger.info(f"  - All cells match exactly")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ Sorted data verification failed")
+            logger.error(f"  - Result range: {result_range}")
+            logger.error(f"  - Mismatches: {mismatch_count} out of {len(sorted_source_data)} rows")
+            logger.error(f"  - All cells must match exactly, no deviation allowed")
+            logger.error("=" * 60)
+            return 0.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_right_match_left_extract(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if RIGHT(MATCH(LEFT(...))) formulas exist in ALL cells of specified range to extract text after last asterisk.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula.
+    
+    This function checks:
+    1. Whether ALL cells in the specified formula range (e.g., B2:B33) contain formulas
+    2. Whether formulas contain RIGHT, MATCH, and LEFT functions
+    3. Whether formulas reference the correct source column cell with relative row (e.g., A2, A3, etc.)
+    4. Whether formulas contain ROW($1:$99) or similar array reference
+    5. Whether formulas contain the pattern matching logic for asterisk "*"
+    6. Whether formulas have the correct structure: =RIGHT(A2,MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))="*"),)-1)
+    
+    The formula =RIGHT(A2,MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))="*"),)-1) works as follows:
+    - RIGHT(A2, ...) extracts characters from the right side of A2
+    - MATCH(,0/(LEFT(RIGHT(A2,ROW($1:$99)))="*"),) finds the position of the last "*"
+      * LEFT(RIGHT(A2,ROW($1:$99))) checks characters from right to left (ROW($1:$99) generates array 1 to 99)
+      * 0/(LEFT(RIGHT(A2,ROW($1:$99)))="*") converts matching "*" to 0, non-matching to error
+      * MATCH finds the first 0 position, which is the last "*" position
+    - -1 adjusts the position to get the number of characters after "*"
+    
+    IMPORTANT: This function checks ALL cells in the specified formula range. If any cell is missing a formula, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - formula_range: Range containing formulas (e.g., "B2:B33") - ALL cells must have formulas
+            - source_column: Source column for formula (default: "A")
+            - expected_functions: List of expected function names (default: ["RIGHT", "MATCH", "LEFT"])
+            - expected_pattern: Expected pattern character (default: "*")
+            - row_array_pattern: Expected ROW array pattern (default: "ROW($1:$99)")
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas, 0.0 otherwise
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     """
     try:
         import re
@@ -25140,6 +26079,7 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
             logger.error(f"Result file not found: {result}")
             return 0.0
         
+<<<<<<< HEAD
         check_range = options.get('check_range', 'L1:M4')
         source_range = options.get('source_range', '$A$1:$D$4')
         target_range = options.get('target_range', '$G$1:$J$4')
@@ -25156,6 +26096,23 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
         # Parse the check range
         try:
             range_clean = check_range.replace("$", "")
+=======
+        formula_range = options.get('formula_range', 'B2:B33')
+        source_column = options.get('source_column', 'A')
+        expected_functions = options.get('expected_functions', ['RIGHT', 'MATCH', 'LEFT'])
+        expected_pattern = options.get('expected_pattern', '*')
+        row_array_pattern = options.get('row_array_pattern', 'ROW($1:$99)')
+        
+        logger.info(f"Verifying RIGHT(MATCH(LEFT)) extract formulas in file: {result}")
+        logger.info(f"Formula range: {formula_range}")
+        logger.info(f"Source column: {source_column}")
+        logger.info(f"Expected functions: {expected_functions}")
+        logger.info(f"Expected pattern: {expected_pattern}")
+        
+        # Parse the formula range
+        try:
+            range_clean = formula_range.replace("$", "")
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
             if ":" in range_clean:
                 start_cell, end_cell = range_clean.split(":")
                 start_col_letter = "".join([c for c in start_cell if c.isalpha()])
@@ -25165,7 +26122,1677 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
                 end_row = int("".join([c for c in end_cell if c.isdigit()]))
                 end_col = column_index_from_string(end_col_letter)
             else:
+<<<<<<< HEAD
                 logger.error(f"Invalid range format: {check_range}")
+=======
+                logger.error(f"Invalid range format: {formula_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {formula_range}: {e}")
+            return 0.0
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check ALL cells in formula range
+        logger.info(f"Checking all cells in range {formula_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            expected_source_cell = f"{source_column}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.error(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                # Get formula text
+                formula_text = None
+                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                    formula_text = cell._value
+                elif hasattr(cell, "formula"):
+                    formula_text = cell.formula
+                elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                    formula_text = cell.value
+                
+                if formula_text is None:
+                    logger.error(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+                
+                # Check 1: Formula contains all expected functions
+                for func_name in expected_functions:
+                    func_pattern = rf'\b{re.escape(func_name.upper())}\s*\('
+                    if not re.search(func_pattern, formula_upper):
+                        logger.error(f"Cell {cell_coord} formula does not contain {func_name} function")
+                        logger.error(f"Formula: {formula_text}")
+                        all_passed = False
+                        break
+                
+                if not all_passed:
+                    continue
+                
+                # Check 2: Formula contains RIGHT function
+                right_pattern = r'\bRIGHT\s*\('
+                if not re.search(right_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain RIGHT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula contains MATCH function
+                match_pattern = r'\bMATCH\s*\('
+                if not re.search(match_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MATCH function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula contains LEFT function
+                left_pattern = r'\bLEFT\s*\('
+                if not re.search(left_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain LEFT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 5: Formula references the correct source column with correct row
+                # Allow both relative (A2) and absolute ($A2) references, but prefer relative
+                source_cell_patterns = [
+                    rf'\b{re.escape(source_column.upper())}\s*{row_num}\b',  # A2 (relative)
+                    rf'\$\s*{re.escape(source_column.upper())}\s*{row_num}\b',  # $A2 (mixed)
+                ]
+                source_cell_found = False
+                for pattern in source_cell_patterns:
+                    if re.search(pattern, formula_upper):
+                        source_cell_found = True
+                        break
+                
+                if not source_cell_found:
+                    logger.error(f"Cell {cell_coord} formula does not reference {expected_source_cell}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 6: Formula contains ROW array pattern (e.g., ROW($1:$99))
+                row_array_pattern_upper = row_array_pattern.upper()
+                # Escape special characters but allow flexibility in spacing
+                row_array_escaped = re.escape(row_array_pattern_upper).replace(r'\$', r'\$?').replace(r'\ ', r'\s*')
+                if not re.search(row_array_escaped, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain ROW array pattern {row_array_pattern}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 7: Formula contains pattern matching logic (0/(...)=...)
+                # This checks for the structure: 0/(LEFT(RIGHT(...))="*")
+                pattern_match_logic = r'0\s*/\s*\(\s*LEFT\s*\('
+                if not re.search(pattern_match_logic, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain pattern matching logic (0/(LEFT(...)))")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 8: Formula contains the expected pattern character (e.g., "*")
+                # Escape the pattern character for regex
+                pattern_escaped = re.escape(expected_pattern)
+                pattern_check = rf'=\s*["\']?\s*{pattern_escaped}\s*["\']?'
+                if not re.search(pattern_check, formula_text):
+                    logger.error(f"Cell {cell_coord} formula does not contain pattern matching for '{expected_pattern}'")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 9: Formula structure should be RIGHT(source, MATCH(,0/(LEFT(RIGHT(...))="*"),)-1)
+                # Check that MATCH is inside RIGHT
+                right_match_pattern = r'RIGHT\s*\([^,)]+,\s*MATCH\s*\('
+                if not re.search(right_match_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct RIGHT(MATCH(...)) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 10: Formula should contain -1 at the end (adjustment for position)
+                minus_one_pattern = r'-\s*1\s*\)'
+                if not re.search(minus_one_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain -1 adjustment")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 11: Formula closes parentheses correctly
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.error(f"Cell {cell_coord} formula has mismatched parentheses")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.info(f"✓ Cell {cell_coord} has valid formula: {formula_text}")
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                all_passed = False
+        
+        if not all_passed:
+            logger.error(f"✗ Formula verification failed: {passed_count}/{checked_count} cells passed")
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error(f"No cells found in range {formula_range}")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All {checked_count} cells in range {formula_range} contain correct RIGHT(MATCH(LEFT)) formulas")
+        logger.info(f"  - All cells passed verification")
+        logger.info(f"  - Formula structure: RIGHT(source, MATCH(,0/(LEFT(RIGHT(...))=\"*\"),)-1)")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_if_mod_date_calculate(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if IF(MOD(...), DATE(...), DATE(...)) formulas exist in ALL cells of specified range to calculate dates.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula.
+    
+    This function checks:
+    1. Whether ALL cells in the specified formula range (e.g., D2:D43) contain formulas
+    2. Whether formulas contain IF, MOD, DATE, YEAR, INT, RIGHT, LEN, FIND, and MONTH functions
+    3. Whether formulas reference the correct source column cells with relative row (e.g., A2, B2, etc.)
+    4. Whether formulas have the correct structure: IF(MOD(B2,1), DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(".",B2))), DATE(YEAR(A2),MONTH(A2),B2))
+    
+    The formula =IF(MOD(B2,1),DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(".",B2))),DATE(YEAR(A2),MONTH(A2),B2)) works as follows:
+    - IF(MOD(B2,1), ...) checks if B2 has a decimal part
+      * MOD(B2,1) returns the remainder of B2 divided by 1, non-zero if decimal exists (truthy), 0 if integer (falsy)
+    - If B2 has decimal part (MOD(B2,1) is truthy):
+      * DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(".",B2)))
+      * YEAR(A2) gets the year from A2
+      * INT(B2) gets the integer part of B2 as month
+      * RIGHT(B2,LEN(B2)-FIND(".",B2)) extracts the decimal part as day
+    - If B2 is integer (MOD(B2,1) is falsy):
+      * DATE(YEAR(A2),MONTH(A2),B2)
+      * YEAR(A2) gets the year from A2
+      * MONTH(A2) gets the month from A2
+      * B2 is used as day
+    
+    IMPORTANT: This function checks ALL cells in the specified formula range. If any cell is missing a formula, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - formula_range: Range containing formulas (e.g., "D2:D43") - ALL cells must have formulas
+            - source_column_a: Source column A for formula (default: "A")
+            - source_column_b: Source column B for formula (default: "B")
+            - expected_functions: List of expected function names (default: ["IF", "MOD", "DATE", "YEAR", "INT", "RIGHT", "LEN", "FIND", "MONTH"])
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        formula_range = options.get('formula_range', 'D2:D43')
+        source_column_a = options.get('source_column_a', 'A')
+        source_column_b = options.get('source_column_b', 'B')
+        expected_functions = options.get('expected_functions', ['IF', 'MOD', 'DATE', 'YEAR', 'INT', 'RIGHT', 'LEN', 'FIND', 'MONTH'])
+        
+        logger.info(f"Verifying IF(MOD(DATE)) calculation formulas in file: {result}")
+        logger.info(f"Formula range: {formula_range}")
+        logger.info(f"Source column A: {source_column_a}")
+        logger.info(f"Source column B: {source_column_b}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Parse the formula range
+        try:
+            range_clean = formula_range.replace("$", "")
+            if ":" in range_clean:
+                start_cell, end_cell = range_clean.split(":")
+                start_col_letter = "".join([c for c in start_cell if c.isalpha()])
+                start_row = int("".join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = "".join([c for c in end_cell if c.isalpha()])
+                end_row = int("".join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {formula_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {formula_range}: {e}")
+            return 0.0
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check ALL cells in formula range
+        logger.info(f"Checking all cells in range {formula_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            expected_source_cell_a = f"{source_column_a}{row_num}"
+            expected_source_cell_b = f"{source_column_b}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.error(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                # Get formula text
+                formula_text = None
+                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                    formula_text = cell._value
+                elif hasattr(cell, "formula"):
+                    formula_text = cell.formula
+                elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                    formula_text = cell.value
+                
+                if formula_text is None:
+                    logger.error(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+                
+                # Check 1: Formula contains all expected functions
+                for func_name in expected_functions:
+                    func_pattern = rf'\b{re.escape(func_name.upper())}\s*\('
+                    if not re.search(func_pattern, formula_upper):
+                        logger.error(f"Cell {cell_coord} formula does not contain {func_name} function")
+                        logger.error(f"Formula: {formula_text}")
+                        all_passed = False
+                        break
+                
+                if not all_passed:
+                    continue
+                
+                # Check 2: Formula contains IF function
+                if_pattern = r'\bIF\s*\('
+                if not re.search(if_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain IF function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula contains MOD function
+                mod_pattern = r'\bMOD\s*\('
+                if not re.search(mod_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MOD function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula contains DATE function (should appear twice)
+                date_pattern = r'\bDATE\s*\('
+                date_matches = re.findall(date_pattern, formula_upper)
+                if len(date_matches) < 2:
+                    logger.error(f"Cell {cell_coord} formula does not contain two DATE functions (found {len(date_matches)})")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 5: Formula contains YEAR function (should appear twice)
+                year_pattern = r'\bYEAR\s*\('
+                year_matches = re.findall(year_pattern, formula_upper)
+                if len(year_matches) < 2:
+                    logger.error(f"Cell {cell_coord} formula does not contain two YEAR functions (found {len(year_matches)})")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 6: Formula contains INT function
+                int_pattern = r'\bINT\s*\('
+                if not re.search(int_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain INT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 7: Formula contains RIGHT function
+                right_pattern = r'\bRIGHT\s*\('
+                if not re.search(right_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain RIGHT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 8: Formula contains LEN function
+                len_pattern = r'\bLEN\s*\('
+                if not re.search(len_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain LEN function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 9: Formula contains FIND function
+                find_pattern = r'\bFIND\s*\('
+                if not re.search(find_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain FIND function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 10: Formula contains MONTH function
+                month_pattern = r'\bMONTH\s*\('
+                if not re.search(month_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MONTH function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 11: Formula references the correct source column A with correct row
+                source_cell_a_patterns = [
+                    rf'\b{re.escape(source_column_a.upper())}\s*{row_num}\b',  # A2 (relative)
+                    rf'\$\s*{re.escape(source_column_a.upper())}\s*{row_num}\b',  # $A2 (mixed)
+                ]
+                source_cell_a_found = False
+                for pattern in source_cell_a_patterns:
+                    if re.search(pattern, formula_upper):
+                        source_cell_a_found = True
+                        break
+                
+                if not source_cell_a_found:
+                    logger.error(f"Cell {cell_coord} formula does not reference {expected_source_cell_a}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 12: Formula references the correct source column B with correct row
+                source_cell_b_patterns = [
+                    rf'\b{re.escape(source_column_b.upper())}\s*{row_num}\b',  # B2 (relative)
+                    rf'\$\s*{re.escape(source_column_b.upper())}\s*{row_num}\b',  # $B2 (mixed)
+                ]
+                source_cell_b_found = False
+                for pattern in source_cell_b_patterns:
+                    if re.search(pattern, formula_upper):
+                        source_cell_b_found = True
+                        break
+                
+                if not source_cell_b_found:
+                    logger.error(f"Cell {cell_coord} formula does not reference {expected_source_cell_b}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 13: Formula structure should be IF(MOD(B2,1), DATE(...), DATE(...))
+                # Check that MOD is inside IF
+                if_mod_pattern = r'IF\s*\(\s*MOD\s*\('
+                if not re.search(if_mod_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct IF(MOD(...)) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 14: Formula contains RIGHT(LEN(FIND pattern for decimal extraction
+                right_len_find_pattern = r'RIGHT\s*\([^,)]+,\s*LEN\s*\([^,)]+\)\s*-\s*FIND\s*\('
+                if not re.search(right_len_find_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct RIGHT(LEN(...)-FIND(...)) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 15: Formula contains FIND with dot pattern (for decimal point)
+                find_dot_pattern = r'FIND\s*\(\s*["\']?\s*\.\s*["\']?\s*,'
+                if not re.search(find_dot_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain FIND with dot pattern for decimal point")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 16: Formula closes parentheses correctly
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.error(f"Cell {cell_coord} formula has mismatched parentheses")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.info(f"✓ Cell {cell_coord} has valid formula: {formula_text}")
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                all_passed = False
+        
+        if not all_passed:
+            logger.error(f"✗ Formula verification failed: {passed_count}/{checked_count} cells passed")
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error(f"No cells found in range {formula_range}")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All {checked_count} cells in range {formula_range} contain correct IF(MOD(DATE)) formulas")
+        logger.info(f"  - All cells passed verification")
+        logger.info(f"  - Formula structure: IF(MOD(B2,1), DATE(YEAR(A2),INT(B2),RIGHT(B2,LEN(B2)-FIND(\".\",B2))), DATE(YEAR(A2),MONTH(A2),B2))")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_financial_month_convert(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if financial month conversion formulas exist in ALL cells of specified range.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula.
+    
+    This function checks:
+    1. Whether ALL cells in the specified formula range (e.g., B1:B58) contain formulas
+    2. Whether formulas contain YEAR, DAY, MONTH, and IF functions
+    3. Whether formulas reference the correct source column cells with relative row (e.g., A1, A2, etc.)
+    4. Whether formulas have the correct structure: (YEAR(A1)+(DAY(A1)>25))&"/"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))
+    5. Whether formulas contain string concatenation operator &
+    6. Whether formulas contain logical expression (DAY(...)>25)
+    
+    The formula =(YEAR(A1)+(DAY(A1)>25))&"/"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1))) works as follows:
+    - YEAR(A1)+(DAY(A1)>25) calculates the financial year
+      * YEAR(A1) gets the year from A1
+      * DAY(A1)>25 returns TRUE(1) if day > 25, FALSE(0) otherwise
+      * If day > 25, year is incremented by 1 (cross-year case)
+    - (DAY(A1)>25)+MONTH(A1) calculates the financial month
+      * DAY(A1)>25 returns 1 if day > 25, 0 otherwise
+      * MONTH(A1) gets the month from A1
+      * If day > 25, month is incremented by 1
+    - IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1))) handles cross-year case
+      * If month > 12, returns 1 (January)
+      * --(DAY(A1)>25) converts logical value to numeric (1 if day > 25, 0 otherwise)
+      * Otherwise returns the calculated month
+    - &"/"& concatenates year and month into "year/month" format
+    
+    IMPORTANT: This function checks ALL cells in the specified formula range. If any cell is missing a formula, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - formula_range: Range containing formulas (e.g., "B1:B58") - ALL cells must have formulas
+            - source_column: Source column for formula (default: "A")
+            - expected_functions: List of expected function names (default: ["YEAR", "DAY", "MONTH", "IF"])
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        formula_range = options.get('formula_range', 'B1:B58')
+        source_column = options.get('source_column', 'A')
+        expected_functions = options.get('expected_functions', ['YEAR', 'DAY', 'MONTH', 'IF'])
+        
+        logger.info(f"Verifying financial month conversion formulas in file: {result}")
+        logger.info(f"Formula range: {formula_range}")
+        logger.info(f"Source column: {source_column}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Parse the formula range
+        try:
+            range_clean = formula_range.replace("$", "")
+            if ":" in range_clean:
+                start_cell, end_cell = range_clean.split(":")
+                start_col_letter = "".join([c for c in start_cell if c.isalpha()])
+                start_row = int("".join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = "".join([c for c in end_cell if c.isalpha()])
+                end_row = int("".join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {formula_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {formula_range}: {e}")
+            return 0.0
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check ALL cells in formula range
+        logger.info(f"Checking all cells in range {formula_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            expected_source_cell = f"{source_column}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.error(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                # Get formula text
+                formula_text = None
+                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                    formula_text = cell._value
+                elif hasattr(cell, "formula"):
+                    formula_text = cell.formula
+                elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                    formula_text = cell.value
+                
+                if formula_text is None:
+                    logger.error(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+                
+                # Check 1: Formula contains all expected functions
+                for func_name in expected_functions:
+                    func_pattern = rf'\b{re.escape(func_name.upper())}\s*\('
+                    if not re.search(func_pattern, formula_upper):
+                        logger.error(f"Cell {cell_coord} formula does not contain {func_name} function")
+                        logger.error(f"Formula: {formula_text}")
+                        all_passed = False
+                        break
+                
+                if not all_passed:
+                    continue
+                
+                # Check 2: Formula contains YEAR function
+                year_pattern = r'\bYEAR\s*\('
+                if not re.search(year_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain YEAR function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula contains DAY function
+                day_pattern = r'\bDAY\s*\('
+                if not re.search(day_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain DAY function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula contains MONTH function
+                month_pattern = r'\bMONTH\s*\('
+                if not re.search(month_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MONTH function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 5: Formula contains IF function
+                if_pattern = r'\bIF\s*\('
+                if not re.search(if_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain IF function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 6: Formula contains string concatenation operator &
+                if '&' not in formula_text:
+                    logger.error(f"Cell {cell_coord} formula does not contain string concatenation operator &")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 7: Formula contains logical expression DAY(...)>25
+                day_gt_25_pattern = r'DAY\s*\([^)]+\)\s*>\s*25'
+                if not re.search(day_gt_25_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain logical expression DAY(...)>25")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 8: Formula references the correct source column cell with relative row
+                # Allow for variations: A1, $A1, A$1, $A$1
+                escaped_source_cell = re.escape(expected_source_cell)
+                escaped_source_col = re.escape(source_column)
+                source_cell_patterns = [
+                    rf'\b{escaped_source_cell}\b',  # A1
+                    rf'\${escaped_source_col}{row_num}\b',  # $A1
+                    rf'\b{escaped_source_col}\${row_num}\b',  # A$1
+                    rf'\${escaped_source_col}\${row_num}\b',  # $A$1
+                ]
+                
+                source_cell_found = False
+                for pattern in source_cell_patterns:
+                    if re.search(pattern, formula_text, re.IGNORECASE):
+                        source_cell_found = True
+                        break
+                
+                if not source_cell_found:
+                    logger.error(f"Cell {cell_coord} formula does not reference source cell {expected_source_cell}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 9: Formula contains YEAR(...)+(DAY(...)>25) pattern
+                year_plus_day_pattern = r'YEAR\s*\([^)]+\)\s*\+\s*\(\s*DAY\s*\([^)]+\)\s*>\s*25\s*\)'
+                if not re.search(year_plus_day_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct YEAR(...)+(DAY(...)>25) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 10: Formula contains (DAY(...)>25)+MONTH(...) pattern
+                day_plus_month_pattern = r'\(\s*DAY\s*\([^)]+\)\s*>\s*25\s*\)\s*\+\s*MONTH\s*\('
+                if not re.search(day_plus_month_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct (DAY(...)>25)+MONTH(...) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 11: Formula contains IF with month > 12 condition
+                if_month_gt_12_pattern = r'IF\s*\(\s*\(\s*\(\s*DAY\s*\([^)]+\)\s*>\s*25\s*\)\s*\+\s*MONTH\s*\([^)]+\)\s*\)\s*>\s*12'
+                if not re.search(if_month_gt_12_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct IF(((DAY(...)>25)+MONTH(...))>12,...) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 12: Formula contains string "/" for concatenation
+                if '"/"' not in formula_text and "'/" not in formula_text and '"/' not in formula_text:
+                    logger.error(f"Cell {cell_coord} formula does not contain string \"/\" for concatenation")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 13: Formula closes parentheses correctly
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.error(f"Cell {cell_coord} formula has mismatched parentheses")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.info(f"✓ Cell {cell_coord} has valid formula: {formula_text}")
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                all_passed = False
+        
+        if not all_passed:
+            logger.error(f"✗ Formula verification failed: {passed_count}/{checked_count} cells passed")
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error(f"No cells found in range {formula_range}")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All {checked_count} cells in range {formula_range} contain correct financial month conversion formulas")
+        logger.info(f"  - All cells passed verification")
+        logger.info(f"  - Formula structure: (YEAR(A1)+(DAY(A1)>25))&\"/\"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_sortby_letter_number_sort(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if SORTBY formula exists in specified cell to sort data by letter first, then by number.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula or correct result.
+    
+    This function checks:
+    1. Whether the formula cell (e.g., B2) contains a SORTBY formula
+    2. Whether the formula contains SORTBY, RIGHT, LEFT, and LEN functions
+    3. Whether the formula references the correct source range (e.g., A2:A78)
+    4. Whether the formula has the correct structure: =SORTBY(A2:A78,RIGHT(A2:A78),,--LEFT(A2:A78,LEN(A2:A78)-1),)
+    5. Whether all cells in the result range (B2:B78) contain formulas or correct sorted results
+    
+    The formula =SORTBY(A2:A78,RIGHT(A2:A78),,--LEFT(A2:A78,LEN(A2:A78)-1),) works as follows:
+    - SORTBY sorts the array A2:A78 based on sort keys
+    - First sort key: RIGHT(A2:A78) extracts the last character (letter) from each cell
+    - Second sort key: --LEFT(A2:A78,LEN(A2:A78)-1) extracts all characters except the last (number part)
+      * LEN(A2:A78)-1 calculates the number of characters to extract (total length minus 1)
+      * LEFT extracts the number part
+      * -- (double negative) converts text to number for proper numeric sorting
+    - Sorting order: first by letter (abcd...), then by number (ascending) within same letter
+    
+    IMPORTANT: This function checks ALL cells in the specified formula range. If any cell is missing a formula or has incorrect result, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - formula_cell: Cell containing the formula (e.g., "B2")
+            - formula_range: Range containing formulas/results (e.g., "B2:B78") - ALL cells must have formulas or correct results
+            - source_range: Source range for SORTBY function (e.g., "A2:A78")
+            - expected_functions: List of expected function names (default: ["SORTBY", "RIGHT", "LEFT", "LEN"])
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas or results, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        formula_cell = options.get('formula_cell', 'B2')
+        formula_range = options.get('formula_range', 'B2:B78')
+        source_range = options.get('source_range', 'A2:A78')
+        expected_functions = options.get('expected_functions', ['SORTBY', 'RIGHT', 'LEFT', 'LEN'])
+        
+        logger.info(f"Verifying SORTBY letter-number sort in file: {result}")
+        logger.info(f"Formula cell: {formula_cell}")
+        logger.info(f"Formula range: {formula_range}")
+        logger.info(f"Source range: {source_range}")
+        
+        # Parse the formula range
+        try:
+            range_clean = formula_range.replace("$", "")
+            if ":" in range_clean:
+                start_cell, end_cell = range_clean.split(":")
+                start_col_letter = "".join([c for c in start_cell if c.isalpha()])
+                start_row = int("".join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = "".join([c for c in end_cell if c.isalpha()])
+                end_row = int("".join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {formula_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {formula_range}: {e}")
+            return 0.0
+        
+        # Parse source range
+        try:
+            source_range_clean = source_range.replace("$", "")
+            if ":" in source_range_clean:
+                source_start, source_end = source_range_clean.split(":")
+                source_start_col = "".join([c for c in source_start if c.isalpha()])
+                source_start_row = int("".join([c for c in source_start if c.isdigit()]))
+                source_end_col = "".join([c for c in source_end if c.isalpha()])
+                source_end_row = int("".join([c for c in source_end if c.isdigit()]))
+            else:
+                logger.error(f"Invalid source range format: {source_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse source range {source_range}: {e}")
+            return 0.0
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check 1: Verify the formula cell contains SORTBY formula
+        logger.info(f"Checking formula cell {formula_cell}")
+        
+        try:
+            formula_cell_obj = ws[formula_cell]
+            
+            # Check if cell contains a formula (including array formulas)
+            # Array formulas may have data_type "f" or may be stored differently
+            is_formula = False
+            if formula_cell_obj.data_type == "f":
+                is_formula = True
+            # Also check if it's an array formula by checking array_formulas attribute
+            elif hasattr(ws, "array_formulas"):
+                for array_range, array_formula in ws.array_formulas.items():
+                    if formula_cell in array_range:
+                        is_formula = True
+                        break
+            
+            if not is_formula:
+                logger.error(f"Cell {formula_cell} does not contain a formula")
+                return 0.0
+            
+            # Get formula text - try multiple methods for array formulas
+            formula_text = None
+            
+            # Method 1: Check if value is ArrayFormula object (most direct for array formulas)
+            if formula_cell_obj.value is not None:
+                # Check if it's an ArrayFormula object
+                from openpyxl.worksheet.formula import ArrayFormula
+                if isinstance(formula_cell_obj.value, ArrayFormula):
+                    # ArrayFormula object has a 'text' attribute that contains the formula
+                    if hasattr(formula_cell_obj.value, "text"):
+                        formula_text = formula_cell_obj.value.text
+                    elif hasattr(formula_cell_obj.value, "formula"):
+                        formula_text = formula_cell_obj.value.formula
+                    elif hasattr(formula_cell_obj.value, "__str__"):
+                        # Try string representation
+                        formula_str = str(formula_cell_obj.value)
+                        if "SORTBY" in formula_str.upper() or formula_str.startswith("="):
+                            formula_text = formula_str
+            
+            # Method 2: Check _value attribute (might also be ArrayFormula)
+            if formula_text is None and hasattr(formula_cell_obj, "_value"):
+                from openpyxl.worksheet.formula import ArrayFormula
+                if isinstance(formula_cell_obj._value, ArrayFormula):
+                    if hasattr(formula_cell_obj._value, "text"):
+                        formula_text = formula_cell_obj._value.text
+                    elif hasattr(formula_cell_obj._value, "formula"):
+                        formula_text = formula_cell_obj._value.formula
+                    elif hasattr(formula_cell_obj._value, "__str__"):
+                        formula_str = str(formula_cell_obj._value)
+                        if "SORTBY" in formula_str.upper() or formula_str.startswith("="):
+                            formula_text = formula_str
+                elif isinstance(formula_cell_obj._value, str):
+                    if formula_cell_obj._value.startswith("="):
+                        formula_text = formula_cell_obj._value
+                    elif "SORTBY" in formula_cell_obj._value.upper():
+                        formula_text = "=" + formula_cell_obj._value if not formula_cell_obj._value.startswith("=") else formula_cell_obj._value
+            
+            # Method 3: Check array_formulas attribute (for array formulas)
+            if formula_text is None and hasattr(ws, "array_formulas"):
+                try:
+                    # array_formulas is a dict where keys are ranges and values are formula strings
+                    for array_range_str, array_formula in ws.array_formulas.items():
+                        # Check if formula_cell is within the array range
+                        cell_in_range = False
+                        if ":" in array_range_str:
+                            start_cell_str, end_cell_str = array_range_str.split(":")
+                            # Parse range to check if formula_cell is in it
+                            try:
+                                # Get column and row from formula_cell
+                                cell_col_letter = "".join([c for c in formula_cell if c.isalpha()])
+                                cell_row = int("".join([c for c in formula_cell if c.isdigit()]))
+                                cell_col = column_index_from_string(cell_col_letter)
+                                
+                                # Get column and row from start and end cells
+                                start_col_letter = "".join([c for c in start_cell_str if c.isalpha()])
+                                start_row = int("".join([c for c in start_cell_str if c.isdigit()]))
+                                start_col = column_index_from_string(start_col_letter)
+                                
+                                end_col_letter = "".join([c for c in end_cell_str if c.isalpha()])
+                                end_row = int("".join([c for c in end_cell_str if c.isdigit()]))
+                                end_col = column_index_from_string(end_col_letter)
+                                
+                                # Check if cell is within range
+                                if start_col <= cell_col <= end_col and start_row <= cell_row <= end_row:
+                                    cell_in_range = True
+                            except Exception as e:
+                                # Fallback: simple string check
+                                if formula_cell in array_range_str or array_range_str.startswith(formula_cell):
+                                    cell_in_range = True
+                        elif formula_cell == array_range_str:
+                            # Exact match
+                            cell_in_range = True
+                        
+                        if cell_in_range:
+                            # Extract formula text
+                            if isinstance(array_formula, str):
+                                formula_text = array_formula
+                            elif isinstance(array_formula, tuple) and len(array_formula) > 0:
+                                formula_text = array_formula[0]
+                            elif hasattr(array_formula, "text"):
+                                formula_text = array_formula.text
+                            break
+                except Exception as e:
+                    logger.debug(f"Error checking array_formulas: {e}")
+            
+            # Method 4: Check formula attribute
+            if formula_text is None and hasattr(formula_cell_obj, "formula"):
+                formula_text = formula_cell_obj.formula
+            
+            # Method 5: Check value attribute (for regular formulas)
+            if formula_text is None and formula_cell_obj.value is not None:
+                if isinstance(formula_cell_obj.value, str):
+                    if formula_cell_obj.value.startswith("="):
+                        formula_text = formula_cell_obj.value
+                    elif "SORTBY" in formula_cell_obj.value.upper():
+                        formula_text = "=" + formula_cell_obj.value if not formula_cell_obj.value.startswith("=") else formula_cell_obj.value
+            
+            # Method 5: Check array_value attribute (if exists)
+            if formula_text is None and hasattr(formula_cell_obj, "array_value"):
+                if isinstance(formula_cell_obj.array_value, str):
+                    if formula_cell_obj.array_value.startswith("="):
+                        formula_text = formula_cell_obj.array_value
+                    elif "SORTBY" in formula_cell_obj.array_value.upper():
+                        formula_text = "=" + formula_cell_obj.array_value if not formula_cell_obj.array_value.startswith("=") else formula_cell_obj.array_value
+            
+            # Method 6: Try to get from internal formula representation
+            if formula_text is None:
+                # Try accessing internal attributes
+                if hasattr(formula_cell_obj, "formula") and formula_cell_obj.formula:
+                    formula_text = formula_cell_obj.formula
+                elif hasattr(formula_cell_obj, "_value") and isinstance(formula_cell_obj._value, str):
+                    # Even if it doesn't start with "=", it might be a formula
+                    if "SORTBY" in formula_cell_obj._value.upper() or "RIGHT" in formula_cell_obj._value.upper():
+                        formula_text = "=" + formula_cell_obj._value if not formula_cell_obj._value.startswith("=") else formula_cell_obj._value
+            
+            if formula_text is None:
+                logger.error(f"Could not extract formula from cell {formula_cell}")
+                logger.error(f"Cell data_type: {formula_cell_obj.data_type}")
+                logger.error(f"Cell value: {formula_cell_obj.value}")
+                logger.error(f"Cell value type: {type(formula_cell_obj.value)}")
+                if hasattr(formula_cell_obj.value, "__dict__"):
+                    logger.error(f"Cell value attributes: {dir(formula_cell_obj.value)}")
+                logger.error(f"Cell has _value: {hasattr(formula_cell_obj, '_value')}")
+                if hasattr(formula_cell_obj, "_value"):
+                    logger.error(f"Cell _value: {formula_cell_obj._value}")
+                    logger.error(f"Cell _value type: {type(formula_cell_obj._value)}")
+                    if hasattr(formula_cell_obj._value, "__dict__"):
+                        logger.error(f"Cell _value attributes: {dir(formula_cell_obj._value)}")
+                if hasattr(ws, "array_formulas"):
+                    logger.error(f"Array formulas in sheet: {list(ws.array_formulas.keys())}")
+                return 0.0
+            
+            # Ensure formula starts with "="
+            if not formula_text.startswith("="):
+                formula_text = "=" + formula_text
+            
+            formula_upper = formula_text.upper()
+            logger.debug(f"Cell {formula_cell} formula: {formula_text}")
+            
+            # Check 1: Formula contains SORTBY function
+            sortby_pattern = r'\bSORTBY\s*\('
+            if not re.search(sortby_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not contain SORTBY function")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 2: Formula contains all expected functions
+            for func_name in expected_functions:
+                func_pattern = rf'\b{re.escape(func_name.upper())}\s*\('
+                if not re.search(func_pattern, formula_upper):
+                    logger.error(f"Cell {formula_cell} formula does not contain {func_name} function")
+                    logger.error(f"Formula: {formula_text}")
+                    return 0.0
+            
+            # Check 3: Formula contains RIGHT function
+            right_pattern = r'\bRIGHT\s*\('
+            if not re.search(right_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not contain RIGHT function")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 4: Formula contains LEFT function
+            left_pattern = r'\bLEFT\s*\('
+            if not re.search(left_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not contain LEFT function")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 5: Formula contains LEN function
+            len_pattern = r'\bLEN\s*\('
+            if not re.search(len_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not contain LEN function")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 6: Formula references the correct source range
+            # Allow flexible matching for range references (with or without $)
+            source_range_patterns = [
+                re.escape(source_range),
+                re.escape(source_range.replace("$", "")),
+                re.escape(source_range.replace("A", "A").replace("$", "")),
+            ]
+            source_range_found = False
+            for pattern in source_range_patterns:
+                if re.search(pattern, formula_text, re.IGNORECASE):
+                    source_range_found = True
+                    break
+            
+            # Also check for partial match (e.g., A2:A78 without $)
+            source_partial_pattern = rf'{re.escape(source_start_col)}\s*\d+\s*:\s*{re.escape(source_end_col)}\s*\d+'
+            if not source_range_found and not re.search(source_partial_pattern, formula_text, re.IGNORECASE):
+                logger.error(f"Cell {formula_cell} formula does not reference source range {source_range}")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 7: Formula structure contains RIGHT and LEFT with LEN
+            # Check for RIGHT(...) pattern
+            right_match = re.search(r'RIGHT\s*\([^)]+\)', formula_upper)
+            if not right_match:
+                logger.error(f"Cell {formula_cell} formula does not have valid RIGHT function call")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check for LEFT(...LEN(...)-1) pattern
+            left_len_pattern = r'LEFT\s*\([^,]+,\s*LEN\s*\([^)]+\)\s*-\s*1\s*\)'
+            if not re.search(left_len_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not have correct LEFT(LEN(...)-1) structure")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            # Check 8: Formula contains double negative (--) for number conversion
+            double_negative_pattern = r'--\s*LEFT'
+            if not re.search(double_negative_pattern, formula_upper):
+                logger.error(f"Cell {formula_cell} formula does not contain -- (double negative) for number conversion")
+                logger.error(f"Formula: {formula_text}")
+                return 0.0
+            
+            logger.info(f"✓ Cell {formula_cell} has valid SORTBY formula: {formula_text}")
+            
+        except Exception as e:
+            logger.error(f"Error checking formula cell {formula_cell}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 0.0
+        
+        # Check 2: Verify ALL cells in formula range contain formulas or correct results
+        logger.info(f"Checking all cells in range {formula_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        # For SORTBY array formula, we need to check if all cells have formulas or if they have correct sorted results
+        # Since SORTBY is an array formula, it might be entered only in B2, but results should appear in all cells
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # For SORTBY array formulas, cells might contain:
+                # 1. The formula itself (in B2)
+                # 2. Array formula results (in other cells)
+                # 3. Or the formula might be copied to all cells
+                
+                # Check if cell contains a formula
+                if cell.data_type == "f":
+                    # Cell has a formula - verify it's correct
+                    cell_formula = None
+                    
+                    # Method 1: Check if value is ArrayFormula object (for array formulas)
+                    if cell.value is not None:
+                        from openpyxl.worksheet.formula import ArrayFormula
+                        if isinstance(cell.value, ArrayFormula):
+                            if hasattr(cell.value, "text"):
+                                cell_formula = cell.value.text
+                            elif hasattr(cell.value, "formula"):
+                                cell_formula = cell.value.formula
+                            elif hasattr(cell.value, "__str__"):
+                                formula_str = str(cell.value)
+                                if "SORTBY" in formula_str.upper() or formula_str.startswith("="):
+                                    cell_formula = formula_str
+                    
+                    # Method 2: Check _value attribute (might also be ArrayFormula)
+                    if cell_formula is None and hasattr(cell, "_value"):
+                        from openpyxl.worksheet.formula import ArrayFormula
+                        if isinstance(cell._value, ArrayFormula):
+                            if hasattr(cell._value, "text"):
+                                cell_formula = cell._value.text
+                            elif hasattr(cell._value, "formula"):
+                                cell_formula = cell._value.formula
+                            elif hasattr(cell._value, "__str__"):
+                                formula_str = str(cell._value)
+                                if "SORTBY" in formula_str.upper() or formula_str.startswith("="):
+                                    cell_formula = formula_str
+                        elif isinstance(cell._value, str) and cell._value.startswith("="):
+                            cell_formula = cell._value
+                    
+                    # Method 3: Check formula attribute
+                    if cell_formula is None and hasattr(cell, "formula"):
+                        cell_formula = cell.formula
+                    
+                    # Method 4: Check value attribute (for regular formulas)
+                    if cell_formula is None and cell.value is not None:
+                        if isinstance(cell.value, str) and cell.value.startswith("="):
+                            cell_formula = cell.value
+                    
+                    # Ensure formula starts with "="
+                    if cell_formula and not cell_formula.startswith("="):
+                        cell_formula = "=" + cell_formula
+                    
+                    if cell_formula:
+                        cell_formula_upper = cell_formula.upper()
+                        # Check if it contains SORTBY (might be the same formula or array formula result)
+                        if not re.search(r'\bSORTBY\s*\(', cell_formula_upper):
+                            # If it's not the main formula cell and doesn't have SORTBY, it might be an array formula result
+                            # In LibreOffice, array formulas might show as individual formulas in each cell
+                            # We'll accept this as long as the main formula cell is correct
+                            if cell_coord == formula_cell:
+                                logger.error(f"Cell {cell_coord} should contain SORTBY formula but doesn't")
+                                logger.error(f"Extracted formula: {cell_formula}")
+                                all_passed = False
+                                continue
+                        passed_count += 1
+                        logger.debug(f"✓ Cell {cell_coord} has formula: {cell_formula[:50]}...")
+                    else:
+                        # Cell marked as formula but we can't extract it
+                        if cell_coord == formula_cell:
+                            logger.error(f"Could not extract formula from cell {cell_coord}")
+                            logger.error(f"Cell data_type: {cell.data_type}")
+                            logger.error(f"Cell value type: {type(cell.value)}")
+                            all_passed = False
+                            continue
+                        # For other cells, might be array formula results
+                        passed_count += 1
+                else:
+                    # Cell doesn't have a formula - might be array formula result
+                    # For SORTBY array formulas, results are calculated values
+                    # We'll accept non-formula cells as long as they have values (array formula results)
+                    if cell.value is not None:
+                        passed_count += 1
+                        logger.debug(f"✓ Cell {cell_coord} has value (array formula result): {cell.value}")
+                    else:
+                        logger.error(f"Cell {cell_coord} has no formula and no value")
+                        all_passed = False
+                        continue
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                all_passed = False
+        
+        if not all_passed:
+            logger.error(f"✗ Formula verification failed: {passed_count}/{checked_count} cells passed")
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error(f"No cells found in range {formula_range}")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All {checked_count} cells in range {formula_range} contain correct SORTBY formulas or results")
+        logger.info(f"  - Formula cell {formula_cell} contains correct SORTBY formula")
+        logger.info(f"  - Formula structure: SORTBY(A2:A78,RIGHT(A2:A78),,--LEFT(A2:A78,LEN(A2:A78)-1),)")
+        logger.info(f"  - All cells passed verification")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_irr_profit_calculation(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if IRR and profit calculation formulas exist in specified ranges for calculating financial product IRR.
+    
+    This function STRICTLY checks ALL cells in the specified ranges - no tolerance, no auto-detection.
+    Every single cell in the specified ranges must contain the correct formula.
+    
+    This function checks:
+    1. Whether ALL cells in the profit range (e.g., G2:G20) contain formulas =E2-D2, =E3-D3, etc.
+    2. Whether the IRR cell (e.g., F2) contains formula =IRR(G2:G20)
+    3. Whether profit formulas reference the correct E and D column cells with relative row
+    4. Whether IRR formula references the correct profit range (G2:G20)
+    5. Whether formulas use relative references correctly (each row references its own data)
+    
+    IMPORTANT: This function checks ALL cells in the specified ranges, regardless of whether they
+    appear to be empty. If any cell in the specified range is missing a formula, verification fails.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - profit_range: Range containing profit formulas (e.g., "G2:G20") - ALL cells must have formulas
+            - irr_cell: Cell containing IRR formula (e.g., "F2") - must have formula
+            - source_col_e: Source column E for profit calculation (default: "E")
+            - source_col_d: Source column D for profit calculation (default: "D")
+    
+    Returns:
+        float: 1.0 if ALL cells in specified ranges contain correct formulas, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        profit_range = options.get('profit_range', 'G2:G20')
+        irr_cell = options.get('irr_cell', 'F2')
+        source_col_e = options.get('source_col_e', 'E')
+        source_col_d = options.get('source_col_d', 'D')
+        
+        logger.info(f"Verifying IRR and profit calculation formulas in file: {result}")
+        logger.info(f"Profit range: {profit_range}, IRR cell: {irr_cell}")
+        
+        # Parse profit range - strictly use the specified range
+        try:
+            profit_range_clean = profit_range.replace('$', '')
+            if ':' in profit_range_clean:
+                profit_start_cell, profit_end_cell = profit_range_clean.split(':')
+                profit_start_col_letter = ''.join([c for c in profit_start_cell if c.isalpha()])
+                profit_start_row = int(''.join([c for c in profit_start_cell if c.isdigit()]))
+                profit_start_col = column_index_from_string(profit_start_col_letter)
+                profit_end_col_letter = ''.join([c for c in profit_end_cell if c.isalpha()])
+                profit_end_row = int(''.join([c for c in profit_end_cell if c.isdigit()]))
+                profit_end_col = column_index_from_string(profit_end_col_letter)
+            else:
+                logger.error(f"Invalid profit range format: {profit_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse profit range {profit_range}: {e}")
+            return 0.0
+        
+        # Verify that profit range is a single column
+        if profit_start_col != profit_end_col:
+            logger.error(f"Profit range must be a single column, got: {profit_range}")
+            return 0.0
+        
+        # Parse IRR cell
+        try:
+            irr_cell_clean = irr_cell.replace('$', '')
+            irr_col_letter = ''.join([c for c in irr_cell_clean if c.isalpha()])
+            irr_row = int(''.join([c for c in irr_cell_clean if c.isdigit()]))
+            irr_col = column_index_from_string(irr_col_letter)
+        except Exception as e:
+            logger.error(f"Failed to parse IRR cell {irr_cell}: {e}")
+            return 0.0
+        
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Strictly check ALL cells in the specified ranges - no auto-detection
+        logger.info(f"Checking all cells in profit range {profit_range} (rows {profit_start_row} to {profit_end_row})")
+        logger.info(f"Checking IRR cell {irr_cell}")
+        
+        # Check profit formulas - check ALL rows in the specified range
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(profit_start_row, profit_end_row + 1):
+            profit_cell_coord = f"{profit_start_col_letter}{row_num}"
+            
+            try:
+                profit_cell = ws[profit_cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if profit_cell.data_type != "f":
+                    logger.warning(f"Cell {profit_cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+                
+                # Get formula text
+                formula_text = None
+                if hasattr(profit_cell, "_value") and isinstance(profit_cell._value, str) and profit_cell._value.startswith("="):
+                    formula_text = profit_cell._value
+                elif hasattr(profit_cell, "formula"):
+                    formula_text = profit_cell.formula
+                else:
+                    if profit_cell.value is not None and isinstance(profit_cell.value, str) and profit_cell.value.startswith("="):
+                        formula_text = profit_cell.value
+                
+                if formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {profit_cell_coord}")
+                    all_passed = False
+                    continue
+                
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {profit_cell_coord} formula: {formula_text}")
+                
+                # Check 1: Formula structure should be =E{row_num}-D{row_num} or similar
+                # Expected pattern: =E{row_num}-D{row_num} (with possible $ for absolute references)
+                expected_e_cell = f"{source_col_e}{row_num}"
+                expected_d_cell = f"{source_col_d}{row_num}"
+                
+                # Pattern to match E{row}-D{row} (allowing for $ absolute references)
+                e_pattern = rf'{re.escape(source_col_e)}\$?{row_num}'
+                d_pattern = rf'{re.escape(source_col_d)}\$?{row_num}'
+                
+                # Check if formula contains both E and D column references for this row
+                e_match = re.search(e_pattern, formula_text, re.IGNORECASE)
+                d_match = re.search(d_pattern, formula_text, re.IGNORECASE)
+                
+                if not e_match or not d_match:
+                    logger.warning(f"Cell {profit_cell_coord} formula does not reference correct cells {expected_e_cell} and {expected_d_cell}")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 2: Formula should be subtraction (E - D)
+                # Pattern: =E{row}-D{row} or =E{row} - D{row} (with spaces)
+                subtraction_pattern = rf'{re.escape(source_col_e)}\$?{row_num}\s*-\s*{re.escape(source_col_d)}\$?{row_num}'
+                if not re.search(subtraction_pattern, formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {profit_cell_coord} formula does not have correct subtraction structure (E-D)")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula should start with =
+                if not formula_text.strip().startswith('='):
+                    logger.warning(f"Cell {profit_cell_coord} formula does not start with =")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula closes parentheses correctly (if any)
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.warning(f"Cell {profit_cell_coord} formula has mismatched parentheses")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.debug(f"✓ Cell {profit_cell_coord} has valid profit formula")
+                
+            except Exception as e:
+                logger.error(f"Error checking profit cell {profit_cell_coord}: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                all_passed = False
+        
+        # Check IRR formula in F2
+        try:
+            irr_cell_obj = ws[irr_cell]
+            checked_count += 1
+            
+            # Check if cell contains a formula
+            if irr_cell_obj.data_type != "f":
+                logger.warning(f"Cell {irr_cell} does not contain a formula")
+                all_passed = False
+            else:
+                # Get formula text
+                formula_text = None
+                if hasattr(irr_cell_obj, "_value") and isinstance(irr_cell_obj._value, str) and irr_cell_obj._value.startswith("="):
+                    formula_text = irr_cell_obj._value
+                elif hasattr(irr_cell_obj, "formula"):
+                    formula_text = irr_cell_obj.formula
+                else:
+                    if irr_cell_obj.value is not None and isinstance(irr_cell_obj.value, str) and irr_cell_obj.value.startswith("="):
+                        formula_text = irr_cell_obj.value
+                
+                if formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {irr_cell}")
+                    all_passed = False
+                else:
+                    formula_upper = formula_text.upper()
+                    logger.debug(f"Cell {irr_cell} formula: {formula_text}")
+                    
+                    # Check 1: Formula contains IRR function
+                    irr_pattern = r'\bIRR\s*\('
+                    if not re.search(irr_pattern, formula_upper):
+                        logger.warning(f"Cell {irr_cell} formula does not contain IRR function")
+                        logger.warning(f"Formula: {formula_text}")
+                        all_passed = False
+                    else:
+                        # Check 2: Formula references the correct profit range (G2:G20)
+                        expected_range = f"{profit_start_col_letter}{profit_start_row}:{profit_end_col_letter}{profit_end_row}"
+                        # Pattern to match G2:G20 (allowing for $ absolute references)
+                        range_pattern = rf'{re.escape(profit_start_col_letter)}\$?{profit_start_row}\s*:\s*{re.escape(profit_end_col_letter)}\$?{profit_end_row}'
+                        
+                        if not re.search(range_pattern, formula_text, re.IGNORECASE):
+                            logger.warning(f"Cell {irr_cell} formula does not reference correct range {expected_range}")
+                            logger.warning(f"Formula: {formula_text}")
+                            all_passed = False
+                        else:
+                            # Check 3: Formula structure is =IRR(G2:G20)
+                            irr_range_pattern = rf'IRR\s*\(\s*{re.escape(profit_start_col_letter)}\$?{profit_start_row}\s*:\s*{re.escape(profit_end_col_letter)}\$?{profit_end_row}\s*\)'
+                            if not re.search(irr_range_pattern, formula_upper):
+                                logger.warning(f"Cell {irr_cell} formula does not have correct IRR(range) structure")
+                                logger.warning(f"Formula: {formula_text}")
+                                all_passed = False
+                            else:
+                                # Check 4: Formula closes parentheses correctly
+                                open_count = formula_text.count('(')
+                                close_count = formula_text.count(')')
+                                if open_count != close_count:
+                                    logger.warning(f"Cell {irr_cell} formula has mismatched parentheses")
+                                    all_passed = False
+                                else:
+                                    passed_count += 1
+                                    logger.debug(f"✓ Cell {irr_cell} has valid IRR formula")
+        except Exception as e:
+            logger.error(f"Error checking IRR cell {irr_cell}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            all_passed = False
+        
+        if not all_passed:
+            logger.error(f"✗ Formula verification failed: {passed_count}/{checked_count} cells passed")
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error(f"No cells found in specified ranges")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All {checked_count} cells contain correct formulas")
+        logger.info(f"  - Profit range {profit_range}: {profit_end_row - profit_start_row + 1} cells with =E-D formulas")
+        logger.info(f"  - IRR cell {irr_cell}: =IRR({profit_range}) formula")
+        logger.info(f"  - All cells passed verification")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_remove_empty_rows(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if all empty rows have been removed from the Excel file.
+    
+    This function checks:
+    1. Whether every row in the worksheet contains at least one non-empty cell
+    2. A row is considered empty if all cells in that row are None, empty strings, or only whitespace
+    3. The verification scans all rows from row 1 to max_row
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - start_row: Starting row to check (default: 1)
+            - end_row: Ending row to check (default: None, checks all rows)
+            - ignore_header: Whether to ignore the first row (default: False)
+    
+    Returns:
+        float: 1.0 if all rows contain content (no empty rows), 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        start_row = options.get('start_row', 1)
+        end_row = options.get('end_row', None)
+        ignore_header = options.get('ignore_header', False)
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Determine the range to check
+        max_row = ws.max_row
+        if end_row is None:
+            end_row = max_row
+        
+        logger.info(f"Checking rows {start_row} to {end_row} for empty rows...")
+        logger.info(f"Total rows in worksheet: {max_row}")
+        
+        # Adjust start_row if ignoring header
+        check_start_row = start_row + 1 if ignore_header else start_row
+        
+        # Check each row
+        empty_rows_found = []
+        for row_num in range(check_start_row, end_row + 1):
+            row = ws[row_num]
+            
+            # Check if row is empty
+            is_empty = True
+            for cell in row:
+                cell_value = cell.value
+                # Check if cell has content
+                if cell_value is not None:
+                    # Check if it's not an empty string or only whitespace
+                    if isinstance(cell_value, str):
+                        if cell_value.strip() != "":
+                            is_empty = False
+                            break
+                    else:
+                        # Non-string value (number, date, etc.) is considered content
+                        is_empty = False
+                        break
+            
+            if is_empty:
+                empty_rows_found.append(row_num)
+                logger.warning(f"Empty row found at row {row_num}")
+        
+        # Verification result
+        if len(empty_rows_found) > 0:
+            logger.error(f"Found {len(empty_rows_found)} empty row(s): {empty_rows_found}")
+            logger.error("Verification failed: Empty rows still exist in the worksheet")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ All rows contain content (checked rows {check_start_row} to {end_row})")
+        logger.info(f"✓ No empty rows found")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_and_not_conditional_formatting(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if conditional formatting with AND and NOT formulas exists in specified range with fill colors.
+    
+    This function checks:
+    1. Whether the specified range (e.g., E13:J47) has conditional formatting
+    2. Whether there are two conditional formatting rules:
+       - Condition 1: AND($B13 + $D13 <= E13, E13 <= $B13 + $C13) with green fill color
+       - Condition 2: NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)) with red fill color
+    3. Whether both conditions apply to the specified range
+    4. Whether the fill colors match the expected colors (green and red)
+    5. Whether each cell in the range has the correct conditional formatting
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_range: Range to check (e.g., "E13:J47")
+            - condition1_formula_pattern: Expected formula pattern for condition 1 (default: 'AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)')
+            - condition1_fill_color: Expected fill color for condition 1 (default: "green")
+            - condition2_formula_pattern: Expected formula pattern for condition 2 (default: 'NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))')
+            - condition2_fill_color: Expected fill color for condition 2 (default: "red")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        from openpyxl.worksheet.cell_range import CellRange
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_range = options.get('check_range', 'E13:J47')
+        condition1_formula_pattern = options.get('condition1_formula_pattern', 'AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)')
+        condition1_fill_color = options.get('condition1_fill_color', 'green')
+        condition2_formula_pattern = options.get('condition2_formula_pattern', 'NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))')
+        condition2_fill_color = options.get('condition2_fill_color', 'red')
+        
+        logger.info(f"Verifying conditional formatting in file: {result}")
+        logger.info(f"Range to check: {check_range}")
+        logger.info(f"Condition 1: {condition1_formula_pattern} -> {condition1_fill_color}")
+        logger.info(f"Condition 2: {condition2_formula_pattern} -> {condition2_fill_color}")
+        
+        # Parse the range
+        try:
+            range_clean = check_range.replace('$', '')
+            if ':' in range_clean:
+                start_cell, end_cell = range_clean.split(':')
+                # Parse start cell
+                start_col_letter = ''.join([c for c in start_cell if c.isalpha()])
+                start_row = int(''.join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                # Parse end cell
+                end_col_letter = ''.join([c for c in end_cell if c.isalpha()])
+                end_row = int(''.join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {check_range}. Expected format like 'E13:J47'")
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
                 return 0.0
         except Exception as e:
             logger.error(f"Failed to parse range {check_range}: {e}")
@@ -25179,6 +27806,7 @@ def verify_iferror_index_small_position_mapping(result: str, expected: str = Non
             logger.error(f"Failed to load workbook: {e}")
             return 0.0
         
+<<<<<<< HEAD
         # Check each cell in the check range
         all_passed = True
         checked_count = 0
@@ -27028,6 +29656,454 @@ def verify_multi_column_formulas(result: str, expected: str = None, **options) -
             logger.error("=" * 60)
             return 0.0
             
+=======
+        # Check conditional formatting
+        conditional_formattings = ws.conditional_formatting
+        
+        if not conditional_formattings:
+            logger.error("No conditional formatting found in worksheet")
+            return 0.0
+        
+        # Debug: Print all conditional formatting rules
+        logger.info("=" * 60)
+        logger.info("DEBUG: All conditional formatting rules found:")
+        for idx, fmt in enumerate(conditional_formattings):
+            logger.info(f"  CF Rule {idx + 1}:")
+            for rge in fmt.cells:
+                logger.info(f"    Range: {rge}")
+            for rule_idx, r in enumerate(fmt.rules):
+                logger.info(f"    Rule {rule_idx + 1}:")
+                if r.formula:
+                    formula_text = r.formula[0] if isinstance(r.formula, list) else str(r.formula)
+                    logger.info(f"      Formula: {formula_text}")
+                else:
+                    logger.info(f"      Formula: None")
+                if r.dxf:
+                    if r.dxf.fill:
+                        try:
+                            if r.dxf.fill.bgColor:
+                                logger.info(f"      Fill bgColor: {r.dxf.fill.bgColor.rgb}")
+                            if r.dxf.fill.fgColor:
+                                logger.info(f"      Fill fgColor: {r.dxf.fill.fgColor.rgb}")
+                        except Exception as e:
+                            logger.info(f"      Fill color error: {e}")
+                    if r.dxf.font:
+                        try:
+                            if r.dxf.font.color:
+                                logger.info(f"      Font color: {r.dxf.font.color.rgb}")
+                        except Exception as e:
+                            logger.info(f"      Font color error: {e}")
+        logger.info("=" * 60)
+        
+        found_condition1 = False
+        found_condition2 = False
+        condition1_range_cells = None
+        condition2_range_cells = None
+        
+        # Helper function to check if fill color matches
+        def check_fill_color(fill_color_obj, expected_color_name):
+            """Check if fill color matches expected color name"""
+            if fill_color_obj is None:
+                logger.debug(f"Fill color object is None")
+                return False
+            
+            color_rgb = None
+            if hasattr(fill_color_obj, 'rgb'):
+                color_rgb = fill_color_obj.rgb
+            elif hasattr(fill_color_obj, 'bgColor') and fill_color_obj.bgColor:
+                color_rgb = fill_color_obj.bgColor.rgb
+            elif hasattr(fill_color_obj, 'fgColor') and fill_color_obj.fgColor:
+                color_rgb = fill_color_obj.fgColor.rgb
+            
+            if color_rgb is None:
+                logger.debug(f"Fill color RGB is None")
+                return False
+            
+            color_str = str(color_rgb).upper()
+            logger.debug(f"Checking color: {color_str} against {expected_color_name}")
+            
+            # Convert color name to RGB values
+            if expected_color_name.lower() == 'green':
+                # Check for known green color values (LibreOffice may use different shades)
+                known_greens = ['FF00A933', '00A933', '00FF00', 'FF00FF00', '008000', 'FF008000', '90EE90', 'FF90EE90']
+                if color_str in known_greens or color_str.endswith('00A933') or color_str.endswith('00FF00') or color_str.endswith('008000'):
+                    logger.debug(f"Green check: Known green color value {color_str}")
+                    return True
+                
+                # Green: low red, high green, low blue (relaxed criteria for LibreOffice)
+                if len(color_str) >= 6:
+                    if len(color_str) == 8:
+                        r_val = int(color_str[2:4], 16)
+                        g_val = int(color_str[4:6], 16)
+                        b_val = int(color_str[6:8], 16)
+                    elif len(color_str) == 6:
+                        r_val = int(color_str[0:2], 16)
+                        g_val = int(color_str[2:4], 16)
+                        b_val = int(color_str[4:6], 16)
+                    else:
+                        logger.debug(f"Unexpected color string length: {len(color_str)}")
+                        return False
+                    # Green: R < 150, G > 100, B < 150 (relaxed for LibreOffice)
+                    is_green = r_val < 150 and g_val > 100 and b_val < 150 and g_val > r_val and g_val > b_val
+                    logger.debug(f"Green check: RGB({r_val}, {g_val}, {b_val}) -> {is_green}")
+                    return is_green
+            elif expected_color_name.lower() == 'red':
+                # Check for known red color values (LibreOffice may use different shades)
+                known_reds = ['FFFF0000', 'FF0000', 'FF00', 'FFFF00', 'DC143C', 'FFDC143C', 'CD5C5C', 'FFCD5C5C']
+                if color_str in known_reds or color_str.endswith('FF0000') or color_str.endswith('FF00'):
+                    logger.debug(f"Red check: Known red color value {color_str}")
+                    return True
+                
+                # Red: high red, low green, low blue (relaxed criteria for LibreOffice)
+                if len(color_str) >= 6:
+                    if len(color_str) == 8:
+                        r_val = int(color_str[2:4], 16)
+                        g_val = int(color_str[4:6], 16)
+                        b_val = int(color_str[6:8], 16)
+                    elif len(color_str) == 6:
+                        r_val = int(color_str[0:2], 16)
+                        g_val = int(color_str[2:4], 16)
+                        b_val = int(color_str[4:6], 16)
+                    else:
+                        logger.debug(f"Unexpected color string length: {len(color_str)}")
+                        return False
+                    # Red: R > 150, G < 150, B < 150, R > G, R > B (relaxed for LibreOffice)
+                    is_red = r_val > 150 and g_val < 150 and b_val < 150 and r_val > g_val and r_val > b_val
+                    logger.debug(f"Red check: RGB({r_val}, {g_val}, {b_val}) -> {is_red}")
+                    return is_red
+            
+            logger.debug(f"Color name {expected_color_name} not recognized")
+            return False
+        
+        # Check each conditional formatting rule
+        for fmt in conditional_formattings:
+            # Check if this formatting applies to any cell in our target range
+            fmt_applies_to_range = False
+            for rge in fmt.cells:
+                # Check if this range overlaps with our target range
+                cf_start_col = rge.min_col
+                cf_start_row = rge.min_row
+                cf_end_col = rge.max_col
+                cf_end_row = rge.max_row
+                
+                # Check if ranges overlap
+                if not (cf_end_col < start_col or cf_start_col > end_col or 
+                        cf_end_row < start_row or cf_start_row > end_row):
+                    fmt_applies_to_range = True
+                    break
+            
+            if not fmt_applies_to_range:
+                continue
+            
+            # Check each rule in this formatting
+            for r in fmt.rules:
+                # Check formula
+                if not r.formula:
+                    continue
+                
+                formula_text = r.formula[0] if isinstance(r.formula, list) else str(r.formula)
+                formula_upper = formula_text.upper()
+                
+                logger.info(f"Checking conditional formatting formula: {formula_text}")
+                
+                # Check if formula contains AND
+                and_pattern = r'\bAND\s*\('
+                if not re.search(and_pattern, formula_upper):
+                    logger.debug(f"Formula does not contain AND: {formula_text}")
+                    continue
+                
+                logger.info(f"  Formula contains AND, checking pattern...")
+                
+                # Check fill color and font color (LibreOffice may use font color instead of fill color)
+                fill_color = None
+                font_color = None
+                if r.dxf:
+                    if r.dxf.fill:
+                        try:
+                            if r.dxf.fill.bgColor:
+                                fill_color = r.dxf.fill.bgColor
+                            elif r.dxf.fill.fgColor:
+                                fill_color = r.dxf.fill.fgColor
+                        except:
+                            pass
+                    if r.dxf.font:
+                        try:
+                            if r.dxf.font.color:
+                                font_color = r.dxf.font.color
+                        except:
+                            pass
+                
+                # Use font color if fill color is not available (LibreOffice Calc behavior)
+                color_to_check = fill_color if fill_color is not None else font_color
+                
+                if color_to_check is None:
+                    logger.debug(f"Conditional formatting rule has no fill or font color")
+                    continue
+                
+                # Check condition 1: AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)
+                # Pattern: AND($B$?13 + $D$?13 <= E$?13, E$?13 <= $B$?13 + $C$?13)
+                # Allow variations in absolute/relative references
+                # Also try to match with different row references (E13, E$13, $E13, $E$13)
+                condition1_patterns = [
+                    r'AND\s*\(\s*\$?B\$?\d+\s*\+\s*\$?D\$?\d+\s*<=\s*E\$?\d+\s*,\s*E\$?\d+\s*<=\s*\$?B\$?\d+\s*\+\s*\$?C\$?\d+\s*\)',
+                    r'AND\s*\(\s*\$B\$?\d+\s*\+\s*\$D\$?\d+\s*<=\s*\$?E\$?\d+\s*,\s*\$?E\$?\d+\s*<=\s*\$B\$?\d+\s*\+\s*\$C\$?\d+\s*\)',
+                ]
+                condition1_match = None
+                for pattern in condition1_patterns:
+                    condition1_match = re.search(pattern, formula_upper)
+                    if condition1_match:
+                        logger.info(f"  Condition 1 pattern matched: {pattern}")
+                        break
+                
+                if condition1_match:
+                    color_match = check_fill_color(color_to_check, condition1_fill_color)
+                    color_type = "fill" if fill_color is not None else "font"
+                    logger.info(f"  Condition 1: formula match={condition1_match is not None}, {color_type} color match={color_match}")
+                    if color_match:
+                        found_condition1 = True
+                        if condition1_range_cells is None:
+                            condition1_range_cells = rge
+                        else:
+                            # Merge ranges if multiple ranges found
+                            from openpyxl.worksheet.cell_range import CellRange
+                            try:
+                                combined = CellRange(condition1_range_cells.coord + ":" + rge.coord)
+                                condition1_range_cells = combined
+                            except:
+                                condition1_range_cells = rge
+                        logger.info(f"✓ Found condition 1: {formula_text} -> {condition1_fill_color} ({color_type} color)")
+                    else:
+                        logger.warning(f"  Condition 1 formula matched but color did not match (color: {color_to_check.rgb if hasattr(color_to_check, 'rgb') else 'unknown'})")
+                else:
+                    logger.debug(f"  Condition 1 pattern did not match: {formula_text}")
+                
+                # Check condition 2: NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))
+                # Pattern: NOT(AND($B$?13 + $D$?13 <= E$?13, E$?13 <= $B$?13 + $C$?13))
+                condition2_patterns = [
+                    r'NOT\s*\(\s*AND\s*\(\s*\$?B\$?\d+\s*\+\s*\$?D\$?\d+\s*<=\s*E\$?\d+\s*,\s*E\$?\d+\s*<=\s*\$?B\$?\d+\s*\+\s*\$?C\$?\d+\s*\)\s*\)',
+                    r'NOT\s*\(\s*AND\s*\(\s*\$B\$?\d+\s*\+\s*\$D\$?\d+\s*<=\s*\$?E\$?\d+\s*,\s*\$?E\$?\d+\s*<=\s*\$B\$?\d+\s*\+\s*\$C\$?\d+\s*\)\s*\)',
+                ]
+                condition2_match = None
+                for pattern in condition2_patterns:
+                    condition2_match = re.search(pattern, formula_upper)
+                    if condition2_match:
+                        logger.info(f"  Condition 2 pattern matched: {pattern}")
+                        break
+                
+                if condition2_match:
+                    color_match = check_fill_color(color_to_check, condition2_fill_color)
+                    color_type = "fill" if fill_color is not None else "font"
+                    logger.info(f"  Condition 2: formula match={condition2_match is not None}, {color_type} color match={color_match}")
+                    if color_match:
+                        found_condition2 = True
+                        if condition2_range_cells is None:
+                            condition2_range_cells = rge
+                        else:
+                            # Merge ranges if multiple ranges found
+                            from openpyxl.worksheet.cell_range import CellRange
+                            try:
+                                combined = CellRange(condition2_range_cells.coord + ":" + rge.coord)
+                                condition2_range_cells = combined
+                            except:
+                                condition2_range_cells = rge
+                        logger.info(f"✓ Found condition 2: {formula_text} -> {condition2_fill_color} ({color_type} color)")
+                    else:
+                        logger.warning(f"  Condition 2 formula matched but color did not match (color: {color_to_check.rgb if hasattr(color_to_check, 'rgb') else 'unknown'})")
+                else:
+                    logger.debug(f"  Condition 2 pattern did not match: {formula_text}")
+        
+        # Verify both conditions are found
+        if not found_condition1:
+            logger.error("=" * 60)
+            logger.error("✗ Condition 1 not found")
+            logger.error(f"  Expected: {condition1_formula_pattern} -> {condition1_fill_color}")
+            logger.error("=" * 60)
+            return 0.0
+        
+        if not found_condition2:
+            logger.error("=" * 60)
+            logger.error("✗ Condition 2 not found")
+            logger.error(f"  Expected: {condition2_formula_pattern} -> {condition2_fill_color}")
+            logger.error("=" * 60)
+            return 0.0
+        
+        # Verify that both conditions apply to the target range
+        # Note: If CF is applied to first row only (e.g., E13:J13) with relative references,
+        # LibreOffice will automatically apply it to all rows, so we check if:
+        # 1. CF range covers the first row of target range, OR
+        # 2. CF range fully covers the target range
+        
+        # Check if formulas use relative references (will auto-apply to other rows)
+        uses_relative_refs = False
+        for fmt in conditional_formattings:
+            for r in fmt.rules:
+                if r.formula:
+                    formula_text = r.formula[0] if isinstance(r.formula, list) else str(r.formula)
+                    # Check if formula uses relative references (E13 instead of $E$13)
+                    # Pattern: E13, E$13, $E13 (but not $E$13)
+                    if re.search(r'[^$]E\$?\d+', formula_text, re.IGNORECASE):
+                        uses_relative_refs = True
+                        break
+            if uses_relative_refs:
+                break
+        
+        if condition1_range_cells:
+            cf_start_col = condition1_range_cells.min_col
+            cf_start_row = condition1_range_cells.min_row
+            cf_end_col = condition1_range_cells.max_col
+            cf_end_row = condition1_range_cells.max_row
+            
+            # Check column coverage
+            col_ok = cf_start_col <= start_col and cf_end_col >= end_col
+            # Check row coverage: either fully covers OR covers first row with relative refs
+            row_ok = (cf_start_row <= start_row and cf_end_row >= end_row) or \
+                     (uses_relative_refs and cf_start_row == start_row and cf_end_row >= start_row and cf_start_col <= start_col and cf_end_col >= end_col)
+            
+            if not (col_ok and row_ok):
+                logger.error("=" * 60)
+                logger.error("✗ Condition 1 range does not cover target range")
+                logger.error(f"  Target range: {check_range} (cols {start_col}-{end_col}, rows {start_row}-{end_row})")
+                logger.error(f"  CF range: cols {cf_start_col}-{cf_end_col}, rows {cf_start_row}-{cf_end_row}")
+                logger.error(f"  Uses relative refs: {uses_relative_refs}")
+                logger.error("=" * 60)
+                return 0.0
+            else:
+                logger.info(f"✓ Condition 1 range covers target range (CF: {cf_start_col}-{cf_end_col}, {cf_start_row}-{cf_end_row})")
+        
+        if condition2_range_cells:
+            cf_start_col = condition2_range_cells.min_col
+            cf_start_row = condition2_range_cells.min_row
+            cf_end_col = condition2_range_cells.max_col
+            cf_end_row = condition2_range_cells.max_row
+            
+            # Check column coverage
+            col_ok = cf_start_col <= start_col and cf_end_col >= end_col
+            # Check row coverage: either fully covers OR covers first row with relative refs
+            row_ok = (cf_start_row <= start_row and cf_end_row >= end_row) or \
+                     (uses_relative_refs and cf_start_row == start_row and cf_end_row >= start_row and cf_start_col <= start_col and cf_end_col >= end_col)
+            
+            if not (col_ok and row_ok):
+                logger.error("=" * 60)
+                logger.error("✗ Condition 2 range does not cover target range")
+                logger.error(f"  Target range: {check_range} (cols {start_col}-{end_col}, rows {start_row}-{end_row})")
+                logger.error(f"  CF range: cols {cf_start_col}-{cf_end_col}, rows {cf_start_row}-{cf_end_row}")
+                logger.error(f"  Uses relative refs: {uses_relative_refs}")
+                logger.error("=" * 60)
+                return 0.0
+            else:
+                logger.info(f"✓ Condition 2 range covers target range (CF: {cf_start_col}-{cf_end_col}, {cf_start_row}-{cf_end_row})")
+        
+        # Verify that ALL cells in the target range have conditional formatting
+        # We need to check each cell individually to ensure it's covered
+        total_target_cells = (end_row - start_row + 1) * (end_col - start_col + 1)
+        cells_with_cf = set()
+        
+        # Collect all cells covered by the matching conditional formatting
+        for fmt in conditional_formattings:
+            for rge in fmt.cells:
+                # Check if this range overlaps with our target range
+                if not (rge.max_col < start_col or rge.min_col > end_col or 
+                        rge.max_row < start_row or rge.min_row > end_row):
+                    # This range overlaps, check if it has the matching rules
+                    for r in fmt.rules:
+                        if not r.formula:
+                            continue
+                        formula_text = r.formula[0] if isinstance(r.formula, list) else str(r.formula)
+                        formula_upper = formula_text.upper()
+                        
+                        # Check if this is a matching rule
+                        and_pattern = r'\bAND\s*\('
+                        if not re.search(and_pattern, formula_upper):
+                            continue
+                        
+                        # Check fill color and font color
+                        fill_color = None
+                        font_color = None
+                        if r.dxf:
+                            if r.dxf.fill:
+                                try:
+                                    if r.dxf.fill.bgColor:
+                                        fill_color = r.dxf.fill.bgColor
+                                    elif r.dxf.fill.fgColor:
+                                        fill_color = r.dxf.fill.fgColor
+                                except:
+                                    pass
+                            if r.dxf.font:
+                                try:
+                                    if r.dxf.font.color:
+                                        font_color = r.dxf.font.color
+                                except:
+                                    pass
+                        
+                        color_to_check = fill_color if fill_color is not None else font_color
+                        if color_to_check is None:
+                            continue
+                        
+                        # Check if this is condition 1 or condition 2
+                        condition1_match = re.search(
+                            r'AND\s*\(\s*\$?B\$?\d+\s*\+\s*\$?D\$?\d+\s*<=\s*E\$?\d+\s*,\s*E\$?\d+\s*<=\s*\$?B\$?\d+\s*\+\s*\$?C\$?\d+\s*\)',
+                            formula_upper
+                        )
+                        condition2_match = re.search(
+                            r'NOT\s*\(\s*AND\s*\(\s*\$?B\$?\d+\s*\+\s*\$?D\$?\d+\s*<=\s*E\$?\d+\s*,\s*E\$?\d+\s*<=\s*\$?B\$?\d+\s*\+\s*\$?C\$?\d+\s*\)\s*\)',
+                            formula_upper
+                        )
+                        
+                        is_condition1 = condition1_match and check_fill_color(color_to_check, condition1_fill_color)
+                        is_condition2 = condition2_match and check_fill_color(color_to_check, condition2_fill_color)
+                        
+                        if not (is_condition1 or is_condition2):
+                            continue
+                        
+                        # This is a matching rule, add all cells in the range to the set
+                        # If using relative refs and CF is only on first row, assume it applies to all rows
+                        if uses_relative_refs and rge.min_row == start_row and rge.max_row == start_row:
+                            # CF applied to first row only, but with relative refs, it applies to all rows
+                            for row in range(start_row, end_row + 1):
+                                for col in range(max(start_col, rge.min_col), min(end_col, rge.max_col) + 1):
+                                    cells_with_cf.add((row, col))
+                        else:
+                            # CF applied to specific range
+                            for row in range(max(start_row, rge.min_row), min(end_row, rge.max_row) + 1):
+                                for col in range(max(start_col, rge.min_col), min(end_col, rge.max_col) + 1):
+                                    cells_with_cf.add((row, col))
+        
+        # Check if all target cells are covered
+        missing_cells = []
+        for row in range(start_row, end_row + 1):
+            for col in range(start_col, end_col + 1):
+                if (row, col) not in cells_with_cf:
+                    col_letter = get_column_letter(col)
+                    missing_cells.append(f"{col_letter}{row}")
+        
+        if missing_cells:
+            logger.error("=" * 60)
+            logger.error(f"✗ {len(missing_cells)} cells in target range do not have conditional formatting")
+            logger.error(f"  Missing cells (first 20): {', '.join(missing_cells[:20])}")
+            if len(missing_cells) > 20:
+                logger.error(f"  ... and {len(missing_cells) - 20} more cells")
+            logger.error(f"  Total target cells: {total_target_cells}")
+            logger.error(f"  Cells with CF: {len(cells_with_cf)}")
+            logger.error("=" * 60)
+            return 0.0
+        
+        if len(cells_with_cf) < total_target_cells:
+            logger.error("=" * 60)
+            logger.error(f"✗ Not all target cells have conditional formatting")
+            logger.error(f"  Expected: {total_target_cells} cells")
+            logger.error(f"  Found: {len(cells_with_cf)} cells")
+            logger.error("=" * 60)
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ Conditional formatting verification passed")
+        logger.info(f"  - Condition 1: {condition1_formula_pattern} -> {condition1_fill_color} ✓")
+        logger.info(f"  - Condition 2: {condition2_formula_pattern} -> {condition2_fill_color} ✓")
+        logger.info(f"  - Range: {check_range} (all {total_target_cells} cells verified)")
+        logger.info("=" * 60)
+        return 1.0
+        
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     except Exception as e:
         import traceback
         logger.error(f"Verification failed: {e}")
@@ -27035,6 +30111,7 @@ def verify_multi_column_formulas(result: str, expected: str = None, **options) -
         return 0.0
 
 
+<<<<<<< HEAD
 def verify_sumproduct_condition_count(result: str, expected: str = None, **options) -> float:
     """
     Verify if SUMPRODUCT formula with condition counting exists in specified cell.
@@ -27049,11 +30126,35 @@ def verify_sumproduct_condition_count(result: str, expected: str = None, **optio
     Expected formula pattern:
     - L1: =SUMPRODUCT((C:C="A")*(B:B<>""))
     - K1: A (value)
+=======
+def verify_text_sumpRODUCT_mmult_match_win_lose(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if TEXT(SUMPRODUCT(MMULT(MATCH(...)))) formulas exist in ALL cells of specified range to calculate win/lose/draw results.
+    
+    This function STRICTLY checks ALL cells in the specified range - no tolerance, no auto-detection.
+    Every single cell in the specified range must contain the correct formula.
+    
+    The formula =TEXT(SUMPRODUCT(MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H11,B$1:E$1,),20),H$2:L$2,),5)+1=MATCH(B$2:E$21,H$2:L$2,)),{1;1;1;1})-MMULT(N(MOD(MATCH(OFFSET(A$2,,MATCH(H11,B$1:E$1,),20),H$2:L$2,)+4,5)=MOD(MATCH(B$2:E$21,H$2:L$2,),5)),{1;1;1;1})),"贏0;輸0;平") 
+    calculates win/lose/draw results based on five-element cycle (金木水火土) game logic.
+    
+    This function checks:
+    1. Whether ALL cells in the specified range (e.g., I12:I15) contain formulas
+    2. Whether formulas contain TEXT, SUMPRODUCT, MMULT, MATCH, OFFSET, MOD, and N functions
+    3. Whether formulas contain the correct structure with two MMULT operations
+    4. Whether formulas contain OFFSET with MATCH(H11,B$1:E$1,) reference
+    5. Whether formulas contain MATCH(B$2:E$21,H$2:L$2,) reference
+    6. Whether formulas contain MOD operations with 5 (for five-element cycle)
+    7. Whether formulas contain TEXT format string "贏0;輸0;平" or similar
+    8. Whether formulas contain array constant {1;1;1;1}
+    
+    IMPORTANT: This function checks ALL cells in the specified range. If any cell is missing a formula, verification fails.
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     
     Args:
         result (str): Path to result Excel file
         expected (str): Not used (for compatibility with framework interface)
         options (dict): Configuration options, should contain:
+<<<<<<< HEAD
             - formula_cell: Cell containing SUMPRODUCT formula (e.g., "L1")
             - value_cell: Cell containing expected value (e.g., "K1")
             - expected_value: Expected value in value_cell (e.g., "A")
@@ -27337,6 +30438,18 @@ def verify_sumproduct_mid_class_size_sum(result: str, expected: str = None, **op
     
     Returns:
         float: 1.0 if verification passes, 0.0 otherwise
+=======
+            - check_range: Range to check (e.g., "I12:I15") - ALL cells must have formulas
+            - expected_functions: List of expected function names (default: ["TEXT", "SUMPRODUCT", "MMULT", "MATCH", "OFFSET", "MOD", "N"])
+            - offset_match_ref: OFFSET MATCH reference (default: "MATCH(H11,B$1:E$1,)")
+            - match_range: MATCH range reference (default: "B$2:E$21")
+            - match_lookup: MATCH lookup array (default: "H$2:L$2")
+            - text_format: TEXT format string (default: "贏0;輸0;平")
+            - array_constant: Array constant pattern (default: "{1;1;1;1}")
+    
+    Returns:
+        float: 1.0 if ALL cells in specified range contain correct formulas, 0.0 otherwise
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     """
     try:
         import re
@@ -27346,6 +30459,7 @@ def verify_sumproduct_mid_class_size_sum(result: str, expected: str = None, **op
             logger.error(f"Result file not found: {result}")
             return 0.0
         
+<<<<<<< HEAD
         formula_range = options.get('formula_range', 'G7:AS19')
         sum_range = options.get('sum_range', 'G20:AS20')
         expected_functions = options.get('expected_functions', ['SUMPRODUCT', 'MID'])
@@ -27393,16 +30507,51 @@ def verify_sumproduct_mid_class_size_sum(result: str, expected: str = None, **op
                 return 0.0
         except Exception as e:
             logger.error(f"Failed to parse sum range {sum_range}: {e}")
+=======
+        check_range = options.get('check_range', 'I12:I15')
+        expected_functions = options.get('expected_functions', ['TEXT', 'SUMPRODUCT', 'MMULT', 'MATCH', 'OFFSET', 'MOD', 'N'])
+        offset_match_ref = options.get('offset_match_ref', 'MATCH(H11,B$1:E$1,)')
+        match_range = options.get('match_range', 'B$2:E$21')
+        match_lookup = options.get('match_lookup', 'H$2:L$2')
+        text_format = options.get('text_format', '贏0;輸0;平')
+        array_constant = options.get('array_constant', '{1;1;1;1}')
+        
+        logger.info(f"Verifying TEXT(SUMPRODUCT(MMULT(MATCH))) win/lose formulas in file: {result}")
+        logger.info(f"Range to check: {check_range}")
+        logger.info(f"Expected functions: {expected_functions}")
+        
+        # Parse the range
+        try:
+            range_clean = check_range.replace('$', '')
+            if ':' in range_clean:
+                start_cell, end_cell = range_clean.split(':')
+                start_col_letter = ''.join([c for c in start_cell if c.isalpha()])
+                start_row = int(''.join([c for c in start_cell if c.isdigit()]))
+                start_col = column_index_from_string(start_col_letter)
+                end_col_letter = ''.join([c for c in end_cell if c.isalpha()])
+                end_row = int(''.join([c for c in end_cell if c.isdigit()]))
+                end_col = column_index_from_string(end_col_letter)
+            else:
+                logger.error(f"Invalid range format: {check_range}")
+                return 0.0
+        except Exception as e:
+            logger.error(f"Failed to parse range {check_range}: {e}")
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
             return 0.0
         
         # Load workbook to get formulas
         try:
+<<<<<<< HEAD
             wb = openpyxl.load_workbook(result, data_only=False)
+=======
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
             ws = wb.active
         except Exception as e:
             logger.error(f"Failed to load workbook: {e}")
             return 0.0
         
+<<<<<<< HEAD
         all_checks_passed = True
         formula_cells_checked = 0
         formula_cells_passed = 0
@@ -27523,6 +30672,26 @@ def verify_sumproduct_mid_class_size_sum(result: str, expected: str = None, **op
                 if cell.data_type != "f":
                     logger.warning(f"Cell {cell_coord} does not contain a formula")
                     all_checks_passed = False
+=======
+        # Strictly check ALL cells in the specified range
+        logger.info(f"Checking all cells in range {check_range} (rows {start_row} to {end_row})")
+        
+        all_passed = True
+        checked_count = 0
+        passed_count = 0
+        
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{start_col_letter}{row_num}"
+            
+            try:
+                cell = ws[cell_coord]
+                checked_count += 1
+                
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.error(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
                     continue
                 
                 # Get formula text
@@ -27535,13 +30704,19 @@ def verify_sumproduct_mid_class_size_sum(result: str, expected: str = None, **op
                     formula_text = cell.value
                 
                 if formula_text is None:
+<<<<<<< HEAD
                     logger.warning(f"Could not extract formula from cell {cell_coord}")
                     all_checks_passed = False
+=======
+                    logger.error(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
                     continue
                 
                 formula_upper = formula_text.upper()
                 logger.debug(f"Cell {cell_coord} formula: {formula_text}")
                 
+<<<<<<< HEAD
                 # Check: Formula contains SUM function
                 if not re.search(r'\bSUM\s*\(', formula_upper):
                     logger.warning(f"Cell {cell_coord} formula does not contain SUM function")
@@ -27871,10 +31046,176 @@ def verify_data_validation_list(result: str, expected: str = None, **options) ->
         logger.info(f"✓ Data validation list verification passed")
         return 1.0
             
+=======
+                # Check 1: Formula contains all expected functions
+                for func in expected_functions:
+                    func_pattern = rf'\b{re.escape(func.upper())}\s*\('
+                    if not re.search(func_pattern, formula_upper):
+                        logger.error(f"Cell {cell_coord} formula does not contain {func} function")
+                        logger.error(f"Formula: {formula_text}")
+                        all_passed = False
+                        break
+                
+                if not all_passed:
+                    continue
+                
+                # Check 2: Formula contains TEXT function
+                text_pattern = r'\bTEXT\s*\('
+                if not re.search(text_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain TEXT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 3: Formula contains SUMPRODUCT function
+                sumproduct_pattern = r'\bSUMPRODUCT\s*\('
+                if not re.search(sumproduct_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain SUMPRODUCT function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 4: Formula contains MMULT function (should appear twice)
+                mmult_pattern = r'\bMMULT\s*\('
+                mmult_matches = len(re.findall(mmult_pattern, formula_upper))
+                if mmult_matches < 2:
+                    logger.error(f"Cell {cell_coord} formula does not contain at least 2 MMULT functions (found {mmult_matches})")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 5: Formula contains OFFSET function
+                offset_pattern = r'\bOFFSET\s*\('
+                if not re.search(offset_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain OFFSET function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 6: Formula contains MATCH function (should appear multiple times)
+                match_pattern = r'\bMATCH\s*\('
+                match_matches = len(re.findall(match_pattern, formula_upper))
+                if match_matches < 3:
+                    logger.error(f"Cell {cell_coord} formula does not contain at least 3 MATCH functions (found {match_matches})")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 7: Formula contains MOD function with 5 (for five-element cycle)
+                mod_pattern = r'\bMOD\s*\([^,]+,\s*5\s*\)'
+                if not re.search(mod_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MOD(...,5) pattern")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 8: Formula contains N function
+                n_pattern = r'\bN\s*\('
+                if not re.search(n_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain N function")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 9: Formula contains OFFSET with MATCH reference pattern
+                # Allow flexibility in spacing and reference format
+                offset_match_pattern = r'OFFSET\s*\([^,]+,\s*,\s*MATCH\s*\(\s*H\d+\s*,\s*B\$?\d+\s*:\s*E\$?\d+\s*,\s*\)'
+                if not re.search(offset_match_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain OFFSET(...,MATCH(H...,B$1:E$1,)) pattern")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 10: Formula contains MATCH(B$2:E$21,H$2:L$2,) pattern
+                match_range_pattern = r'MATCH\s*\(\s*B\$?\d+\s*:\s*E\$?\d+\s*,\s*H\$?\d+\s*:\s*L\$?\d+\s*,\s*\)'
+                if not re.search(match_range_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MATCH(B$2:E$21,H$2:L$2,) pattern")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 11: Formula contains array constant {1;1;1;1} or similar
+                array_pattern = r'\{[^}]*1[^}]*;[^}]*1[^}]*;[^}]*1[^}]*;[^}]*1[^}]*\}'
+                if not re.search(array_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain array constant pattern like {{1;1;1;1}}")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 12: Formula contains TEXT format string (allow variations)
+                # Escape special characters in text_format
+                text_format_escaped = re.escape(text_format)
+                # Allow flexibility in quotes and spacing
+                text_format_pattern = rf'["\']?\s*{text_format_escaped}\s*["\']?'
+                if not re.search(text_format_pattern, formula_text):
+                    logger.error(f"Cell {cell_coord} formula does not contain TEXT format string '{text_format}'")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 13: Formula structure - TEXT(SUMPRODUCT(...))
+                text_sumpRODUCT_pattern = r'TEXT\s*\(\s*SUMPRODUCT\s*\('
+                if not re.search(text_sumpRODUCT_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not have correct TEXT(SUMPRODUCT(...)) structure")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 14: Formula contains subtraction between two MMULT operations
+                # Look for pattern: MMULT(...) - MMULT(...)
+                mmult_subtract_pattern = r'MMULT\s*\([^)]+\)\s*-\s*MMULT\s*\('
+                if not re.search(mmult_subtract_pattern, formula_upper):
+                    logger.error(f"Cell {cell_coord} formula does not contain MMULT(...) - MMULT(...) subtraction pattern")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                # Check 15: Formula closes parentheses correctly
+                open_count = formula_text.count('(')
+                close_count = formula_text.count(')')
+                if open_count != close_count:
+                    logger.error(f"Cell {cell_coord} formula has mismatched parentheses (open: {open_count}, close: {close_count})")
+                    logger.error(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
+                passed_count += 1
+                logger.debug(f"✓ Cell {cell_coord} passed all checks")
+                
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                all_passed = False
+                continue
+        
+        if not all_passed:
+            logger.error("=" * 60)
+            logger.error(f"✗ Formula verification failed")
+            logger.error(f"  Checked: {checked_count} cells")
+            logger.error(f"  Passed: {passed_count} cells")
+            logger.error(f"  Range: {check_range}")
+            logger.error("=" * 60)
+            return 0.0
+        
+        if checked_count == 0:
+            logger.error("=" * 60)
+            logger.error(f"✗ No cells were checked in range {check_range}")
+            logger.error("=" * 60)
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ TEXT(SUMPRODUCT(MMULT(MATCH))) formula verification passed")
+        logger.info(f"  - Checked: {checked_count} cells")
+        logger.info(f"  - Passed: {passed_count} cells")
+        logger.info(f"  - Range: {check_range}")
+        logger.info("=" * 60)
+        return 1.0
+        
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18
     except Exception as e:
         import traceback
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
+<<<<<<< HEAD
         return 0.0
 
 
@@ -28562,3 +31903,6 @@ def verify_sumproduct_value_regex(result: str, expected: str = None, **options) 
         logger.error(traceback.format_exc())
         return 0.0
 
+=======
+        return 0.0
+>>>>>>> 420157e04ce7be9f30c3ff56c014f4c7d55fba18

@@ -1,0 +1,88 @@
+{
+  "id": "985d355c-2b65-4446-b707-71e46ffed099",
+  "snapshot": "libreoffice_calc",
+  "instruction": "因为公司的财务制度，上月26日到本月25日为一个月。比如：2月=1月26日~2月25日，3月=2月26日~3月25日。有没有办法进行一个换算呢？考虑到年份。（换算到B列）专门做2列来用vLOOKUP进行查询是一个办法。但是感觉比较麻烦。有没有更简单的方法呢？",
+  "method": "使用YEAR、DAY、MONTH、IF函数和字符串连接符&来将日期转换为财务月份格式。具体步骤：1) 在B1单元格中输入公式=(YEAR(A1)+(DAY(A1)>25))&\"\/\"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))，该公式会根据A1的日期计算对应的财务月份；2) 公式的逻辑：YEAR(A1)+(DAY(A1)>25)用于计算年份，如果日期大于25日，则年份加1（因为跨年了）；3) DAY(A1)>25判断日期是否大于25日，返回TRUE(1)或FALSE(0)；4) (DAY(A1)>25)+MONTH(A1)计算财务月份，如果日期大于25日，月份加1；5) IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))用于处理跨年情况，如果月份超过12，则返回1（表示1月），否则返回计算后的月份；6) 使用&\"\/\"&将年份和月份连接成\"年/月\"格式；7) 将公式填充到B1:B58范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能将标准日期转换为财务月份格式（上月26日到本月25日为一个月）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/420.xlsx",
+            "path": "/home/user/financial_month_convert_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/financial_month_convert_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'financial_month_convert_formula.txt'), 'w', encoding='utf-8'); f.write('验证公式：\\n\\n=(YEAR(A1)+(DAY(A1)>25))&\\\"/\\\"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))\\n\\n该公式的工作原理：\\n- YEAR(A1)+(DAY(A1)>25)用于计算财务年份\\n  * YEAR(A1)获取A1的年份\\n  * DAY(A1)>25判断日期是否大于25日，返回TRUE(1)或FALSE(0)\\n  * 如果日期大于25日，则年份加1（因为跨年了）\\n\\n- (DAY(A1)>25)+MONTH(A1)用于计算财务月份\\n  * DAY(A1)>25判断日期是否大于25日\\n  * MONTH(A1)获取A1的月份\\n  * 如果日期大于25日，月份加1\\n\\n- IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))用于处理跨年情况\\n  * 如果月份超过12，则返回1（表示1月）\\n  * --(DAY(A1)>25)将逻辑值转换为数值，如果日期大于25日返回1，否则返回0\\n  * 如果月份不超过12，则返回计算后的月份\\n\\n- &\\\"/\\\"&用于将年份和月份连接成\\\"年/月\\\"格式\\n\\n财务月份规则：\\n- 上月26日到本月25日为一个月\\n- 例如：2月=1月26日~2月25日，3月=2月26日~3月25日\\n\\n验证结果要求：\\n- B1:B58范围内的所有单元格必须包含上述公式\\n- 每个单元格的公式必须引用对应的A列单元格（B1引用A1，B2引用A2，以此类推）\\n- 公式必须包含YEAR、DAY、MONTH、IF函数\\n- 公式必须包含字符串连接符&\\n- 公式必须包含逻辑表达式(DAY(A1)>25)\\n- 所有58个单元格（B1到B58）都必须填充公式，少一个都不行\\n\\n注意：\\n- 公式中的单元格引用应该是相对引用（如A1），不是绝对引用（如$A$1）\\n- 公式结构必须正确，包含所有必要的函数和参数\\n- 输出格式为\\\"年/月\\\"的字符串格式'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/985d355c-2b65-4446-b707-71e46ffed099",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "financial_month_convert_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_financial_month_convert",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/financial_month_convert_data.xlsx",
+      "dest": "financial_month_convert_data.xlsx"
+    },
+    "options": {
+      "formula_range": "B1:B58",
+      "source_column": "A",
+      "expected_functions": ["YEAR", "DAY", "MONTH", "IF"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

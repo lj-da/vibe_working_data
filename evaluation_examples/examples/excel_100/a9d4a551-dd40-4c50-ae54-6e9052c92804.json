@@ -1,0 +1,90 @@
+{
+  "id": "a9d4a551-dd40-4c50-ae54-6e9052c92804",
+  "snapshot": "libreoffice_calc",
+  "instruction": "在E-J列测量值区域输入测量值，其符合公差要求显示绿色，不符合则显示红色",
+  "method": "使用条件格式功能为E13:J47区域设置两个条件格式规则。条件1：使用公式=AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)，当条件为真时填充绿色；条件2：使用公式=NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))，当条件为真时填充红色。这样，当测量值在公差范围内（$B13 + $D13 <= E13 <= $B13 + $C13）时显示绿色，否则显示红色。每个单元格都需要应用这两个条件格式规则。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/391.xlsx",
+            "path": "/home/user/measurement_tolerance_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/measurement_tolerance_data.xlsx"
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'measurement_tolerance_verification.txt'), 'w', encoding='utf-8'); f.write('验证公式说明：\\n\\n条件格式验证任务：\\n\\n1. 条件1（绿色）：\\n   公式：AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)\\n   说明：当测量值E13满足 $B13 + $D13 <= E13 <= $B13 + $C13 时，单元格填充绿色\\n\\n2. 条件2（红色）：\\n   公式：NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))\\n   说明：当测量值E13不满足公差要求时，单元格填充红色\\n\\n3. 验证范围：E13:J47\\n   说明：需要验证该范围内每个单元格的条件格式是否正确应用\\n\\n4. 验证标准：\\n   - 每个单元格都必须有两个条件格式规则\\n   - 条件1公式必须匹配：AND($B$?行号 + $D$?行号 <= E$?行号, E$?行号 <= $B$?行号 + $C$?行号)\\n   - 条件2公式必须匹配：NOT(AND($B$?行号 + $D$?行号 <= E$?行号, E$?行号 <= $B$?行号 + $C$?行号))\\n   - 条件1对应的填充颜色必须是绿色（RGB: R < 100, G > 200, B < 100）\\n   - 条件2对应的填充颜色必须是红色（RGB: R > 200, G < 100, B < 100）\\n   - 所有单元格都必须被条件格式覆盖'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/a9d4a551-dd40-4c50-ae54-6e9052c92804",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "measurement_tolerance_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_and_not_conditional_formatting",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/measurement_tolerance_data.xlsx",
+      "dest": "measurement_tolerance_data.xlsx"
+    },
+    "options": {
+      "check_range": "E13:J47",
+      "condition1_formula_pattern": "AND($B13 + $D13 <= E13, E13 <= $B13 + $C13)",
+      "condition1_fill_color": "green",
+      "condition2_formula_pattern": "NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))",
+      "condition2_fill_color": "red"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
