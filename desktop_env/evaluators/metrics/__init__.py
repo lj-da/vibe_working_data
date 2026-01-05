@@ -177,7 +177,21 @@ from .table import (
     verify_index_column_row_transform,
     verify_count_find_conditional_formatting,
     verify_sumpRODUCT_multi_condition_sum,
-    verify_sumpRODUCT_mmult_find_hours_sum
+    verify_sumpRODUCT_mmult_find_hours_sum,
+    verify_sumproduct_condition_count,
+    verify_cell_text_format,
+    verify_sumproduct_mid_class_size_sum,
+    verify_data_validation_list,
+    verify_iferror_year_text_substitute,
+    verify_index_large_offset_match_top5,
+    verify_iferror_index_small_position_mapping,
+    verify_value_sort_column,
+    verify_mid_date_format,
+    verify_iferror_text_vlookup_index_small_countif,
+    verify_text_sort_filter_date,
+    verify_unique_sumif_material_summary,
+    verify_multi_column_formulas,
+    verify_sumproduct_value_regex
 )
 from .thunderbird import (
     check_thunderbird_prefs,

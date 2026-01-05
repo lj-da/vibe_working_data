@@ -1,0 +1,78 @@
+{
+  "id": "b79eb228-362c-43bd-8373-738daf7543d3",
+  "snapshot": "libreoffice_calc",
+  "instruction": "比如，A1=0.008 ,B1=POWER(A1,3), B1显示的结果是5.12E-10 ,怎么设置或者处理，可以用普通计数法显示。",
+  "method": "将B1单元格的格式设置为文本格式，这样科学计数法的数值就会以普通计数法显示。具体步骤：1)选中B1单元格；2)右键点击选择\"设置单元格格式\"或使用快捷键Ctrl+1打开格式对话框；3)在\"数值\"选项卡中选择\"文本\"类别；4)点击\"确定\"。设置文本格式后，B1单元格中的公式结果（5.12E-10）会以普通计数法显示为0.000000000512。文本格式的格式代码是\"@\"，它告诉Excel/LibreOffice将该单元格的内容作为文本处理，即使内容是数字，也会按照文本方式显示，不会自动转换为科学计数法。这样就能看到完整的数字，而不是科学计数法的简化形式。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/276.xlsx",
+            "path": "/home/user/cell_text_format.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/cell_text_format.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/b79eb228-362c-43bd-8373-738daf7543d3",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "cell_text_format.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_cell_text_format",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/cell_text_format.xlsx",
+      "dest": "cell_text_format.xlsx"
+    },
+    "options": {
+      "check_column": "B",
+      "start_row": 1,
+      "expected_format": "@"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

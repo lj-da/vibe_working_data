@@ -1,0 +1,91 @@
+{
+  "id": "8b01c3fa-54d7-4b6f-bef0-457ed5d97f72",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么将日期按从小到大的顺序进行排序呢？",
+  "method": "使用TEXT、SORT和FILTER函数组合来实现日期的排序和格式化。第一步：在B2单元格中输入公式=TEXT(SORT(FILTER(B:B; B:B<>\"\"); 1; 1); \"yyyy-m-dd\")。公式的工作原理：FILTER(B:B; B:B<>\"\")从B列中筛选出所有非空单元格，返回一个数组；SORT(..., 1; 1)对筛选后的数组进行排序，第一个参数1表示按第一列排序，第二个参数1表示升序（从小到大）；TEXT(..., \"yyyy-m-dd\")将排序后的日期格式化为\"yyyy-m-dd\"格式（年份-月份-日期，月份和日期不补零）。注意：这是数组公式，在LibreOffice Calc中需要使用Ctrl+Shift+Enter输入，公式会自动填充到其他行。第二步：公式输入后会自动将B列中的日期按从小到大的顺序排序，并格式化为指定的日期格式显示在C列（或B列，取决于具体需求）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nB2=TEXT(SORT(FILTER(B:B; B:B<>\"\"); 1; 1); \"yyyy-m-dd\")\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/258.xlsx",
+            "path": "/home/user/text_sort_filter_date.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/text_sort_filter_date.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/8b01c3fa-54d7-4b6f-bef0-457ed5d97f72",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "text_sort_filter_date.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_text_sort_filter_date",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/text_sort_filter_date.xlsx",
+      "dest": "text_sort_filter_date.xlsx"
+    },
+    "options": {
+      "check_column": "C",
+      "start_row": 2,
+      "source_column": "B",
+      "expected_functions": ["TEXT", "SORT", "FILTER"],
+      "data_column": "B",
+      "date_format": "yyyy-m-dd"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

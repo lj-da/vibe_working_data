@@ -1,0 +1,95 @@
+{
+  "id": "2338359a-57d1-4f48-b035-6a1206a85b50",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问怎么把同一张表格中的相同物料号的数量汇总",
+  "method": "使用UNIQUE、INDEX、COUNTA和SUMIF函数组合来实现物料号的数量汇总。第一步：在H2单元格中输入公式=UNIQUE(G2:INDEX(G:G, COUNTA(G:G)))，从G列中提取所有唯一的物料编码。公式的工作原理：COUNTA(G:G)统计G列中非空单元格的数量；INDEX(G:G, COUNTA(G:G))返回G列中最后一个非空单元格的引用；G2:INDEX(G:G, COUNTA(G:G))构建一个从G2到最后一个非空单元格的范围；UNIQUE(...)对这个范围进行去重，返回一个包含唯一值的数组，去除重复的物料编码。第二步：在I2单元格中输入公式=SUMIF($G:$G,H2,$F:$F)，对每个唯一的物料编码进行数量汇总。公式的工作原理：SUMIF($G:$G,H2,$F:$F)在G列中查找与H2单元格（物料编码）匹配的所有行，然后将这些行对应的F列（数量）进行求和。$G:$G和$F:$F使用绝对引用，确保在复制公式时范围不变；H2使用相对引用，在向下复制时会自动变为H3、H4等，对应不同的物料编码。第三步：将I2的公式向下复制到其他行（如I3、I4等），相对引用会自动调整（H2变为H3、H4等），确保每行都能对对应的物料编码进行数量汇总。这样就能实现相同物料号的数量汇总。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nH2=UNIQUE(G2:INDEX(G:G, COUNTA(G:G)))\nI2=SUMIF($G:$G,H2,$F:$F)\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/264.xlsx",
+            "path": "/home/user/unique_sumif_material_summary.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/unique_sumif_material_summary.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/2338359a-57d1-4f48-b035-6a1206a85b50",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "unique_sumif_material_summary.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_unique_sumif_material_summary",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/unique_sumif_material_summary.xlsx",
+      "dest": "unique_sumif_material_summary.xlsx"
+    },
+    "options": {
+      "unique_cell": "H2",
+      "unique_source_column": "G",
+      "unique_start_row": 2,
+      "sumif_column": "I",
+      "sumif_start_row": 2,
+      "criteria_range": "$G:$G",
+      "sum_range": "$F:$F",
+      "criteria_column": "H",
+      "data_column": "G",
+      "expected_functions": ["UNIQUE", "INDEX", "COUNTA", "SUMIF"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

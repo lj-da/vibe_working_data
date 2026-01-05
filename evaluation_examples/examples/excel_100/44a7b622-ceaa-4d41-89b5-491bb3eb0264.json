@@ -1,0 +1,92 @@
+{
+  "id": "44a7b622-ceaa-4d41-89b5-491bb3eb0264",
+  "snapshot": "libreoffice_calc",
+  "instruction": "说明：编号是唯一的，一个编号代表1车，我想知道A这个人在3月3号有几车？",
+  "method": "使用SUMPRODUCT函数结合条件判断来统计满足条件的数据行数。在L1单元格中输入公式=SUMPRODUCT((C:C=\"A\")*(B:B<>\"\"))。该公式的工作原理：第一个条件(C:C=\"A\")检查C列中每个单元格是否等于\"A\"，返回TRUE或FALSE的数组。第二个条件(B:B<>\"\")检查B列中每个单元格是否不为空，返回TRUE或FALSE的数组。使用乘法操作符(*)将两个条件数组相乘，TRUE*TRUE=1，其他情况为0。SUMPRODUCT函数将结果数组求和，得到满足两个条件的行数，即A这个人在3月3号的车数。由于编号是唯一的，一个编号代表1车，所以统计行数就是统计车数。使用整列引用(C:C和B:B)可以自动处理所有数据行，无需指定具体范围。同时在K1单元格中输入值\"A\"，作为查询条件标识。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nL1=SUMPRODUCT((C:C=\"A\")*(B:B<>\"\"))\nK1=A\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/270.xlsx",
+            "path": "/home/user/sumproduct_condition_count.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/sumproduct_condition_count.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/44a7b622-ceaa-4d41-89b5-491bb3eb0264",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sumproduct_condition_count.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sumproduct_condition_count",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/sumproduct_condition_count.xlsx",
+      "dest": "sumproduct_condition_count.xlsx"
+    },
+    "options": {
+      "formula_cell": "L1",
+      "value_cell": "K1",
+      "expected_value": "A",
+      "condition_column": "C",
+      "condition_value": "A",
+      "non_empty_column": "B",
+      "expected_functions": ["SUMPRODUCT"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

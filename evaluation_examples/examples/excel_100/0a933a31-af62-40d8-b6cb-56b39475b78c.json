@@ -1,0 +1,91 @@
+{
+  "id": "0a933a31-af62-40d8-b6cb-56b39475b78c",
+  "snapshot": "libreoffice_calc",
+  "instruction": "A1-D4和G1-J4是两组表格，要求找出\"分数\"对应的\"姓\"（按照各自在自己表格的位置映射），\"分数\"写在L列，\"姓\"写在M列。",
+  "method": "使用IFERROR、INDEX、SMALL、IF、ROW和COLUMN函数组合来实现位置映射查找。这是一个数组公式，需要按Ctrl+Shift+Enter输入。第一步：在L1单元格中输入公式=IFERROR(INDEX($G$1:$J$4,INT((SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1)/10),MOD(SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1,10)+1),\"\")，然后按Ctrl+Shift+Enter确认输入。输入后公式会显示为{=IFERROR(...)}的形式（用大括号包围），这是数组公式的标记。第二步：在M1单元格中输入相同的公式，同样按Ctrl+Shift+Enter确认。第三步：将L1和M1的公式向下复制到L2:M4的其他单元格。公式的工作原理：IF($A$1:$D$4=0,...)检查A1:D4中值为0的单元格，使用ROW*10+COLUMN进行位置编码；SMALL函数提取第n个0值的位置；INT和MOD函数将编码还原为行号和列号；INDEX从G1:J4中提取对应位置的\"姓\"；IFERROR处理错误情况。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nL1=IFERROR(INDEX($G$1:$J$4,INT((SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1)/10),MOD(SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1,10)+1),\"\")\nM1=IFERROR(INDEX($G$1:$J$4,INT((SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1)/10),MOD(SMALL(IF($A$1:$D$4=0,ROW($A$1:$D$4)*10+COLUMN($A$1:$D$4),\"\"),(ROW()-1)*2+COLUMN()-11)-1,10)+1),\"\")\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/244.xlsx",
+            "path": "/home/user/iferror_index_small_position_mapping.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/iferror_index_small_position_mapping.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/0a933a31-af62-40d8-b6cb-56b39475b78c",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "iferror_index_small_position_mapping.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_iferror_index_small_position_mapping",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/iferror_index_small_position_mapping.xlsx",
+      "dest": "iferror_index_small_position_mapping.xlsx"
+    },
+    "options": {
+      "check_range": "L1:M4",
+      "source_range": "$A$1:$D$4",
+      "target_range": "$G$1:$J$4",
+      "expected_functions": ["IFERROR", "INDEX", "SMALL", "IF", "ROW", "COLUMN"],
+      "condition_value": 0,
+      "position_encoding_multiplier": 10
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

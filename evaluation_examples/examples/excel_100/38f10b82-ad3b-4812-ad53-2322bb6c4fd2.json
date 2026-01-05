@@ -1,0 +1,82 @@
+{
+  "id": "38f10b82-ad3b-4812-ad53-2322bb6c4fd2",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎样才能使d11单元格的下拉选项里面只显示：张三、李四、王武、赵六，其他什么都不显示",
+  "method": "在D11单元格设置数据有效性（数据验证），使下拉选项只显示指定的四个名字。具体步骤：1)选中D11单元格；2)点击菜单\"数据\"->\"有效性\"（或右键选择\"设置单元格格式\"->\"有效性\"）；3)取消勾选的允许空白单元格",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/280.xlsx",
+            "path": "/home/user/data_validation_list.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/data_validation_list.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/38f10b82-ad3b-4812-ad53-2322bb6c4fd2",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "data_validation_list.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_data_validation_list",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/data_validation_list.xlsx",
+      "dest": "data_validation_list.xlsx"
+    },
+    "options": {
+      "check_cell": "D11",
+      "expected_values": ["张三", "李四", "王武", "赵六"],
+      "validation_type": "cell range",
+      "expected_source": "$B$1:$B$48",
+      "no_spaces": true,
+      "allow_blank": false,
+      "show_dropdown": true
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
