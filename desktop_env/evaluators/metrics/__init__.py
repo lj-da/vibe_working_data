@@ -214,30 +214,8 @@ from .table import (
     verify_vlookup_sheet2,
     verify_index_match_small_transform,
     verify_tv_episode_range_calculate,
-    verify_seat_number_arrangement,
-    verify_pie_chart_sorted_data,
-    verify_combination_chart_bar_line,
-    verify_combination_chart_formatted,
-    verify_combo_chart_bar_line_gradient,
-    verify_bar_chart_with_data_table,
-    verify_stacked_bar_chart_difference,
-    verify_chart_with_scrollbar,
-    verify_line_chart_with_high_low_lines,
-    verify_data_bars_percentage,
-    verify_combo_chart_with_high_low_lines_and_labels,
-    verify_find_compare_conditional_formatting,
-    verify_line_chart_single_series_coordinates,
-    verify_combination_chart_trendline_format,
-    verify_chart_series_missing_values,
-    verify_scatter_chart_initial_final_values,
-    verify_pie_scatter_combination_with_image_fill,
-    verify_chart_error_bars_with_arrows,
-    verify_line_chart_high_low_lines_with_data_labels,
-    verify_scatter_chart_secondary_axis_internal_ticks,
-    verify_bar_chart_axis_cross_value,
-    verify_bar_chart_year_over_year_analysis,
-    verify_combination_chart_auto_data_labels,
-    verify_data_bar_conditional_formatting
+    verify_seat_number_arrangement
+    
 )
 from .thunderbird import (
     check_thunderbird_prefs,
@@ -272,6 +250,31 @@ from .vscode import (
     compare_zip_files
 )
 
+from .table_visualization import (
+    verify_pie_chart_sorted_data,
+    verify_combination_chart_bar_line,
+    verify_combination_chart_formatted,
+    verify_combo_chart_bar_line_gradient,
+    verify_bar_chart_with_data_table,
+    verify_stacked_bar_chart_difference,
+    verify_chart_with_scrollbar,
+    verify_line_chart_with_high_low_lines,
+    verify_data_bars_percentage,
+    verify_combo_chart_with_high_low_lines_and_labels,
+    verify_find_compare_conditional_formatting,
+    verify_line_chart_single_series_coordinates,
+    verify_combination_chart_trendline_format,
+    verify_chart_series_missing_values,
+    verify_scatter_chart_initial_final_values,
+    verify_pie_scatter_combination_with_image_fill,
+    verify_chart_error_bars_with_arrows,
+    verify_line_chart_high_low_lines_with_data_labels,
+    verify_scatter_chart_secondary_axis_internal_ticks,
+    verify_bar_chart_axis_cross_value,
+    verify_bar_chart_year_over_year_analysis,
+    verify_combination_chart_auto_data_labels,
+    verify_data_bar_conditional_formatting
+)
 
 def infeasible():
     pass
