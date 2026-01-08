@@ -1,0 +1,79 @@
+{
+  "id": "7c07ae66-bcda-45c8-a438-b89b856873dc",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问组合图形中均线怎样顶格拉到头",
+  "method": "在LibreOffice Calc中打开包含组合图表的工作表。双击图表进入编辑模式，找到名为\"月均\"的数据系列。右键点击\"月均\"系列，选择\"插入趋势线\"或\"添加趋势线\"。在趋势线对话框中，选择趋势线类型（通常为线性），勾选\"向前预测\"选项并设置为0.5，勾选\"向后预测\"选项并设置为0.5。然后设置趋势线的格式：右键点击添加的趋势线，选择\"格式化趋势线\"或\"趋势线属性\"，在\"线条\"选项卡中，将线条颜色、样式（实线/虚线）、宽度等属性设置为与\"月均\"数据系列完全一致。可以通过查看\"月均\"系列的格式属性来确保趋势线格式与之匹配。完成设置后，趋势线将显示在图表中，并且向前后各预测0.5个周期，线条格式与\"月均\"系列保持一致。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/597.xlsx",
+            "path": "/home/user/combination_chart_trendline.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/combination_chart_trendline.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/7c07ae66-bcda-45c8-a438-b89b856873dc",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combination_chart_trendline.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combination_chart_trendline_format",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/combination_chart_trendline.xlsx",
+      "dest": "combination_chart_trendline.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "series_name": "月均",
+      "forward_periods": 0.5,
+      "backward_periods": 0.5
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

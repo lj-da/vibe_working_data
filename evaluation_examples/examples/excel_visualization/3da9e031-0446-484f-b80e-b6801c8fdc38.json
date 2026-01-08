@@ -1,0 +1,87 @@
+{
+  "id": "3da9e031-0446-484f-b80e-b6801c8fdc38",
+  "snapshot": "libreoffice_calc",
+  "instruction": "体现初值、终值的散点图（初值、终值中间用线连接，这种情况下是不是叫散线图更确切些）。常规情况下，散点图是无法体现初值、终值的，我也尝试了股价图，但X轴是序号而非数值，这样就无法直观的体现变化趋势。如果能在散点图的基础上有初值选项就完美了。",
+  "method": "创建散点图来展示初值和终值数据，并通过线条连接数据点。首先，在数据区域中，从第2行开始到第75行，每隔两行空一行的方式组织数据（即2、3行有数据，4行为空，5、6行有数据，以此类推）。然后选中包含初值和终值的数据区域，通过菜单栏的插入->图表选项，选择散点图类型。在图表向导中，创建两个数据系列：第一个系列用于初值，设置名称为初值终值表的D1单元格，X值为D2:D66范围，Y值为E2:E66范围；第二个系列用于终值，设置名称为初值终值表的F1单元格，X值为F2:F75范围，Y值为G2:G75范围。完成图表创建后，需要配置每个系列的缺失值处理方式：右键点击每个数据系列，选择数据序列或格式数据序列选项，在弹出的对话框中切换到选项标签页，在图表缺失值部分，选择保留间隙选项。这样当数据序列中存在缺失值时，图表会显示间隙而不是继续连线或假设为零。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/579.xlsx",
+            "path": "/home/user/scatter_chart_initial_final_values.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/scatter_chart_initial_final_values.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/3da9e031-0446-484f-b80e-b6801c8fdc38",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "scatter_chart_initial_final_values.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_scatter_chart_initial_final_values",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/scatter_chart_initial_final_values.xlsx",
+      "dest": "scatter_chart_initial_final_values.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "start_row": 2,
+      "end_row": 75,
+      "expected_series_count": 2,
+      "series1_name_cell": "D1",
+      "series1_x_range": "D2:D66",
+      "series1_y_range": "E2:E66",
+      "series2_name_cell": "F1",
+      "series2_x_range": "F2:F75",
+      "series2_y_range": "G2:G75",
+      "expected_missing_value_type": "keep_gaps",
+      "data_column": "D"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

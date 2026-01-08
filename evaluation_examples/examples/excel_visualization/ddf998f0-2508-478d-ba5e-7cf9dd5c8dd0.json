@@ -1,0 +1,81 @@
+{
+  "id": "ddf998f0-2508-478d-ba5e-7cf9dd5c8dd0",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎样自动更新最近一个月的数据标签,图表11月份的数据标签是我自己一个个手动添加的，但是我新增12月的数据时，数据标签仍然是显示11月份的，请问大神怎样可以自动显示12月单月的数值？",
+  "method": "首先在E2单元格输入公式=IF(B3<>\"\",\" \",B2)，然后将公式右拉到F2，再下拉到F12，使E2:F12区域全部填充该公式。这个公式的作用是：如果B3不为空（即下一个月有数据），则显示空格；如果B3为空（即当前是最后一个月），则显示B2的值（当前月份）。这样当新增12月数据时，公式会自动更新，只显示最后一个月（12月）的标签。接下来创建组合图，选中包含数据的区域创建图表。然后设置\"供应套数\"系列的数据标签，数据标签包含单元格中的值，引用范围为E2:E12。同样设置\"成交套数\"系列的数据标签，数据标签包含单元格中的值，引用范围为F2:F12。这样数据标签就会自动显示最后一个月（当前最新月份）的数值。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/863.xlsx",
+            "path": "/home/user/Desktop/combination_chart_auto_data_labels.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ddf998f0-2508-478d-ba5e-7cf9dd5c8dd0",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combination_chart_auto_data_labels.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combination_chart_auto_data_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combination_chart_auto_data_labels.xlsx",
+      "dest": "combination_chart_auto_data_labels.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "formula_range": "E2:F12",
+      "expected_formula": "=IF(B3<>\"\",\" \",B2)",
+      "chart_type": "comboChart",
+      "series_data_labels": {
+        "供应套数": {
+          "source_range": "E2:E12"
+        },
+        "成交套数": {
+          "source_range": "F2:F12"
+        }
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,76 @@
+{
+  "id": "481e2f52-de7f-489d-b9d1-a1cfe149b0c1",
+  "snapshot": "libreoffice_calc",
+  "instruction": "饼图+散点图如何调整饼图的位置？",
+  "method": "首先创建一个组合图表，包含圆环图和散点图。圆环图的数据区域为C3:C45，散点图的X轴数据为H3:H46，Y轴数据为G3:G46，其中G46和H46都为0（表示原点位置）。然后在原点处添加一个散点图数据点，坐标为（0，0）。接下来，单独创建一个饼图，并将其保存为图片文件到桌面，命名为1.png。最后，使用保存的饼图图片（1.png）来填充位于原点（0，0）的那个散点图数据点。这样就能实现将饼图嵌入到散点图中的效果，通过图片填充的方式调整饼图在组合图表中的位置。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/862.xlsx",
+            "path": "/home/user/Desktop/pie_scatter_position.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/481e2f52-de7f-489d-b9d1-a1cfe149b0c1",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "pie_scatter_position.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_pie_scatter_combination_with_image_fill",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/pie_scatter_position.xlsx",
+      "dest": "pie_scatter_position.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "doughnut_series_range": "C3:C45",
+      "scatter_x_range": "H3:H46",
+      "scatter_y_range": "G3:G46",
+      "origin_x_cell": "H46",
+      "origin_y_cell": "G46",
+      "desktop_image_vm_path": "/home/user/Desktop/1.png"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

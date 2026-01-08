@@ -1,0 +1,83 @@
+{
+  "id": "3efabed7-947d-47b4-b129-ccecd80476c7",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何作出两条折线图拐点之间的差额线？有两条折线A与B，如何能够作出A折线每一个拐点与B折线每一个拐点之点的差额直线，并显示差额值？",
+  "method": "首先在B4单元格输入公式=B2-B3，计算两条折线对应数据点的差额。然后将公式向左填充到J4单元格，这样B4:J4区域就包含了所有数据点的差额值。接下来创建折线图，包含两条折线系列（A折线和B折线）。在图表中添加高低点连线功能，这样可以在两条折线的对应拐点之间绘制连接线，直观显示差额。最后，为图表添加数据标签，设置数据标签的值为B4:J4单元格范围，这样每个数据点都会显示对应的差额值。通过这种方式，可以清晰地看到两条折线在每个拐点处的差额，并通过连接线和数值标签进行可视化展示。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/829.xlsx",
+            "path": "/home/user/line_chart_high_low_lines.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/line_chart_high_low_lines.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/3efabed7-947d-47b4-b129-ccecd80476c7",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_high_low_lines.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_high_low_lines_with_data_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/line_chart_high_low_lines.xlsx",
+      "dest": "line_chart_high_low_lines.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "formula_column": "B",
+      "formula_start_col": "B",
+      "formula_end_col": "J",
+      "formula_row": 4,
+      "formula_base_pattern": "=B2-B3",
+      "data_label_range": "B4:J4",
+      "expected_series_count": 2
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

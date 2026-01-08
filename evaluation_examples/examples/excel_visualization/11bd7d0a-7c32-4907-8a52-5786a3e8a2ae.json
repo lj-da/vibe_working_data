@@ -1,0 +1,79 @@
+{
+  "id": "11bd7d0a-7c32-4907-8a52-5786a3e8a2ae",
+  "snapshot": "libreoffice_calc",
+  "instruction": "做一个各产品实际销售和计划差距对比的柱状图",
+  "method": "首先在D2单元格输入公式=C2-B2，计算实际销售与计划的差距，然后将公式向下填充至D5单元格。接下来创建柱状图，包含两个系列：\"实际\"系列和\"计划\"系列。然后选中\"实际\"系列，添加误差线。设置误差线的正误差为D2:D5单元格范围（表示实际销售与计划的差距），负误差设置为0。最后设置误差线线条的前后端点为箭头样式，以突出显示实际销售与计划之间的差距。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/831.xlsx",
+            "path": "/home/user/Desktop/sales_plan_comparison_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/11bd7d0a-7c32-4907-8a52-5786a3e8a2ae",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sales_plan_comparison_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_error_bars_with_arrows",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/sales_plan_comparison_chart.xlsx",
+      "dest": "sales_plan_comparison_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_series_names": ["实际", "计划"],
+      "target_series_name": "实际",
+      "formula_column": "D",
+      "formula_start_row": 2,
+      "formula_end_row": 5,
+      "formula_pattern": "=C2-B2",
+      "error_bar_positive_range": "D2:D5",
+      "error_bar_negative_value": 0,
+      "error_bar_arrow_enabled": true
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

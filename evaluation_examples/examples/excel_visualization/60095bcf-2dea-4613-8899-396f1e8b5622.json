@@ -1,0 +1,129 @@
+{
+  "id": "60095bcf-2dea-4613-8899-396f1e8b5622",
+  "snapshot": "libreoffice_calc",
+  "instruction": "麻烦用柱形图同比分析公司1-6月业绩达标以及变化情况。",
+  "method": "首先在E1:H7区域创建辅助列。E1输入\"增长\"，F1输入\"下滑\"，G1输入\"增长标签\"，H1输入\"下滑标签\"。E2输入公式=IF(D2>0,C2+80,NA())，F2输入公式=IF(D2<0,B2+70,NA())，G2输入公式=IFERROR(IF(E2>0,D2,\"\"),\"\")，H2输入公式=IFERROR(IF(F2>0,D2,\"\"),\"\")，然后将E2:H2的公式下拉填充到E7:H7。接下来选中A1:C7和E1:F7的数据范围创建柱状图。将系列\"2022年\"和\"2023年\"设置为使用次坐标轴（次Y轴），并将次坐标轴的最大值设置为1000。然后调整各个系列的格式：2023年系列设置系列重叠为-25%，分类间距为100%，并添加分隔线，分隔线设置为无线端、正偏差；2022年系列保持默认设置；增长系列设置系列重叠为100%，分类间距为160%，纯色填充为绿色，透明度为90%，线条设置为实线，线条颜色为黑色，并添加数据标签，数据标签包括单元格中的值（G2:G7）；下滑系列设置系列重叠为100%，分类间距为160%，纯色填充为红色，透明度为90%，线条设置为实线，线条颜色为黑色，并添加数据标签，数据标签包括单元格中的值（H2:H7）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nE1=增长\nF1=下滑\nG1=增长标签\nH1=下滑标签\nE2=IF(D2>0,C2+80,NA())\nF2=IF(D2<0,B2+70,NA())\nG2=IFERROR(IF(E2>0,D2,\"\"),\"\")\nH2=IFERROR(IF(F2>0,D2,\"\"),\"\")\nE3=IF(D3>0,C3+80,NA())\nF3=IF(D3<0,B3+70,NA())\nG3=IFERROR(IF(E3>0,D3,\"\"),\"\")\nH3=IFERROR(IF(F3>0,D3,\"\"),\"\")\nE4=IF(D4>0,C4+80,NA())\nF4=IF(D4<0,B4+70,NA())\nG4=IFERROR(IF(E4>0,D4,\"\"),\"\")\nH4=IFERROR(IF(F4>0,D4,\"\"),\"\")\nE5=IF(D5>0,C5+80,NA())\nF5=IF(D5<0,B5+70,NA())\nG5=IFERROR(IF(E5>0,D5,\"\"),\"\")\nH5=IFERROR(IF(F5>0,D5,\"\"),\"\")\nE6=IF(D6>0,C6+80,NA())\nF6=IF(D6<0,B6+70,NA())\nG6=IFERROR(IF(E6>0,D6,\"\"),\"\")\nH6=IFERROR(IF(F6>0,D6,\"\"),\"\")\nE7=IF(D7>0,C7+80,NA())\nF7=IF(D7<0,B7+70,NA())\nG7=IFERROR(IF(E7>0,D7,\"\"),\"\")\nH7=IFERROR(IF(F7>0,D7,\"\"),\"\")\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/318.xlsx",
+            "path": "/home/user/Desktop/bar_chart_year_over_year_analysis.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/60095bcf-2dea-4613-8899-396f1e8b5622",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_year_over_year_analysis.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_year_over_year_analysis",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_year_over_year_analysis.xlsx",
+      "dest": "bar_chart_year_over_year_analysis.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_headers": {
+        "E1": "增长",
+        "F1": "下滑",
+        "G1": "增长标签",
+        "H1": "下滑标签"
+      },
+      "expected_formulas": {
+        "E2": "=IF(D2>0,C2+80,NA())",
+        "F2": "=IF(D2<0,B2+70,NA())",
+        "G2": "=IFERROR(IF(E2>0,D2,\"\"),\"\")",
+        "H2": "=IFERROR(IF(F2>0,D2,\"\"),\"\")"
+      },
+      "formula_range": "E2:H7",
+      "expected_data_ranges": ["A1:C7", "E1:F7"],
+      "chart_type": "barChart",
+      "secondary_axis_series": ["2022年", "2023年"],
+      "secondary_axis_max": 1000,
+      "series_formatting": {
+        "2023年": {
+          "overlap": -25,
+          "gap_width": 100,
+          "error_bars": {
+            "direction": "plus",
+            "end_style": "noCap"
+          }
+        },
+        "增长": {
+          "overlap": 100,
+          "gap_width": 160,
+          "fill_color": "green",
+          "transparency": 90,
+          "line_style": "solid",
+          "line_color": "black",
+          "data_labels": {
+            "source_range": "G2:G7"
+          }
+        },
+        "下滑": {
+          "overlap": 100,
+          "gap_width": 160,
+          "fill_color": "red",
+          "transparency": 90,
+          "line_style": "solid",
+          "line_color": "black",
+          "data_labels": {
+            "source_range": "H2:H7"
+          }
+        }
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

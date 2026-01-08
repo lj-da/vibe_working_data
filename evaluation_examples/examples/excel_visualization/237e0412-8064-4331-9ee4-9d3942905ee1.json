@@ -1,0 +1,76 @@
+{
+  "id": "237e0412-8064-4331-9ee4-9d3942905ee1",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助小红书中的excel表大神!求助万能的小红书,想把一个模块在12个月份的数据变化进行类似柱状图的对比,但是有ABCDEFG......个模块,如果都放在同一个柱状图里就会特别拥挤,如果一个模块一张图又会导致图表数量太多。有没有一个比较好的方法用图来展示",
+  "method": "使用条件格式中的数据条功能来可视化多个模块在12个月份的数据变化。数据条可以在单元格内显示条形图，既能直观展示数据大小，又不会像传统图表那样占用额外空间。具体步骤：1) 选中B3:K14区域（包含多个模块在12个月份的数据）；2) 打开条件格式菜单，选择数据条；3) 选择合适的数据条样式（如渐变填充或实心填充）；4) 数据条会根据每个单元格的数值大小自动调整长度，数值越大条形越长，数值越小条形越短；5) 这样可以在同一个表格中同时展示所有模块在12个月份的数据变化趋势，既节省空间又便于对比。数据条的优势在于：不需要创建额外的图表，直接在数据单元格中显示可视化效果，适合需要同时展示多个数据系列的场景。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/207.xlsx",
+            "path": "/home/user/data_bar_visualization.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/data_bar_visualization.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/237e0412-8064-4331-9ee4-9d3942905ee1",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "data_bar_visualization.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_data_bar_conditional_formatting",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/data_bar_visualization.xlsx",
+      "dest": "data_bar_visualization.xlsx"
+    },
+    "options": {
+      "check_range": "B3:K14"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

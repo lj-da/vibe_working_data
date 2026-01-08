@@ -1,0 +1,79 @@
+{
+  "id": "7e72bdf7-9fc4-411d-822b-7a3ac2b207ad",
+  "snapshot": "libreoffice_calc",
+  "instruction": "问题1：表一中的图表数据为公式引用所获得，为何与表二（直接数据），在屏蔽零值上会表现不同呢？问题2：如何实现表一中的屏蔽零值？",
+  "method": "在图表中配置数据序列的缺失值处理方式。首先选中图表，然后右键点击需要配置的数据序列（如\"设备开动率\"），选择\"数据序列\"或\"格式数据序列\"选项。在弹出的对话框中，切换到\"选项\"标签页。在\"图表缺失值\"部分，选择\"继续连线\"选项。这样当数据序列中存在缺失值（如零值或空值）时，图表会继续连接前后数据点，而不是显示间隙或假设为零。这个设置对于使用公式引用的数据特别重要，因为公式可能返回零值或空值，需要正确配置缺失值处理方式才能正确显示图表。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/774.xlsx",
+            "path": "/home/user/chart_missing_values_config.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/chart_missing_values_config.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/7e72bdf7-9fc4-411d-822b-7a3ac2b207ad",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "chart_missing_values_config.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_series_missing_values",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/chart_missing_values_config.xlsx",
+      "dest": "chart_missing_values_config.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_series_count": 2,
+      "target_series_name": "设备开动率",
+      "expected_missing_value_type": "continue_line"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

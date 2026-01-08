@@ -1,0 +1,78 @@
+{
+  "id": "94278b55-b6ab-41f2-b8c2-da20ca9b6d9c",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问怎么可以让边框显示刻度呀，还有怎么可以让横轴的值从20开始呀，希望大佬帮忙看看，非常非常感谢！！！。",
+  "method": "首先在F3:G4单元格区域添加辅助数据，这些数据将用于创建新的图表系列。然后根据F3:G4的数据创建一个新的散点图系列。接下来，将该系列设置为使用次坐标轴（包括次X轴和次Y轴）。最后，将次X轴和次Y轴的刻度线标记主要类型设置为内部，这样边框就会显示刻度线。通过使用次坐标轴，可以独立控制横轴的起始值，从而实现横轴从20开始的需求。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/697.xlsx",
+            "path": "/home/user/Desktop/scatter_chart_secondary_axis_ticks.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/94278b55-b6ab-41f2-b8c2-da20ca9b6d9c",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "scatter_chart_secondary_axis_ticks.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_scatter_chart_secondary_axis_internal_ticks",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/scatter_chart_secondary_axis_ticks.xlsx",
+      "dest": "scatter_chart_secondary_axis_ticks.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "auxiliary_data_range": "F3:G4",
+      "expected_series_x_range": "F3:F4",
+      "expected_series_y_range": "G3:G4",
+      "chart_type": "scatterChart",
+      "smooth_line": true,
+      "secondary_axis": true,
+      "tick_mark_type": "in",
+      "primary_x_axis_min": 20
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

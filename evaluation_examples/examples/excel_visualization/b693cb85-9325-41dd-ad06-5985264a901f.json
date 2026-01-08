@@ -1,0 +1,76 @@
+{
+  "id": "b693cb85-9325-41dd-ad06-5985264a901f",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问，怎么将图片设置成柱状图，并且如果值出现不足100%值时，数据在另外一边；。",
+  "method": "首先根据A1:B13的数据范围创建柱状图。然后设置纵坐标（Y轴）的最大值为1.5，最小值为0.5。接下来设置横坐标（X轴）的交叉方式为坐标轴值，交叉值设置为1。这样当数据值小于1（100%）时，柱状图会显示在横轴下方，大于1时显示在上方。最后将横坐标轴的标签位置设置为低，这样标签会显示在图表底部。通过这些设置，可以实现当值不足100%时数据在横轴另一边的效果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/358.xlsx",
+            "path": "/home/user/Desktop/bar_chart_axis_cross_value.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b693cb85-9325-41dd-ad06-5985264a901f",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_axis_cross_value.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_axis_cross_value",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_axis_cross_value.xlsx",
+      "dest": "bar_chart_axis_cross_value.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_data_range": "A1:B13",
+      "chart_type": "barChart",
+      "y_axis_max": 1.5,
+      "y_axis_min": 0.5,
+      "x_axis_cross_value": 1,
+      "x_axis_label_position": "low"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

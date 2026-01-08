@@ -1,0 +1,80 @@
+{
+  "id": "72a75955-4f2e-4dbf-acdd-0a9fa853bc73",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何才能用折线图显示每个单号的几个数据",
+  "method": "使用LibreOffice Calc的图表功能创建折线图。首先选中包含单号数据和对应数值的数据区域，然后通过菜单栏的插入->图表选项，选择折线图类型。在图表向导中，设置数据系列，确保横坐标（类别轴）显示单号（1、2、3、4、5），纵坐标（数值轴）显示对应的数据值。图表应包含一个系列，该系列的数据点从左到右依次为：10、8、3、11、19、22、6、9、1、7、5、2、8、6、9。完成图表创建后，图表将显示在表格中，可以清晰地展示每个单号对应的数据趋势。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/867.xlsx",
+            "path": "/home/user/line_chart_single_series.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/line_chart_single_series.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/72a75955-4f2e-4dbf-acdd-0a9fa853bc73",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_single_series.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_single_series_coordinates",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/line_chart_single_series.xlsx",
+      "dest": "line_chart_single_series.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_x_values": [1, 2, 3, 4, 5],
+      "expected_y_values": [10, 8, 3, 11, 19, 22, 6, 9, 1, 7, 5, 2, 8, 6, 9],
+      "chart_type": "lineChart",
+      "tolerance": 0.01
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

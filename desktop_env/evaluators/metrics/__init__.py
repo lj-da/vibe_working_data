@@ -224,7 +224,20 @@ from .table import (
     verify_chart_with_scrollbar,
     verify_line_chart_with_high_low_lines,
     verify_data_bars_percentage,
-    verify_combo_chart_with_high_low_lines_and_labels
+    verify_combo_chart_with_high_low_lines_and_labels,
+    verify_find_compare_conditional_formatting,
+    verify_line_chart_single_series_coordinates,
+    verify_combination_chart_trendline_format,
+    verify_chart_series_missing_values,
+    verify_scatter_chart_initial_final_values,
+    verify_pie_scatter_combination_with_image_fill,
+    verify_chart_error_bars_with_arrows,
+    verify_line_chart_high_low_lines_with_data_labels,
+    verify_scatter_chart_secondary_axis_internal_ticks,
+    verify_bar_chart_axis_cross_value,
+    verify_bar_chart_year_over_year_analysis,
+    verify_combination_chart_auto_data_labels,
+    verify_data_bar_conditional_formatting
 )
 from .thunderbird import (
     check_thunderbird_prefs,
