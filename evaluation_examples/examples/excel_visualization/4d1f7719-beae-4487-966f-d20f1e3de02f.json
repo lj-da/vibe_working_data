@@ -1,0 +1,78 @@
+{
+  "id": "4d1f7719-beae-4487-966f-d20f1e3de02f",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问EXCEL表格如何一键生成简易折线图",
+  "method": "首先选中包含数据的区域（包括表头和数据行，如A1:D9），然后点击菜单栏的\"插入\"选项，在图表类型中选择\"折线图\"。系统会自动识别选中的数据范围，包括科目列（A列）和三列成绩数据（B、C、D列），一键生成折线图。折线图会显示每个科目在三次模拟考试中的成绩变化趋势，每个系列对应一次模拟考试（一模、二模、三模）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/183.xlsx",
+            "path": "/home/user/line_chart_exam_scores.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/line_chart_exam_scores.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/4d1f7719-beae-4487-966f-d20f1e3de02f",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_exam_scores.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/line_chart_exam_scores.xlsx",
+      "dest": "line_chart_exam_scores.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "lineChart",
+      "min_series_count": 3,
+      "data_range": "A1:D9"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,73 @@
+{
+  "id": "aae9b584-fb42-4116-9c15-e2bb9b3320e1",
+  "snapshot": "libreoffice_calc",
+  "instruction": "excel表格如何一键生成折线图",
+  "method": "首先选中表格数据区域（包括表头和数据行），然后点击菜单栏的\"插入\"选项，在图表类型中选择\"折线图\"，然后选择合适的折线图样式。系统会自动识别选中的数据范围并一键生成折线图。折线图会显示数据的变化趋势，每个系列对应一列数据。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/128.xlsx",
+            "path": "/home/user/Desktop/line_chart_data.xlsx"
+          }
+        ]
+      }
+    }
+   
+  ],
+  "trajectory": "trajectories/aae9b584-fb42-4116-9c15-e2bb9b3320e1",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_data.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/line_chart_data.xlsx",
+      "dest": "line_chart_data.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "lineChart",
+      "min_series_count": 1,
+      "data_range": ""
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

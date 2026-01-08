@@ -1,0 +1,73 @@
+{
+  "id": "5dd1b5c6-53b8-4b0a-9fb3-b4f9c2900b55",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求在图表里显示目标值与实际值的差额",
+  "method": "首先选中表格数据（包括表头和数据行），点击菜单栏的\"插入\"选项卡，选择\"柱状图\"，选择\"簇状柱形图\"，创建原始柱状图。然后需要创建两个系列：第一个系列使用实际值数据，设置数据标签在外侧，显示实际值（181、188、213、257、302等）；第二个系列使用差额数据，设置数据标签在柱状图内部，显示差额数据。将图表类型改为堆叠柱状图，这样底部段表示目标值，顶部段表示差额，总高度表示实际值。确保数据标签正确显示：实际值标签在柱状图外侧顶部，差额标签在柱状图内部。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/669.xlsx",
+            "path": "/home/user/Desktop/target_actual_difference_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/5dd1b5c6-53b8-4b0a-9fb3-b4f9c2900b55",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "target_actual_difference_chart.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_stacked_bar_chart_difference",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/target_actual_difference_chart.xlsx",
+      "dest": "target_actual_difference_chart.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "barChart",
+      "min_series_count": 2,
+      "check_stacked": false
+      
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

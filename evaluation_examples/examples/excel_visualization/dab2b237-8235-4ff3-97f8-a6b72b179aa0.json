@@ -1,0 +1,75 @@
+{
+  "id": "dab2b237-8235-4ff3-97f8-a6b72b179aa0",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问怎么设置柱状图和折线图的组合图？要求：1.增长率/转换率两组数据用折线图显示；2.预计销售额/实际销售额用柱状图显示；",
+  "method": "首先全选表格数据（包括表头和数据行），然后点击菜单栏的\"插入\"选项卡，选择\"图表\"，在弹出的对话框中选择\"所有图表\"，在图表类型中选择\"组合图\"中的第四个选项（自定义组合）。在自定义组合设置中，将增长率和转换率两个系列改为折线图类型，并勾选次坐标轴选项，确保这两个折线图系列使用右侧的次坐标轴显示。然后选中橙色折线，点击鼠标右键，选择\"设置数据系列格式\"，勾选平滑线选项。选中预计销售额柱形图，在\"格式\"选项卡的\"形状填充\"中选择喜欢的颜色，在\"形状效果\"的\"阴影\"中添加外部左下阴影。选中黄色曲线，在\"格式\"选项卡的\"形状轮廓\"中选择喜欢的颜色，对绿色曲线也进行同样的操作。选中绿色曲线，添加数据标签，根据需要选择居中、左、右等位置，对另一条曲线也进行同样的操作。选中图例，单击鼠标右键，选择\"设置图例格式\"，将图例位置设置为靠上。删除图表标题，删除网格线。选中左侧坐标轴数据，跳转到\"设置坐标轴格式\"，设置最大值为40000，让数据更清晰。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/190.xlsx",
+            "path": "/home/user/Desktop/combo_chart_formatted.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/dab2b237-8235-4ff3-97f8-a6b72b179aa0",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combo_chart_formatted.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combination_chart_formatted",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combo_chart_formatted.xlsx",
+      "dest": "combo_chart_formatted.xlsx"
+    },
+    "options": {
+      "min_bar_series": 2,
+      "min_line_series": 2,
+      "require_secondary_axis": true,
+      "expected_chart_type": "comboChart",
+      "check_axis_max": true,
+      "axis_max_value": 40000
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

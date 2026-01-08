@@ -1,0 +1,74 @@
+{
+  "id": "e5e40e27-6a43-482e-ac7b-e08d94d20a23",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助根据提供的数据生成柱状+折线组合图，零售额占比用折线图展示，并且将柱状图颜色改为渐变色",
+  "method": "首先选中目标表格数据（包括表头和数据行），然后点击菜单栏的\"插入\"选项卡，选择\"二维柱形图\"，选择\"簇型柱状图\"，创建原始柱状图。选中柱状图任意空白处，选中标题，输入标题内容。选中橙色柱状图，鼠标右键单击，选择\"设置数据系列格式\"，选择\"次坐标轴\"。更改为次坐标轴后，鼠标右键单击，选择\"更改系列图表类型\"，选择\"带数据标记的折线图\"，点击\"确定\"。选中蓝色柱状图，鼠标右键单击，选择\"添加数据标签\"，这时柱状图上方就会出现数据；橙色折线图同理；若删除数据，选中数据删除即可。选中蓝色柱状图，鼠标右键单击，选择\"设置数据系列格式\"，在\"填充\"栏选择\"渐变\"，选择喜欢的颜色即可。选中单个柱状图，鼠标右键单击，选择\"设置数据点格式\"，在\"填充-渐变\"栏改变颜色即可。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/176.xlsx",
+            "path": "/home/user/Desktop/retail_sales_combo_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/e5e40e27-6a43-482e-ac7b-e08d94d20a23",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "retail_sales_combo_chart.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_chart_bar_line_gradient",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/retail_sales_combo_chart.xlsx",
+      "dest": "retail_sales_combo_chart.xlsx"
+    },
+    "options": {
+      "min_bar_series": 1,
+      "min_line_series": 1,
+      "require_secondary_axis": true,
+      "expected_chart_type": "comboChart",
+      "check_gradient_fill": true
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

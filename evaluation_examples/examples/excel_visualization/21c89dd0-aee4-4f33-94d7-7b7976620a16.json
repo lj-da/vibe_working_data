@@ -1,0 +1,79 @@
+{
+  "id": "21c89dd0-aee4-4f33-94d7-7b7976620a16",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何将图标中的目标值与实际值的差值数字显示出来",
+  "method": "第一步：在表格中计算差异值。选中B4单元格，输入公式=B3-B2，计算2010年实际产值与2010年年初目标的差值，然后将公式向右填充到M4单元格，得到所有月份的差异值。第二步：创建折线图。选中包含\"2010年年初目标\"行（B2:M2）和\"差异\"行（B4:M4）的数据区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"折线图\"。创建折线图后，选中折线图的线条，右键点击选择\"设置数据系列格式\"，将线条颜色和标记颜色都设置为\"无\"（透明），使折线图不可见但数据点位置保留。第三步：添加高低点线。选中折线图，右键点击选择\"设置数据系列格式\"，在\"选项\"或\"线条\"选项卡中勾选\"高低点连线\"选项。然后调整高低点线的线型宽度至合适的粗细，并设置高低点线的颜色。第四步：添加柱形图。在图表中右键点击，选择\"选择数据\"，添加\"2010年年初目标\"行数据（B2:M2）作为新的数据系列。然后选中这个新添加的系列，右键点击选择\"更改系列图表类型\"，将其改为\"柱形图\"类型。第五步：添加数据标签。分别右键点击高低点线的标记点和柱形图的柱形，选择\"添加数据标签\"选项，这样可以在图表上显示具体的数值。调整数据标签的位置和格式，使其清晰可见。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/872.xlsx",
+            "path": "/home/user/Desktop/target_actual_difference_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/21c89dd0-aee4-4f33-94d7-7b7976620a16",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "target_actual_difference_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_chart_with_high_low_lines_and_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/target_actual_difference_chart.xlsx",
+      "dest": "target_actual_difference_chart.xlsx"
+    },
+    "options": {
+      "target_row": 2,
+      "actual_row": 3,
+      "difference_row": 4,
+      "start_column": "B",
+      "end_column": "M",
+      "min_line_series": 2,
+      "min_bar_series": 1,
+      "check_high_low_lines": true,
+      "check_data_labels": true,
+      "check_difference_formula": true
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

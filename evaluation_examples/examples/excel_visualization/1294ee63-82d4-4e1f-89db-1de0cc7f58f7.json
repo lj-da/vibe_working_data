@@ -1,0 +1,72 @@
+{
+  "id": "1294ee63-82d4-4e1f-89db-1de0cc7f58f7",
+  "snapshot": "libreoffice_calc",
+  "instruction": "查找Excel单元格以进度条方式显示百分比",
+  "method": "首先在单元格中输入百分比数据（例如A列从A1开始输入35%、89%、95%等百分比值）。然后选中包含百分比数据的单元格区域（例如A1:A10）。接着点击菜单栏的\"格式\"选项，选择\"条件格式\"，在弹出的条件格式对话框中选择\"数据条\"选项。在数据条设置中，可以选择不同的数据条样式和颜色。设置完成后，数据条会以进度条的方式显示在每个单元格中，根据百分比值的大小显示不同长度的数据条。如果需要调整数据条的显示效果，可以右键点击单元格，选择\"条件格式\"-\"管理规则\"，然后编辑数据条规则。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/873.xlsx",
+            "path": "/home/user/Desktop/percentage_data_bars.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/1294ee63-82d4-4e1f-89db-1de0cc7f58f7",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "percentage_data_bars.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_data_bars_percentage",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/percentage_data_bars.xlsx",
+      "dest": "percentage_data_bars.xlsx"
+    },
+    "options": {
+      "data_column": "A",
+      "start_row": 1,
+      "min_data_rows": 5
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

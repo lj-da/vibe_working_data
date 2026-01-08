@@ -214,7 +214,17 @@ from .table import (
     verify_vlookup_sheet2,
     verify_index_match_small_transform,
     verify_tv_episode_range_calculate,
-    verify_seat_number_arrangement
+    verify_seat_number_arrangement,
+    verify_pie_chart_sorted_data,
+    verify_combination_chart_bar_line,
+    verify_combination_chart_formatted,
+    verify_combo_chart_bar_line_gradient,
+    verify_bar_chart_with_data_table,
+    verify_stacked_bar_chart_difference,
+    verify_chart_with_scrollbar,
+    verify_line_chart_with_high_low_lines,
+    verify_data_bars_percentage,
+    verify_combo_chart_with_high_low_lines_and_labels
 )
 from .thunderbird import (
     check_thunderbird_prefs,

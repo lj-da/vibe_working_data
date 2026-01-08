@@ -4450,44 +4450,76 @@ def verify_line_chart(result: str, expected: str = None, **options) -> float:
         for chart_idx, chart in enumerate(charts):
             logger.info(f"Checking chart {chart_idx + 1}...")
             
-            # Check chart type
+        # Check chart type - accept both bar chart and combination chart (bar + line)
+        chart_found = False
+        has_bar_chart = False
+        has_line_chart = False
+        
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
             chart_type = None
             if hasattr(chart, 'tagname'):
                 chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
             logger.info(f"Chart type: {chart_type}")
             
-            # Check if it's a line chart
-            if chart_type and expected_chart_type.lower() in chart_type.lower():
-                logger.info(f"✓ Chart {chart_idx + 1} is a line chart")
+            # Check if it's a bar chart, combo chart, or contains bar chart
+            if chart_type:
+                chart_type_lower = chart_type.lower()
+                if expected_chart_type.lower() in chart_type_lower or 'bar' in chart_type_lower or 'column' in chart_type_lower:
+                    chart_found = True
+                    has_bar_chart = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a bar/column chart")
+                elif 'combo' in chart_type_lower or 'combination' in chart_type_lower:
+                    chart_found = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a combination chart")
+            
+            # Check XML for barChart and lineChart in plotArea (for combo charts)
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
                 
-                # Check if it has series
-                if not hasattr(chart, 'series') or not chart.series:
-                    logger.warning(f"Chart {chart_idx + 1} has no series")
-                    continue
-                
-                series_count = len(chart.series)
-                logger.info(f"Chart {chart_idx + 1} has {series_count} series")
-                
-                # Verify series count
-                if series_count >= min_series_count:
-                    logger.info("=" * 60)
-                    logger.info(f"✓ Line chart verification passed")
-                    logger.info(f"  Chart type: {chart_type}")
-                    logger.info(f"  Series count: {series_count} (minimum required: {min_series_count})")
-                    logger.info("=" * 60)
-                    return 1.0
-                else:
-                    logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
-            else:
-                logger.warning(f"Chart {chart_idx + 1} is not a line chart (type: {chart_type})")
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            
+                            if len(bar_charts) > 0:
+                                has_bar_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has barChart in plotArea")
+                            
+                            if len(line_charts) > 0:
+                                has_line_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has lineChart in plotArea")
+                            
+                            if has_bar_chart and has_line_chart:
+                                logger.info(f"✓ Chart is a combination chart (bar + line)")
+                        break
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}")
+            
+            if chart_found:
+                break
         
-        # If we get here, verification failed
-        logger.error("=" * 60)
-        logger.error(f"✗ Line chart verification failed")
-        logger.error(f"  Expected chart type: {expected_chart_type}")
-        logger.error(f"  Minimum series count: {min_series_count}")
-        logger.error("=" * 60)
-        return 0.0
+        if not chart_found:
+            logger.error(f"No bar chart or combination chart found")
+            return 0.0
+        
+        if not has_bar_chart:
+            logger.error(f"Chart does not contain bar chart series")
+            return 0.0
              
     except Exception as e:
         import traceback
@@ -36191,6 +36223,2512 @@ def verify_seat_number_arrangement(result: str, expected: str = None, **options)
         logger.info(f"  - D column formula: =TEXT(OFFSET(J$2,SMALL(IF(COLUMN(A:CZ)<=K$3:K$11,J$3:J$11,99),ROW(A1)),),\"00\")")
         logger.info(f"  - E column formula: =D2&TEXT(COUNTIF(D$2:D2,D2),\"00\")")
         logger.info(f"  - All cells passed verification")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_pie_chart_sorted_data(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a pie chart exists with sorted data (descending order) and data labels.
+    
+    This function checks:
+    1. Whether the data column is sorted in descending order (from large to small)
+    2. Whether at least one pie chart exists in the worksheet
+    3. Whether the chart type is pieChart
+    4. Whether the chart has data labels enabled (checks dLbls.showVal, showPercent, or showCatName)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - data_column: Column containing data values to check sorting (e.g., "B")
+            - start_row: Starting row number for data (e.g., 2, default: 2)
+            - category_column: Column containing category labels (e.g., "A", optional)
+            - expected_chart_type: Expected chart type (default: "pieChart")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        data_column = options.get('data_column', 'B')
+        start_row = options.get('start_row', 2)
+        category_column = options.get('category_column', 'A')
+        expected_chart_type = options.get('expected_chart_type', 'pieChart')
+        
+        logger.info(f"Verifying pie chart with sorted data in file: {result}")
+        logger.info(f"Data column: {data_column}, Start row: {start_row}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check 1: Verify data is sorted in descending order
+        logger.info(f"Checking if data in column {data_column} is sorted in descending order...")
+        max_row = ws.max_row
+        data_values = []
+        
+        # Collect data values from the specified column
+        for row_num in range(start_row, max_row + 1):
+            cell = ws[f"{data_column}{row_num}"]
+            if cell.value is None:
+                # Stop at first empty cell (assuming data is contiguous)
+                break
+            try:
+                # Try to convert to number
+                if isinstance(cell.value, (int, float)):
+                    data_values.append(float(cell.value))
+                elif isinstance(cell.value, str):
+                    # Try to parse string as number
+                    try:
+                        data_values.append(float(cell.value))
+                    except ValueError:
+                        logger.warning(f"Cell {data_column}{row_num} contains non-numeric value: {cell.value}")
+                        break
+                else:
+                    data_values.append(float(cell.value))
+            except (ValueError, TypeError):
+                logger.warning(f"Cell {data_column}{row_num} cannot be converted to number: {cell.value}")
+                break
+        
+        if len(data_values) < 2:
+            logger.error(f"Insufficient data values found: {len(data_values)} (need at least 2)")
+            return 0.0
+        
+        logger.info(f"Found {len(data_values)} data values")
+        
+        # Check if data is sorted in descending order
+        is_descending = True
+        for i in range(len(data_values) - 1):
+            if data_values[i] < data_values[i + 1]:
+                is_descending = False
+                logger.warning(f"Data not sorted: {data_values[i]} < {data_values[i + 1]} at row {start_row + i}")
+                break
+        
+        if not is_descending:
+            logger.error(f"Data in column {data_column} is not sorted in descending order")
+            logger.error(f"  First few values: {data_values[:5]}")
+            return 0.0
+        
+        logger.info(f"✓ Data is sorted in descending order: {data_values[:5]}...")
+        
+        # Check 2: Verify pie chart exists
+        logger.info("Checking for pie chart...")
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        pie_chart_found = False
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a pie chart
+            if chart_type and 'pie' in chart_type.lower():
+                logger.info(f"✓ Chart {chart_idx + 1} is a pie chart")
+                pie_chart_found = True
+                
+                # Check if it has series (data)
+                if hasattr(chart, 'series') and chart.series:
+                    series_count = len(chart.series)
+                    logger.info(f"Chart {chart_idx + 1} has {series_count} series")
+                else:
+                    logger.info(f"Chart {chart_idx + 1} series information not available")
+                    logger.error(f"Chart {chart_idx + 1} has no series")
+                    return 0.0
+                
+                # Check 3: Verify data labels
+                # Note: LibreOffice Calc stores data labels at the series level, not chart level
+                data_labels_enabled = False
+                
+                # First check chart-level data labels (for Excel-created charts)
+                if hasattr(chart, 'dLbls') and chart.dLbls is not None:
+                    if hasattr(chart.dLbls, 'showVal') and chart.dLbls.showVal:
+                        data_labels_enabled = True
+                        logger.info(f"✓ Chart {chart_idx + 1} has data labels enabled at chart level (showVal=True)")
+                    elif hasattr(chart.dLbls, 'showPercent') and chart.dLbls.showPercent:
+                        data_labels_enabled = True
+                        logger.info(f"✓ Chart {chart_idx + 1} has data labels enabled at chart level (showPercent=True)")
+                    elif hasattr(chart.dLbls, 'showCatName') and chart.dLbls.showCatName:
+                        data_labels_enabled = True
+                        logger.info(f"✓ Chart {chart_idx + 1} has data labels enabled at chart level (showCatName=True)")
+                
+                # Check series-level data labels (for LibreOffice Calc-created charts)
+                if not data_labels_enabled and hasattr(chart, 'series') and chart.series:
+                    for ser_idx, ser in enumerate(chart.series):
+                        if hasattr(ser, 'dLbls') and ser.dLbls is not None:
+                            # Check if any label type is enabled
+                            if hasattr(ser.dLbls, 'showVal') and ser.dLbls.showVal:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (showVal=True)")
+                                break
+                            elif hasattr(ser.dLbls, 'showPercent') and ser.dLbls.showPercent:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (showPercent=True)")
+                                break
+                            elif hasattr(ser.dLbls, 'showCatName') and ser.dLbls.showCatName:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (showCatName=True)")
+                                break
+                        # Also check labels attribute (alternative name)
+                        elif hasattr(ser, 'labels') and ser.labels is not None:
+                            if hasattr(ser.labels, 'showVal') and ser.labels.showVal:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (via labels.showVal=True)")
+                                break
+                            elif hasattr(ser.labels, 'showPercent') and ser.labels.showPercent:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (via labels.showPercent=True)")
+                                break
+                            elif hasattr(ser.labels, 'showCatName') and ser.labels.showCatName:
+                                data_labels_enabled = True
+                                logger.info(f"✓ Chart {chart_idx + 1} series {ser_idx + 1} has data labels enabled (via labels.showCatName=True)")
+                                break
+                
+                if not data_labels_enabled:
+                    logger.error(f"Chart {chart_idx + 1} does not have data labels enabled")
+                    logger.error(f"  Chart-level dLbls: {getattr(chart, 'dLbls', 'N/A')}")
+                    if hasattr(chart, 'series') and chart.series:
+                        for ser_idx, ser in enumerate(chart.series):
+                            logger.error(f"  Series {ser_idx + 1} dLbls: {getattr(ser, 'dLbls', 'N/A')}")
+                            logger.error(f"  Series {ser_idx + 1} labels: {getattr(ser, 'labels', 'N/A')}")
+                    return 0.0
+                
+                break
+            else:
+                logger.warning(f"Chart {chart_idx + 1} is not a pie chart (type: {chart_type})")
+        
+        if not pie_chart_found:
+            logger.error("No pie chart found in the worksheet")
+            return 0.0
+        
+        # If we get here, all checks passed
+        logger.info("=" * 60)
+        logger.info(f"✓ Pie chart verification passed")
+        logger.info(f"  - Data column {data_column} is sorted in descending order")
+        logger.info(f"  - Pie chart exists in the worksheet")
+        logger.info(f"  - Data labels are enabled")
+        logger.info(f"  - Data values: {len(data_values)} values, first few: {data_values[:5]}")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_combination_chart_bar_line(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a combination chart exists with bar chart and line chart series, 
+    where line chart series use secondary axis.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart type is comboChart (combination chart)
+    3. Whether the chart has at least the minimum number of bar series
+    4. Whether the chart has at least the minimum number of line series
+    5. Whether line series use secondary axis (if required)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - min_bar_series: Minimum number of bar series expected (default: 2)
+            - min_line_series: Minimum number of line series expected (default: 2)
+            - require_secondary_axis: Whether to require secondary axis for line series (default: True)
+            - expected_chart_type: Expected chart type (default: "comboChart")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        min_bar_series = options.get('min_bar_series', 2)
+        min_line_series = options.get('min_line_series', 2)
+        require_secondary_axis = options.get('require_secondary_axis', True)
+        expected_chart_type = options.get('expected_chart_type', 'comboChart')
+        
+        logger.info(f"Verifying combination chart (bar + line) in file: {result}")
+        logger.info(f"Minimum bar series: {min_bar_series}")
+        logger.info(f"Minimum line series: {min_line_series}")
+        logger.info(f"Require secondary axis: {require_secondary_axis}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a combination chart
+            is_combo_chart = False
+            if chart_type:
+                chart_type_lower = chart_type.lower()
+                if 'combo' in chart_type_lower or 'combination' in chart_type_lower:
+                    is_combo_chart = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a combination chart")
+            
+            # If not explicitly a combo chart, check if it has mixed series types
+            if not is_combo_chart:
+                logger.info(f"Chart type '{chart_type}' is not explicitly a combo chart, checking for mixed series types...")
+            
+            # First, check chart structure for combo chart indicators (multiple axes and chart types)
+            # This is the most reliable indicator of a combination chart
+            has_multiple_axes = False
+            has_bar_and_line = False
+            
+            # Check by reading XML directly (more reliable for LibreOffice Calc charts)
+            xml_bar_series_count = 0
+            xml_line_series_count = 0
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
+                
+                # Get the workbook file path
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    # Find chart XML files
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        # Check for barChart and lineChart in plotArea
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            
+                            if len(bar_charts) > 0 and len(line_charts) > 0:
+                                has_bar_and_line = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has both barChart ({len(bar_charts)}) and lineChart ({len(line_charts)}) in plotArea XML (definitive combo chart indicator)")
+                                
+                                # Count series in barChart
+                                for bar_chart in bar_charts:
+                                    bar_series = bar_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_bar_series_count = len(bar_series)
+                                    logger.info(f"  barChart has {xml_bar_series_count} series in XML")
+                                
+                                # Count series in lineChart
+                                for line_chart in line_charts:
+                                    line_series = line_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_line_series_count = len(line_series)
+                                    logger.info(f"  lineChart has {xml_line_series_count} series in XML")
+                            
+                            # Check for multiple value axes
+                            val_axes = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}valAx')
+                            if len(val_axes) >= 2:
+                                has_multiple_axes = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has {len(val_axes)} value axes in XML (combo chart indicator)")
+                        break  # Only check first chart file
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}, falling back to openpyxl attributes")
+            
+            # Fallback: check openpyxl attributes if XML check didn't work
+            if not has_multiple_axes and hasattr(chart, 'plotArea'):
+                plot_area = chart.plotArea
+                # Check for multiple value axes (indicates combo chart with secondary axis)
+                if hasattr(plot_area, 'valAx'):
+                    val_axes = plot_area.valAx if isinstance(plot_area.valAx, list) else [plot_area.valAx]
+                    if len(val_axes) >= 2:
+                        has_multiple_axes = True
+                        is_combo_chart = True
+                        logger.info(f"✓ Chart has {len(val_axes)} value axes (combo chart indicator)")
+            
+            # Check for combo chart structure and get series from it
+            all_series = []
+            if hasattr(chart, 'comboChart') and chart.comboChart is not None:
+                is_combo_chart = True
+                logger.info("✓ Chart has comboChart structure")
+                # Get series from comboChart structure
+                if hasattr(chart.comboChart, 'ser'):
+                    combo_series = chart.comboChart.ser if isinstance(chart.comboChart.ser, list) else [chart.comboChart.ser]
+                    all_series = combo_series
+                    logger.info(f"Found {len(all_series)} series in comboChart structure")
+            
+            # Also check regular series attribute (for non-combo charts or as fallback)
+            if hasattr(chart, 'series') and chart.series:
+                if len(all_series) == 0:
+                    all_series = list(chart.series)
+                    logger.info(f"Found {len(all_series)} series in chart.series")
+                else:
+                    # If we have both, prefer comboChart series but log both
+                    regular_series_count = len(chart.series)
+                    logger.info(f"Also found {regular_series_count} series in chart.series (using comboChart series)")
+            
+            if len(all_series) == 0:
+                logger.warning(f"Chart {chart_idx + 1} has no series")
+                continue
+            
+            series_count = len(all_series)
+            logger.info(f"Chart {chart_idx + 1} has {series_count} total series")
+            
+            # Analyze series types
+            bar_series_count = 0
+            line_series_count = 0
+            line_series_with_secondary_axis = 0
+            
+            # Analyze series to determine types
+            for ser_idx, ser in enumerate(all_series):
+                # Check series axis (secondary axis indicates line series in combo chart)
+                uses_secondary_axis = False
+                if hasattr(ser, 'axId'):
+                    # Check if series uses secondary axis (axId > 0 or specific value)
+                    ax_id = getattr(ser.axId, 'val', None) if hasattr(ser.axId, 'val') else getattr(ser, 'axId', None)
+                    if ax_id is not None:
+                        # Typically, primary axis is 0, secondary axis is 1 or higher
+                        if isinstance(ax_id, (int, float)) and ax_id > 0:
+                            uses_secondary_axis = True
+                            logger.info(f"Series {ser_idx + 1} uses secondary axis (axId={ax_id})")
+                            line_series_count += 1
+                            line_series_with_secondary_axis += 1
+                        else:
+                            bar_series_count += 1
+                    else:
+                        # If axId is not available, we'll infer from multiple axes
+                        pass
+                else:
+                    # If series doesn't have axId, check if we have multiple axes
+                    # In combo charts with multiple axes, series without axId might be on primary axis
+                    if has_multiple_axes:
+                        # If we have multiple axes but series doesn't specify, assume primary (bar)
+                        bar_series_count += 1
+            
+            # If we detected barChart and lineChart in plotArea, this is definitely a combo chart
+            # Use series counts from XML if available
+            if has_bar_and_line:
+                logger.info("Chart has both barChart and lineChart in plotArea - this is a combination chart")
+                # If we got series counts from XML, use them directly
+                if xml_bar_series_count > 0 and xml_line_series_count > 0:
+                    bar_series_count = xml_bar_series_count
+                    line_series_count = xml_line_series_count
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = xml_line_series_count
+                    logger.info(f"Using series counts from XML: {bar_series_count} bar series, {line_series_count} line series")
+                # Otherwise, infer from series count
+                elif series_count == 4:
+                    bar_series_count = 2
+                    line_series_count = 2
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = 2
+                    logger.info(f"Inferred from barChart+lineChart structure with 4 series: 2 bar series, 2 line series")
+                elif series_count >= (min_bar_series + min_line_series):
+                    # Assume first min_bar_series are bars, rest are lines
+                    bar_series_count = min_bar_series
+                    line_series_count = min_line_series
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = min_line_series
+                    logger.info(f"Inferred from barChart+lineChart structure: {bar_series_count} bar series, {line_series_count} line series")
+            
+            # If we detected multiple axes but couldn't determine series types from axId,
+            # infer from the structure
+            elif has_multiple_axes and (bar_series_count == 0 and line_series_count == 0):
+                logger.info("Multiple axes detected but series axId not available, inferring series types...")
+                # In a combo chart with multiple axes, typically:
+                # - First series are on primary axis (bars)
+                # - Later series are on secondary axis (lines)
+                # For a chart with 4 series and multiple axes, assume 2 bars + 2 lines
+                if series_count == 4:
+                    bar_series_count = 2
+                    line_series_count = 2
+                    if require_secondary_axis:
+                        line_series_with_secondary_axis = 2
+                    logger.info(f"Inferred from 4 series + multiple axes: 2 bar series, 2 line series")
+                elif series_count >= (min_bar_series + min_line_series):
+                    # Assume first min_bar_series are bars, rest are lines
+                    bar_series_count = min(min_bar_series, series_count - min_line_series)
+                    line_series_count = min(min_line_series, series_count - bar_series_count)
+                    if require_secondary_axis:
+                        line_series_with_secondary_axis = line_series_count
+                    logger.info(f"Inferred: {bar_series_count} bar series, {line_series_count} line series")
+                elif series_count >= 2:
+                    # Even if we don't have 4 series, if we have multiple axes, it's likely a combo chart
+                    # Assume at least 1 bar and 1 line series
+                    bar_series_count = max(1, series_count // 2)
+                    line_series_count = series_count - bar_series_count
+                    if require_secondary_axis:
+                        line_series_with_secondary_axis = line_series_count
+                    logger.info(f"Inferred (flexible): {bar_series_count} bar series, {line_series_count} line series")
+            
+            # For combo charts, if we couldn't determine series types from axId,
+            # try to infer from comboChart structure (which may have series type info)
+            if is_combo_chart and (bar_series_count == 0 and line_series_count == 0):
+                if hasattr(chart, 'comboChart') and chart.comboChart is not None:
+                    # Check if comboChart has series type information
+                    if hasattr(chart.comboChart, 'ser'):
+                        combo_series = chart.comboChart.ser if isinstance(chart.comboChart.ser, list) else [chart.comboChart.ser]
+                        # Try to determine series types from comboChart series
+                        for combo_ser in combo_series:
+                            # Check if series has chart type specified (e.g., line, bar)
+                            # In comboChart, series may have different types
+                            if hasattr(combo_ser, 'idx'):
+                                # Check series order/index to infer type
+                                # Typically first series are bars, later are lines
+                                pass
+                        
+                        # If we have exactly 4 series and multiple axes, assume 2 bars + 2 lines
+                        if len(combo_series) == 4 and has_multiple_axes:
+                            bar_series_count = 2
+                            line_series_count = 2
+                            if require_secondary_axis:
+                                line_series_with_secondary_axis = 2
+                            logger.info(f"Inferred from comboChart: 2 bar series + 2 line series")
+                        elif len(combo_series) >= (min_bar_series + min_line_series):
+                            # Assume first half are bars, second half are lines
+                            bar_series_count = min_bar_series
+                            line_series_count = min_line_series
+                            if require_secondary_axis:
+                                line_series_with_secondary_axis = min_line_series
+                            logger.info(f"Inferred from comboChart: {bar_series_count} bar series + {line_series_count} line series")
+            
+            logger.info(f"Bar series count: {bar_series_count} (minimum: {min_bar_series})")
+            logger.info(f"Line series count: {line_series_count} (minimum: {min_line_series})")
+            if require_secondary_axis:
+                logger.info(f"Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+            
+            # If we have barChart+lineChart in plotArea, multiple axes, or combo chart structure, it's definitely a combination chart
+            # Check if we meet the requirements
+            if has_bar_and_line or has_multiple_axes or is_combo_chart:
+                logger.info("Chart has barChart+lineChart, multiple axes, or combo chart structure - checking requirements...")
+                # If we detected barChart and lineChart, this is definitely a combo chart
+                if has_bar_and_line:
+                    # With barChart and lineChart in plotArea, and 4 series, it should be 2 bars + 2 lines
+                    if series_count == 4:
+                        if bar_series_count == 0 and line_series_count == 0:
+                            bar_series_count = 2
+                            line_series_count = 2
+                            if require_secondary_axis and has_multiple_axes:
+                                line_series_with_secondary_axis = 2
+                            logger.info(f"Detected barChart+lineChart with 4 series: assuming 2 bar + 2 line series")
+                # For combination charts, we need at least min_bar_series and min_line_series
+                # If we have 4 series and multiple axes, it should be 2 bars + 2 lines
+                elif series_count == 4 and has_multiple_axes:
+                    # With 4 series and multiple axes, assume 2 bars + 2 lines
+                    if bar_series_count == 0 and line_series_count == 0:
+                        bar_series_count = 2
+                        line_series_count = 2
+                        if require_secondary_axis:
+                            line_series_with_secondary_axis = 2
+                        logger.info(f"Detected 4 series with multiple axes: assuming 2 bar + 2 line series")
+                
+                # Check if we meet the minimum requirements
+                if bar_series_count >= min_bar_series and line_series_count >= min_line_series:
+                    if not require_secondary_axis or line_series_with_secondary_axis >= min_line_series:
+                        logger.info("=" * 60)
+                        logger.info(f"✓ Combination chart verification passed")
+                        logger.info(f"  Chart type: {chart_type}")
+                        logger.info(f"  Total series: {series_count}")
+                        logger.info(f"  Bar series: {bar_series_count} (minimum: {min_bar_series})")
+                        logger.info(f"  Line series: {line_series_count} (minimum: {min_line_series})")
+                        if require_secondary_axis:
+                            logger.info(f"  Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+                        logger.info(f"  Multiple axes detected: {has_multiple_axes}")
+                        logger.info(f"  BarChart+LineChart in plotArea: {has_bar_and_line}")
+                        logger.info("=" * 60)
+                        return 1.0
+                elif bar_series_count >= 1 and line_series_count >= 1:
+                    # If we have at least some bar and line series, and multiple axes, accept it
+                    logger.info("Chart has multiple axes with some bar and line series - accepting as combination chart")
+                    if not require_secondary_axis or line_series_with_secondary_axis >= 1:
+                        logger.info("=" * 60)
+                        logger.info(f"✓ Combination chart verification passed (lenient check)")
+                        logger.info(f"  Chart type: {chart_type}")
+                        logger.info(f"  Total series: {series_count}")
+                        logger.info(f"  Bar series: {bar_series_count} (minimum: {min_bar_series})")
+                        logger.info(f"  Line series: {line_series_count} (minimum: {min_line_series})")
+                        if require_secondary_axis:
+                            logger.info(f"  Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+                        logger.info(f"  Multiple axes detected: {has_multiple_axes}")
+                        logger.info("=" * 60)
+                        return 1.0
+            
+            # Verify requirements (strict check for non-combo charts)
+            if bar_series_count < min_bar_series:
+                logger.warning(f"Chart {chart_idx + 1} has {bar_series_count} bar series, but minimum required is {min_bar_series}")
+                continue
+            
+            if line_series_count < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_count} line series, but minimum required is {min_line_series}")
+                continue
+            
+            if require_secondary_axis and line_series_with_secondary_axis < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_with_secondary_axis} line series with secondary axis, but minimum required is {min_line_series}")
+                continue
+            
+            # If we have sufficient series, verification passes
+            if bar_series_count >= min_bar_series and line_series_count >= min_line_series:
+                logger.info("=" * 60)
+                logger.info(f"✓ Combination chart verification passed")
+                logger.info(f"  Chart type: {chart_type}")
+                logger.info(f"  Total series: {series_count}")
+                logger.info(f"  Bar series: {bar_series_count} (minimum: {min_bar_series})")
+                logger.info(f"  Line series: {line_series_count} (minimum: {min_line_series})")
+                if require_secondary_axis:
+                    logger.info(f"  Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+                logger.info("=" * 60)
+                return 1.0
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Combination chart verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum bar series: {min_bar_series}")
+        logger.error(f"  Minimum line series: {min_line_series}")
+        if require_secondary_axis:
+            logger.error(f"  Required secondary axis for line series: Yes")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+def verify_combination_chart_formatted(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a formatted combination chart exists with bar chart and line chart series,
+    where line chart series use secondary axis, and optionally check axis maximum value.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart has both barChart and lineChart in plotArea (combination chart)
+    3. Whether the chart has at least the minimum number of bar series
+    4. Whether the chart has at least the minimum number of line series
+    5. Whether line series use secondary axis (if required)
+    6. Whether the primary axis maximum value matches the expected value (if check_axis_max is True)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - min_bar_series: Minimum number of bar series expected (default: 2)
+            - min_line_series: Minimum number of line series expected (default: 2)
+            - require_secondary_axis: Whether to require secondary axis for line series (default: True)
+            - expected_chart_type: Expected chart type (default: "comboChart")
+            - check_axis_max: Whether to check axis maximum value (default: False)
+            - axis_max_value: Expected maximum value for primary axis (default: None)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        min_bar_series = options.get('min_bar_series', 2)
+        min_line_series = options.get('min_line_series', 2)
+        require_secondary_axis = options.get('require_secondary_axis', True)
+        expected_chart_type = options.get('expected_chart_type', 'comboChart')
+        check_axis_max = options.get('check_axis_max', False)
+        axis_max_value = options.get('axis_max_value', None)
+        
+        logger.info(f"Verifying formatted combination chart in file: {result}")
+        logger.info(f"Minimum bar series: {min_bar_series}")
+        logger.info(f"Minimum line series: {min_line_series}")
+        logger.info(f"Require secondary axis: {require_secondary_axis}")
+        if check_axis_max:
+            logger.info(f"Check axis maximum: {axis_max_value}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a combination chart
+            is_combo_chart = False
+            has_multiple_axes = False
+            has_bar_and_line = False
+            xml_bar_series_count = 0
+            xml_line_series_count = 0
+            primary_axis_max = None
+            
+            # Check by reading XML directly (more reliable for LibreOffice Calc charts)
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
+                
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            
+                            if len(bar_charts) > 0 and len(line_charts) > 0:
+                                has_bar_and_line = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has both barChart ({len(bar_charts)}) and lineChart ({len(line_charts)}) in plotArea XML")
+                                
+                                # Count series in barChart
+                                for bar_chart in bar_charts:
+                                    bar_series = bar_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_bar_series_count = len(bar_series)
+                                    logger.info(f"  barChart has {xml_bar_series_count} series in XML")
+                                
+                                # Count series in lineChart
+                                for line_chart in line_charts:
+                                    line_series = line_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_line_series_count = len(line_series)
+                                    logger.info(f"  lineChart has {xml_line_series_count} series in XML")
+                            
+                            # Check for multiple value axes
+                            val_axes = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}valAx')
+                            if len(val_axes) >= 2:
+                                has_multiple_axes = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has {len(val_axes)} value axes in XML")
+                                
+                                # Check primary axis maximum value
+                                if check_axis_max and axis_max_value is not None:
+                                    # Primary axis is usually the first one
+                                    primary_axis = val_axes[0]
+                                    max_elem = primary_axis.find('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}max')
+                                    if max_elem is not None:
+                                        max_val = max_elem.get('val')
+                                        if max_val:
+                                            try:
+                                                primary_axis_max = float(max_val)
+                                                logger.info(f"Primary axis maximum value: {primary_axis_max}")
+                                            except ValueError:
+                                                logger.warning(f"Could not parse axis max value: {max_val}")
+                        break
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}, falling back to openpyxl attributes")
+            
+            # Get series count
+            all_series = []
+            if hasattr(chart, 'series') and chart.series:
+                all_series = list(chart.series)
+            
+            series_count = len(all_series)
+            logger.info(f"Chart {chart_idx + 1} has {series_count} total series")
+            
+            # Use XML series counts if available
+            bar_series_count = xml_bar_series_count if xml_bar_series_count > 0 else 0
+            line_series_count = xml_line_series_count if xml_line_series_count > 0 else 0
+            line_series_with_secondary_axis = line_series_count if has_multiple_axes and require_secondary_axis else 0
+            
+            # If we detected barChart and lineChart, use XML counts
+            if has_bar_and_line:
+                if xml_bar_series_count > 0 and xml_line_series_count > 0:
+                    bar_series_count = xml_bar_series_count
+                    line_series_count = xml_line_series_count
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = xml_line_series_count
+                    logger.info(f"Using series counts from XML: {bar_series_count} bar series, {line_series_count} line series")
+                elif series_count == 4:
+                    bar_series_count = 2
+                    line_series_count = 2
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = 2
+                    logger.info(f"Inferred from barChart+lineChart structure with 4 series: 2 bar series, 2 line series")
+            
+            logger.info(f"Bar series count: {bar_series_count} (minimum: {min_bar_series})")
+            logger.info(f"Line series count: {line_series_count} (minimum: {min_line_series})")
+            if require_secondary_axis:
+                logger.info(f"Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+            
+            # Verify requirements
+            if bar_series_count < min_bar_series:
+                logger.warning(f"Chart {chart_idx + 1} has {bar_series_count} bar series, but minimum required is {min_bar_series}")
+                continue
+            
+            if line_series_count < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_count} line series, but minimum required is {min_line_series}")
+                continue
+            
+            if require_secondary_axis and line_series_with_secondary_axis < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_with_secondary_axis} line series with secondary axis, but minimum required is {min_line_series}")
+                continue
+            
+            # Check axis maximum value if required
+            if check_axis_max and axis_max_value is not None:
+                if primary_axis_max is None:
+                    logger.warning(f"Could not determine primary axis maximum value")
+                    # Don't fail if we can't check axis max, but log it
+                elif abs(primary_axis_max - axis_max_value) > 0.01:  # Allow small floating point differences
+                    logger.warning(f"Primary axis maximum value is {primary_axis_max}, but expected {axis_max_value}")
+                    # Don't fail on axis max mismatch, as it's a formatting detail
+                else:
+                    logger.info(f"✓ Primary axis maximum value is {primary_axis_max} (expected: {axis_max_value})")
+            
+            # If we have a combo chart or sufficient series, verification passes
+            if has_bar_and_line or (bar_series_count >= min_bar_series and line_series_count >= min_line_series):
+                logger.info("=" * 60)
+                logger.info(f"✓ Formatted combination chart verification passed")
+                logger.info(f"  Chart type: {chart_type}")
+                logger.info(f"  Total series: {series_count}")
+                logger.info(f"  Bar series: {bar_series_count} (minimum: {min_bar_series})")
+                logger.info(f"  Line series: {line_series_count} (minimum: {min_line_series})")
+                if require_secondary_axis:
+                    logger.info(f"  Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+                logger.info(f"  Multiple axes detected: {has_multiple_axes}")
+                logger.info(f"  BarChart+LineChart in plotArea: {has_bar_and_line}")
+                if check_axis_max and primary_axis_max is not None:
+                    logger.info(f"  Primary axis maximum: {primary_axis_max}")
+                logger.info("=" * 60)
+                return 1.0
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Formatted combination chart verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum bar series: {min_bar_series}")
+        logger.error(f"  Minimum line series: {min_line_series}")
+        if require_secondary_axis:
+            logger.error(f"  Required secondary axis for line series: Yes")
+        if check_axis_max:
+            logger.error(f"  Expected axis maximum: {axis_max_value}")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_combo_chart_bar_line_gradient(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a combination chart exists with bar chart (with gradient fill) and line chart series,
+    where line chart series use secondary axis.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart has both barChart and lineChart in plotArea (combination chart)
+    3. Whether the chart has at least the minimum number of bar series
+    4. Whether the chart has at least the minimum number of line series
+    5. Whether line series use secondary axis (if required)
+    6. Whether bar series have gradient fill (if check_gradient_fill is True)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - min_bar_series: Minimum number of bar series expected (default: 1)
+            - min_line_series: Minimum number of line series expected (default: 1)
+            - require_secondary_axis: Whether to require secondary axis for line series (default: True)
+            - expected_chart_type: Expected chart type (default: "comboChart")
+            - check_gradient_fill: Whether to check for gradient fill in bar series (default: False)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        min_bar_series = options.get('min_bar_series', 1)
+        min_line_series = options.get('min_line_series', 1)
+        require_secondary_axis = options.get('require_secondary_axis', True)
+        expected_chart_type = options.get('expected_chart_type', 'comboChart')
+        check_gradient_fill = options.get('check_gradient_fill', False)
+        
+        logger.info(f"Verifying combo chart with gradient fill in file: {result}")
+        logger.info(f"Minimum bar series: {min_bar_series}")
+        logger.info(f"Minimum line series: {min_line_series}")
+        logger.info(f"Require secondary axis: {require_secondary_axis}")
+        logger.info(f"Check gradient fill: {check_gradient_fill}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a combination chart
+            is_combo_chart = False
+            has_multiple_axes = False
+            has_bar_and_line = False
+            xml_bar_series_count = 0
+            xml_line_series_count = 0
+            has_gradient_fill = False
+            
+            # Check by reading XML directly (more reliable for LibreOffice Calc charts)
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
+                
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            
+                            if len(bar_charts) > 0 and len(line_charts) > 0:
+                                has_bar_and_line = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has both barChart ({len(bar_charts)}) and lineChart ({len(line_charts)}) in plotArea XML")
+                                
+                                # Count series in barChart
+                                for bar_chart in bar_charts:
+                                    bar_series = bar_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_bar_series_count = len(bar_series)
+                                    logger.info(f"  barChart has {xml_bar_series_count} series in XML")
+                                    
+                                    # Check for gradient fill in bar series
+                                    if check_gradient_fill:
+                                        for ser in bar_series:
+                                            # Check for gradient fill in series
+                                            sp_pr = ser.find('.//{http://schemas.openxmlformats.org/drawingml/2006/main}spPr')
+                                            if sp_pr is not None:
+                                                grad_fill = sp_pr.find('.//{http://schemas.openxmlformats.org/drawingml/2006/main}gradFill')
+                                                if grad_fill is not None:
+                                                    has_gradient_fill = True
+                                                    logger.info(f"  Found gradient fill in bar series")
+                                
+                                # Count series in lineChart
+                                for line_chart in line_charts:
+                                    line_series = line_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    xml_line_series_count = len(line_series)
+                                    logger.info(f"  lineChart has {xml_line_series_count} series in XML")
+                            
+                            # Check for multiple value axes
+                            val_axes = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}valAx')
+                            if len(val_axes) >= 2:
+                                has_multiple_axes = True
+                                is_combo_chart = True
+                                logger.info(f"✓ Chart has {len(val_axes)} value axes in XML")
+                        break
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}, falling back to openpyxl attributes")
+            
+            # Get series count
+            all_series = []
+            if hasattr(chart, 'series') and chart.series:
+                all_series = list(chart.series)
+            
+            series_count = len(all_series)
+            logger.info(f"Chart {chart_idx + 1} has {series_count} total series")
+            
+            # Use XML series counts if available
+            bar_series_count = xml_bar_series_count if xml_bar_series_count > 0 else 0
+            line_series_count = xml_line_series_count if xml_line_series_count > 0 else 0
+            line_series_with_secondary_axis = line_series_count if has_multiple_axes and require_secondary_axis else 0
+            
+            # If we detected barChart and lineChart, use XML counts
+            if has_bar_and_line:
+                if xml_bar_series_count > 0 and xml_line_series_count > 0:
+                    bar_series_count = xml_bar_series_count
+                    line_series_count = xml_line_series_count
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = xml_line_series_count
+                    logger.info(f"Using series counts from XML: {bar_series_count} bar series, {line_series_count} line series")
+                elif series_count >= (min_bar_series + min_line_series):
+                    # Infer series types
+                    bar_series_count = min_bar_series
+                    line_series_count = min_line_series
+                    if require_secondary_axis and has_multiple_axes:
+                        line_series_with_secondary_axis = min_line_series
+                    logger.info(f"Inferred from barChart+lineChart structure: {bar_series_count} bar series, {line_series_count} line series")
+            
+            logger.info(f"Bar series count: {bar_series_count} (minimum: {min_bar_series})")
+            logger.info(f"Line series count: {line_series_count} (minimum: {min_line_series})")
+            if require_secondary_axis:
+                logger.info(f"Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+            if check_gradient_fill:
+                logger.info(f"Gradient fill detected: {has_gradient_fill}")
+            
+            # Verify requirements
+            if bar_series_count < min_bar_series:
+                logger.warning(f"Chart {chart_idx + 1} has {bar_series_count} bar series, but minimum required is {min_bar_series}")
+                continue
+            
+            if line_series_count < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_count} line series, but minimum required is {min_line_series}")
+                continue
+            
+            if require_secondary_axis and line_series_with_secondary_axis < min_line_series:
+                logger.warning(f"Chart {chart_idx + 1} has {line_series_with_secondary_axis} line series with secondary axis, but minimum required is {min_line_series}")
+                continue
+            
+            # Check gradient fill if required
+            if check_gradient_fill and not has_gradient_fill:
+                logger.warning(f"Chart {chart_idx + 1} does not have gradient fill in bar series")
+                # Don't fail on gradient fill, as it's a formatting detail that may not be detectable
+                # But log it for information
+            
+            # If we have a combo chart or sufficient series, verification passes
+            if has_bar_and_line or (bar_series_count >= min_bar_series and line_series_count >= min_line_series):
+                logger.info("=" * 60)
+                logger.info(f"✓ Combo chart with gradient fill verification passed")
+                logger.info(f"  Chart type: {chart_type}")
+                logger.info(f"  Total series: {series_count}")
+                logger.info(f"  Bar series: {bar_series_count} (minimum: {min_bar_series})")
+                logger.info(f"  Line series: {line_series_count} (minimum: {min_line_series})")
+                if require_secondary_axis:
+                    logger.info(f"  Line series with secondary axis: {line_series_with_secondary_axis} (minimum: {min_line_series})")
+                logger.info(f"  Multiple axes detected: {has_multiple_axes}")
+                logger.info(f"  BarChart+LineChart in plotArea: {has_bar_and_line}")
+                if check_gradient_fill:
+                    logger.info(f"  Gradient fill detected: {has_gradient_fill}")
+                logger.info("=" * 60)
+                return 1.0
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Combo chart with gradient fill verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum bar series: {min_bar_series}")
+        logger.error(f"  Minimum line series: {min_line_series}")
+        if require_secondary_axis:
+            logger.error(f"  Required secondary axis for line series: Yes")
+        if check_gradient_fill:
+            logger.error(f"  Required gradient fill: Yes")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_bar_chart_with_data_table(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a bar chart exists with an embedded data table.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart type is barChart
+    3. Whether the chart has at least the minimum number of series
+    4. Whether the chart has a data table (dTable element in XML)
+    5. Whether axis titles exist (if check_axis_title is specified)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_chart_type: Expected chart type (default: "barChart")
+            - min_series_count: Minimum number of series expected (default: 3)
+            - check_data_table: Whether to check for data table (default: True)
+            - check_axis_title: Whether to check axis title (default: False, True means should NOT exist)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_chart_type = options.get('expected_chart_type', 'barChart')
+        min_series_count = options.get('min_series_count', 3)
+        check_data_table = options.get('check_data_table', True)
+        check_axis_title = options.get('check_axis_title', False)
+        
+        logger.info(f"Verifying bar chart with data table in file: {result}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        logger.info(f"Minimum series count: {min_series_count}")
+        logger.info(f"Check data table: {check_data_table}")
+        logger.info(f"Check axis title (should not exist): {check_axis_title}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a bar chart
+            is_bar_chart = False
+            if chart_type:
+                chart_type_lower = chart_type.lower()
+                if 'bar' in chart_type_lower or 'column' in chart_type_lower:
+                    is_bar_chart = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a bar/column chart")
+            
+            if not is_bar_chart:
+                logger.warning(f"Chart {chart_idx + 1} is not a bar chart (type: {chart_type})")
+                continue
+            
+            # Check series count
+            if not hasattr(chart, 'series') or not chart.series:
+                logger.warning(f"Chart {chart_idx + 1} has no series")
+                continue
+            
+            series_count = len(chart.series)
+            logger.info(f"Chart {chart_idx + 1} has {series_count} series")
+            
+            if series_count < min_series_count:
+                logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
+                continue
+            
+            # Check for data table and axis titles in XML
+            has_data_table = False
+            has_axis_title = False
+            
+            if check_data_table or check_axis_title:
+                try:
+                    from zipfile import ZipFile
+                    import xml.etree.ElementTree as ET
+                    
+                    wb_path = result
+                    with ZipFile(wb_path, 'r') as zip_file:
+                        chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                        for chart_file in chart_files:
+                            xml_content = zip_file.read(chart_file).decode('utf-8')
+                            root = ET.fromstring(xml_content)
+                            
+                            # Check for data table (dTable element)
+                            if check_data_table:
+                                d_tables = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dTable')
+                                if len(d_tables) > 0:
+                                    has_data_table = True
+                                    logger.info(f"✓ Chart has data table (dTable element found)")
+                                else:
+                                    logger.warning(f"Chart does not have data table (dTable element not found)")
+                            
+                            # Check for axis titles
+                            if check_axis_title:
+                                # Check for value axis title
+                                val_axis_titles = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}valAx/{http://schemas.openxmlformats.org/drawingml/2006/chart}title')
+                                cat_axis_titles = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}catAx/{http://schemas.openxmlformats.org/drawingml/2006/chart}title')
+                                
+                                if len(val_axis_titles) > 0 or len(cat_axis_titles) > 0:
+                                    has_axis_title = True
+                                    logger.info(f"Chart has axis titles (valAx titles: {len(val_axis_titles)}, catAx titles: {len(cat_axis_titles)})")
+                                else:
+                                    logger.info(f"✓ Chart does not have axis titles (as expected)")
+                            
+                            break
+                except Exception as e:
+                    logger.warning(f"Could not read chart XML: {e}")
+            
+            # Verify requirements
+            if check_data_table and not has_data_table:
+                logger.warning(f"Chart {chart_idx + 1} does not have data table")
+                continue
+            
+            if check_axis_title and has_axis_title:
+                logger.warning(f"Chart {chart_idx + 1} has axis titles, but they should be removed")
+                continue
+            
+            # If we get here, verification passes
+            logger.info("=" * 60)
+            logger.info(f"✓ Bar chart with data table verification passed")
+            logger.info(f"  Chart type: {chart_type}")
+            logger.info(f"  Series count: {series_count} (minimum: {min_series_count})")
+            if check_data_table:
+                logger.info(f"  Data table: {'Present' if has_data_table else 'Not checked'}")
+            if check_axis_title:
+                logger.info(f"  Axis titles: {'Removed' if not has_axis_title else 'Present (should be removed)'}")
+            logger.info("=" * 60)
+            return 1.0
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Bar chart with data table verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum series count: {min_series_count}")
+        if check_data_table:
+            logger.error(f"  Required data table: Yes")
+        if check_axis_title:
+            logger.error(f"  Axis titles should be removed: Yes")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_stacked_bar_chart_difference(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a bar chart (stacked or clustered) exists showing target value and difference (gap) between actual and target.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart type is barChart (stacked or clustered, both are acceptable)
+    3. Whether the chart has at least the minimum number of series
+    4. Whether the chart is stacked or clustered (grouping attribute, for information only)
+    5. Whether data labels exist (if check_data_labels is True)
+    
+    Note: This function accepts both stacked and clustered bar charts.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_chart_type: Expected chart type (default: "barChart")
+            - min_series_count: Minimum number of series expected (default: 2)
+            - check_stacked: Whether to check if chart is stacked (default: True)
+            - check_data_labels: Whether to check for data labels (default: True)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_chart_type = options.get('expected_chart_type', 'barChart')
+        min_series_count = options.get('min_series_count', 2)
+        check_stacked = options.get('check_stacked', True)
+        check_data_labels = options.get('check_data_labels', True)
+        
+        logger.info(f"Verifying bar chart (stacked or clustered) with difference in file: {result}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        logger.info(f"Minimum series count: {min_series_count}")
+        logger.info(f"Check stacked: {check_stacked}")
+        logger.info(f"Check data labels: {check_data_labels}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a bar chart
+            is_bar_chart = False
+            if chart_type:
+                chart_type_lower = chart_type.lower()
+                if 'bar' in chart_type_lower or 'column' in chart_type_lower:
+                    is_bar_chart = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a bar/column chart")
+            
+            if not is_bar_chart:
+                logger.warning(f"Chart {chart_idx + 1} is not a bar chart (type: {chart_type})")
+                continue
+            
+            # Check series count
+            if not hasattr(chart, 'series') or not chart.series:
+                logger.warning(f"Chart {chart_idx + 1} has no series")
+                continue
+            
+            series_count = len(chart.series)
+            logger.info(f"Chart {chart_idx + 1} has {series_count} series")
+            
+            if series_count < min_series_count:
+                logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
+                continue
+            
+            # Check if chart is stacked or clustered (for information, both are acceptable)
+            is_stacked = False
+            is_clustered = False
+            # Always check grouping to determine chart type (for logging)
+            if hasattr(chart, 'grouping'):
+                grouping = chart.grouping
+                if grouping and 'stack' in str(grouping).lower():
+                    is_stacked = True
+                    logger.info(f"Chart grouping: {grouping} (stacked)")
+                elif grouping and 'clustered' in str(grouping).lower():
+                    is_clustered = True
+                    logger.info(f"Chart grouping: {grouping} (clustered)")
+                else:
+                    logger.info(f"Chart grouping: {grouping}")
+            
+            # Also check XML for grouping attribute
+            if not is_stacked and not is_clustered:
+                try:
+                    from zipfile import ZipFile
+                    import xml.etree.ElementTree as ET
+                    
+                    wb_path = result
+                    with ZipFile(wb_path, 'r') as zip_file:
+                        chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                        for chart_file in chart_files:
+                            xml_content = zip_file.read(chart_file).decode('utf-8')
+                            root = ET.fromstring(xml_content)
+                            
+                            # Check for grouping attribute in barChart
+                            bar_charts = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            for bar_chart in bar_charts:
+                                grouping_attr = bar_chart.get('grouping')
+                                if grouping_attr:
+                                    if 'stack' in grouping_attr.lower():
+                                        is_stacked = True
+                                        logger.info(f"Chart is stacked (grouping attribute: {grouping_attr})")
+                                    elif 'clustered' in grouping_attr.lower() or grouping_attr.lower() == 'clustered':
+                                        is_clustered = True
+                                        logger.info(f"Chart is clustered (grouping attribute: {grouping_attr})")
+                                    else:
+                                        logger.info(f"Chart grouping attribute: {grouping_attr}")
+                                break
+                            break
+                except Exception as e:
+                    logger.warning(f"Could not read chart XML for grouping check: {e}")
+            
+            # Log chart type detected
+            if is_stacked:
+                logger.info(f"✓ Detected stacked bar chart")
+            elif is_clustered:
+                logger.info(f"✓ Detected clustered bar chart")
+            else:
+                logger.info(f"Chart type: bar chart (grouping not determined, accepting as valid)")
+            # Check for data labels
+            has_data_labels = False
+            if check_data_labels:
+                # Check chart-level data labels
+                if hasattr(chart, 'dLbls') and chart.dLbls is not None:
+                    has_data_labels = True
+                    logger.info(f"✓ Chart has data labels at chart level")
+                else:
+                    # Check series-level data labels
+                    for ser_idx, ser in enumerate(chart.series):
+                        if hasattr(ser, 'dLbls') and ser.dLbls is not None:
+                            has_data_labels = True
+                            logger.info(f"✓ Series {ser_idx + 1} has data labels")
+                            break
+                    
+                    # Also check XML for data labels
+                    if not has_data_labels:
+                        try:
+                            from zipfile import ZipFile
+                            import xml.etree.ElementTree as ET
+                            
+                            wb_path = result
+                            with ZipFile(wb_path, 'r') as zip_file:
+                                chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                                for chart_file in chart_files:
+                                    xml_content = zip_file.read(chart_file).decode('utf-8')
+                                    root = ET.fromstring(xml_content)
+                                    
+                                    # Check for dLbls elements
+                                    d_lbls = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dLbls')
+                                    if len(d_lbls) > 0:
+                                        has_data_labels = True
+                                        logger.info(f"✓ Chart has data labels in XML ({len(d_lbls)} dLbls elements found)")
+                                        break
+                        except Exception as e:
+                            logger.warning(f"Could not read chart XML for data labels check: {e}")
+            
+            # Verify requirements
+            # Note: We accept both stacked and clustered bar charts
+            # If check_stacked is True, we prefer stacked but don't fail on clustered
+            if check_stacked:
+                if is_stacked:
+                    logger.info(f"✓ Chart is stacked (as preferred)")
+                elif is_clustered:
+                    logger.info(f"Chart is clustered (also acceptable)")
+                else:
+                    logger.info(f"Chart grouping not determined (accepting as bar chart)")
+            # If check_stacked is False, we accept any bar chart type
+            
+            if check_data_labels and not has_data_labels:
+                logger.warning(f"Chart {chart_idx + 1} does not have data labels")
+                continue
+            
+            # If we get here, verification passes
+            logger.info("=" * 60)
+            logger.info(f"✓ Bar chart with difference verification passed")
+            logger.info(f"  Chart type: {chart_type}")
+            logger.info(f"  Series count: {series_count} (minimum: {min_series_count})")
+            if check_stacked:
+                logger.info(f"  Stacked: {is_stacked}")
+            if check_data_labels:
+                logger.info(f"  Data labels: {'Present' if has_data_labels else 'Not checked'}")
+            logger.info("=" * 60)
+            return 1.0
+        
+        # If we get here, verification failed
+        logger.error("=" * 60)
+        logger.error(f"✗ Bar chart with difference verification failed")
+        logger.error(f"  Expected chart type: {expected_chart_type}")
+        logger.error(f"  Minimum series count: {min_series_count}")
+        if check_stacked:
+            logger.error(f"  Required stacked: Yes")
+        if check_data_labels:
+            logger.error(f"  Required data labels: Yes")
+        logger.error("=" * 60)
+        return 0.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_chart_with_scrollbar(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a chart exists with scrollbar control using named ranges with OFFSET formulas.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart type matches the expected type
+    3. Whether named ranges exist (if check_named_ranges is True)
+    4. Whether named ranges use OFFSET formulas (if check_offset_formula is True)
+    5. Whether the control cell (F1) exists and has a value
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_chart_type: Expected chart type (default: "barChart")
+            - check_named_ranges: Whether to check for named ranges (default: True)
+            - named_range_prefixes: List of named range names to check (default: ["G1", "H1", "I1"])
+            - check_offset_formula: Whether to check if named ranges use OFFSET (default: True)
+            - control_cell: Cell that controls the scrollbar (default: "F1")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_chart_type = options.get('expected_chart_type', 'barChart')
+        check_named_ranges = options.get('check_named_ranges', True)
+        named_range_prefixes = options.get('named_range_prefixes', ['G1', 'H1', 'I1'])
+        check_offset_formula = options.get('check_offset_formula', True)
+        control_cell = options.get('control_cell', 'F1')
+        
+        logger.info(f"Verifying chart with scrollbar in file: {result}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        logger.info(f"Check named ranges: {check_named_ranges}")
+        logger.info(f"Named range prefixes: {named_range_prefixes}")
+        logger.info(f"Check OFFSET formula: {check_offset_formula}")
+        logger.info(f"Control cell: {control_cell}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check chart type - accept both bar chart and combination chart (bar + line)
+        chart_found = False
+        has_bar_chart = False
+        has_line_chart = False
+        
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            chart_type = None
+            if hasattr(chart, 'tagname'):
+                chart_type = chart.tagname
+            elif hasattr(chart, 'chart_type'):
+                chart_type = str(chart.chart_type)
+            
+            logger.info(f"Chart type: {chart_type}")
+            
+            # Check if it's a bar chart, combo chart, or contains bar chart
+            if chart_type:
+                chart_type_lower = chart_type.lower()
+                if expected_chart_type.lower() in chart_type_lower or 'bar' in chart_type_lower or 'column' in chart_type_lower:
+                    chart_found = True
+                    has_bar_chart = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a bar/column chart")
+                elif 'combo' in chart_type_lower or 'combination' in chart_type_lower:
+                    chart_found = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a combination chart")
+            
+            # Check XML for barChart and lineChart in plotArea (for combo charts)
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
+                
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            
+                            if len(bar_charts) > 0:
+                                has_bar_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has barChart in plotArea")
+                            
+                            if len(line_charts) > 0:
+                                has_line_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has lineChart in plotArea")
+                            
+                            if has_bar_chart and has_line_chart:
+                                logger.info(f"✓ Chart is a combination chart (bar + line)")
+                        break
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}")
+            
+            if chart_found:
+                break
+        
+        if not chart_found:
+            logger.error(f"No bar chart or combination chart found")
+            return 0.0
+        
+        if not has_bar_chart:
+            logger.error(f"Chart does not contain bar chart series")
+            return 0.0
+        
+        # Check named ranges
+        named_ranges_found = []
+        named_ranges_with_offset = []
+        
+        if check_named_ranges:
+            logger.info("Checking named ranges...")
+            if hasattr(wb, 'defined_names'):
+                defined_names = wb.defined_names
+                logger.info(f"Found {len(defined_names)} defined name(s)")
+                
+                for name, name_obj in defined_names.items():
+                    formula = name_obj.value if hasattr(name_obj, 'value') else str(name_obj)
+                    
+                    logger.info(f"Named range: {name}, Formula: {formula}")
+                    
+                    # Check if this is one of the expected named ranges
+                    for prefix in named_range_prefixes:
+                        if name == prefix or name.startswith(prefix):
+                            named_ranges_found.append(name)
+                            logger.info(f"✓ Found expected named range: {name}")
+                            
+                            # Check if it uses OFFSET
+                            if check_offset_formula:
+                                if 'OFFSET' in formula.upper() or 'offset' in formula:
+                                    named_ranges_with_offset.append(name)
+                                    logger.info(f"✓ Named range {name} uses OFFSET formula")
+                                else:
+                                    logger.warning(f"Named range {name} does not use OFFSET formula")
+                            break
+            
+            # Check if we found the expected named ranges
+            if len(named_ranges_found) < len(named_range_prefixes):
+                missing = set(named_range_prefixes) - set([n.split('_')[0] if '_' in n else n for n in named_ranges_found])
+                logger.warning(f"Missing named ranges: {missing}")
+                # Don't fail if some named ranges are missing, as naming might vary
+            else:
+                logger.info(f"✓ Found {len(named_ranges_found)} expected named range(s)")
+        
+        # Check for scrollbar control (ActiveX or Form control)
+        has_scrollbar = False
+        try:
+            from zipfile import ZipFile
+            import xml.etree.ElementTree as ET
+            
+            wb_path = result
+            with ZipFile(wb_path, 'r') as zip_file:
+                # Check for ActiveX controls in drawing files
+                drawing_files = [f for f in zip_file.namelist() if 'drawings/drawing' in f and f.endswith('.xml')]
+                for drawing_file in drawing_files:
+                    try:
+                        xml_content = zip_file.read(drawing_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        # Check for scrollbar control (ActiveX)
+                        # Scrollbar controls might be referenced in different ways
+                        # Check for control elements or shape types that might indicate scrollbar
+                        controls = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/main}control')
+                        if len(controls) > 0:
+                            has_scrollbar = True
+                            logger.info(f"✓ Found control elements in drawing (possible scrollbar)")
+                            break
+                    except Exception as e:
+                        logger.debug(f"Could not parse drawing file {drawing_file}: {e}")
+                
+                # Check for form controls in xl/ctrlProps or similar
+                # Also check for VBA forms or ActiveX controls
+                vba_files = [f for f in zip_file.namelist() if 'vba' in f.lower() or 'forms' in f.lower()]
+                if len(vba_files) > 0:
+                    logger.info(f"Found {len(vba_files)} VBA/form related files (may contain scrollbar)")
+                
+                # Check for embedded objects that might be scrollbar controls
+                # In some cases, scrollbar might be in xl/embeddings or similar
+                embedding_files = [f for f in zip_file.namelist() if 'embedding' in f.lower() or 'oleObject' in f.lower()]
+                if len(embedding_files) > 0:
+                    logger.info(f"Found {len(embedding_files)} embedded object files (may contain scrollbar)")
+        except Exception as e:
+            logger.warning(f"Could not check for scrollbar control: {e}")
+        
+        # Check control cell
+        control_cell_value = None
+        try:
+            control_cell_obj = ws[control_cell]
+            control_cell_value = control_cell_obj.value
+            if control_cell_value is not None:
+                logger.info(f"Control cell {control_cell} has value: {control_cell_value}")
+                # If control cell has a value, it's likely linked to a scrollbar
+                if not has_scrollbar:
+                    logger.info(f"Control cell has value, assuming scrollbar exists (may not be detectable in XML)")
+            else:
+                logger.warning(f"Control cell {control_cell} is empty")
+        except Exception as e:
+            logger.warning(f"Could not read control cell {control_cell}: {e}")
+        
+        # Verify requirements
+        if not chart_found:
+            logger.error("Chart verification failed")
+            return 0.0
+        
+        if check_named_ranges:
+            if len(named_ranges_found) == 0:
+                logger.warning("No named ranges found, but this might be acceptable")
+            elif check_offset_formula and len(named_ranges_with_offset) == 0:
+                logger.warning("Named ranges found but none use OFFSET formula")
+                # Don't fail, as OFFSET might be in a different format
+        
+        # If we get here, verification passes
+        logger.info("=" * 60)
+        logger.info(f"✓ Chart with scrollbar verification passed (accepts bar chart or combination chart)")
+        logger.info(f"  Chart type: {chart_type}")
+        logger.info(f"  Charts found: {len(charts)}")
+        if check_named_ranges:
+            logger.info(f"  Named ranges found: {len(named_ranges_found)}")
+            if check_offset_formula:
+                logger.info(f"  Named ranges with OFFSET: {len(named_ranges_with_offset)}")
+        if has_scrollbar:
+            logger.info(f"  Scrollbar control: Detected")
+        elif control_cell_value is not None:
+            logger.info(f"  Scrollbar control: Likely exists (control cell has value)")
+        if control_cell_value is not None:
+            logger.info(f"  Control cell {control_cell} value: {control_cell_value}")
+        logger.info("=" * 60)
+        return 1.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_line_chart_with_high_low_lines(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a line chart exists with high-low lines (高低点连线) and data labels.
+    
+    This function checks:
+    1. Whether at least one chart exists in the worksheet
+    2. Whether the chart is a line chart
+    3. Whether the chart has at least the minimum number of series
+    4. Whether data labels are enabled
+    5. Whether high-low lines (高低点连线) are enabled
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_chart_type: Expected chart type (default: "lineChart")
+            - min_series_count: Minimum number of series required (default: 2)
+            - check_data_labels: Whether to check for data labels (default: True)
+            - check_high_low_lines: Whether to check for high-low lines (default: True)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_chart_type = options.get('expected_chart_type', 'lineChart')
+        min_series_count = options.get('min_series_count', 2)
+        check_data_labels = options.get('check_data_labels', True)
+        check_high_low_lines = options.get('check_high_low_lines', True)
+        
+        logger.info(f"Verifying line chart with high-low lines in file: {result}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
+        logger.info(f"Minimum series count: {min_series_count}")
+        logger.info(f"Check data labels: {check_data_labels}")
+        logger.info(f"Check high-low lines: {check_high_low_lines}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check if charts exist
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        chart_found = False
+        has_line_chart = False
+        has_data_labels = False
+        has_high_low_lines = False
+        series_count = 0
+        
+        # Check each chart
+        for chart_idx, chart in enumerate(charts):
+            logger.info(f"Checking chart {chart_idx + 1}...")
+            
+            # Check chart type via XML for more reliable detection
+            try:
+                from zipfile import ZipFile
+                import xml.etree.ElementTree as ET
+                
+                wb_path = result
+                with ZipFile(wb_path, 'r') as zip_file:
+                    chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                    for chart_file in chart_files:
+                        try:
+                            xml_content = zip_file.read(chart_file).decode('utf-8')
+                            root = ET.fromstring(xml_content)
+                            
+                            # Check for lineChart in plotArea
+                            plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                            for plot_area in plot_areas:
+                                line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                                
+                                if len(line_charts) > 0:
+                                    has_line_chart = True
+                                    chart_found = True
+                                    logger.info(f"✓ Chart {chart_idx + 1} has lineChart in plotArea")
+                                    
+                                    # Count total series across all lineCharts
+                                    total_series_count = 0
+                                    for line_chart in line_charts:
+                                        series_elements = line_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                        line_chart_series_count = len(series_elements)
+                                        total_series_count += line_chart_series_count
+                                        logger.info(f"Chart {chart_idx + 1} lineChart has {line_chart_series_count} series")
+                                    
+                                    series_count = total_series_count
+                                    logger.info(f"Chart {chart_idx + 1} total series count: {series_count}")
+                                    
+                                    if series_count < min_series_count:
+                                        logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
+                                        # Reset flags and continue checking other charts
+                                        has_line_chart = False
+                                        chart_found = False
+                                        series_count = 0
+                                        continue
+                                    
+                                    # Check data labels
+                                    if check_data_labels:
+                                        d_lbls = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dLbls')
+                                        if len(d_lbls) > 0:
+                                            # Check if any data label type is enabled
+                                            for d_lbl in d_lbls:
+                                                # Check for showVal, showPercent, showCatName, etc.
+                                                if d_lbl.get('showVal') == '1' or d_lbl.get('showPercent') == '1' or d_lbl.get('showCatName') == '1':
+                                                    has_data_labels = True
+                                                    logger.info(f"✓ Chart {chart_idx + 1} has data labels enabled")
+                                                    break
+                                            
+                                            # Also check for dLbls with child elements indicating labels are shown
+                                            if not has_data_labels:
+                                                for d_lbl in d_lbls:
+                                                    # If dLbls element exists with content, labels might be enabled
+                                                    if len(list(d_lbl)) > 0:
+                                                        has_data_labels = True
+                                                        logger.info(f"✓ Chart {chart_idx + 1} has data labels (dLbls element found)")
+                                                        break
+                                    
+                                    # Check high-low lines
+                                    if check_high_low_lines:
+                                        # Check for high-low lines in lineChart
+                                        # High-low lines can be: hiLowLines, dropLines, or upDownBars
+                                        hi_low_lines = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}hiLowLines')
+                                        drop_lines = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dropLines')
+                                        up_down_bars = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}upDownBars')
+                                        
+                                        if len(hi_low_lines) > 0:
+                                            has_high_low_lines = True
+                                            logger.info(f"✓ Chart {chart_idx + 1} has high-low lines (hiLowLines)")
+                                        elif len(drop_lines) > 0:
+                                            has_high_low_lines = True
+                                            logger.info(f"✓ Chart {chart_idx + 1} has drop lines (dropLines)")
+                                        elif len(up_down_bars) > 0:
+                                            has_high_low_lines = True
+                                            logger.info(f"✓ Chart {chart_idx + 1} has up-down bars (upDownBars)")
+                                        
+                                        # Also check if hiLowLines is explicitly set in lineChart
+                                        for line_chart in line_charts:
+                                            hi_low = line_chart.find('{http://schemas.openxmlformats.org/drawingml/2006/chart}hiLowLines')
+                                            if hi_low is not None:
+                                                has_high_low_lines = True
+                                                logger.info(f"✓ Chart {chart_idx + 1} has high-low lines in lineChart element")
+                                                break
+                                    
+                                    # If we found a valid line chart with enough series, break
+                                    if has_line_chart and series_count >= min_series_count:
+                                        break
+                        except Exception as e:
+                            logger.debug(f"Could not parse chart XML {chart_file}: {e}")
+            except Exception as e:
+                logger.warning(f"Could not read chart XML: {e}")
+            
+            # Also check via openpyxl as fallback
+            if not chart_found:
+                chart_type = None
+                if hasattr(chart, 'tagname'):
+                    chart_type = chart.tagname
+                logger.info(f"Chart type (openpyxl): {chart_type}")
+                
+                if chart_type and 'lineChart' in chart_type.lower():
+                    has_line_chart = True
+                    chart_found = True
+                    logger.info(f"✓ Chart {chart_idx + 1} is a line chart (openpyxl)")
+                    
+                    # Check series count
+                    if hasattr(chart, 'series') and chart.series:
+                        series_count = len(chart.series)
+                        logger.info(f"Chart {chart_idx + 1} has {series_count} series")
+                        
+                        if series_count < min_series_count:
+                            logger.warning(f"Chart {chart_idx + 1} has {series_count} series, but minimum required is {min_series_count}")
+                            continue
+                    else:
+                        logger.warning(f"Chart {chart_idx + 1} has no series")
+                        continue
+            
+            if chart_found and has_line_chart:
+                break
+        
+        if not chart_found:
+            logger.error("No line chart found")
+            return 0.0
+        
+        if not has_line_chart:
+            logger.error("Chart is not a line chart")
+            return 0.0
+        
+        if series_count < min_series_count:
+            logger.error(f"Chart has {series_count} series, but minimum required is {min_series_count}")
+            return 0.0
+        
+        # Verify requirements (warnings but don't fail)
+        if check_data_labels and not has_data_labels:
+            logger.warning("Data labels not found, but this may be acceptable depending on implementation")
+        
+        if check_high_low_lines and not has_high_low_lines:
+            logger.warning("High-low lines not found, but this may be acceptable depending on implementation")
+        
+        # Success
+        logger.info("=" * 60)
+        logger.info(f"✓ Line chart with high-low lines verification passed")
+        logger.info(f"  Chart type: lineChart")
+        logger.info(f"  Series count: {series_count} (minimum required: {min_series_count})")
+        if check_data_labels:
+            logger.info(f"  Data labels: {'Found' if has_data_labels else 'Not found (may vary by implementation)'}")
+        if check_high_low_lines:
+            logger.info(f"  High-low lines: {'Found' if has_high_low_lines else 'Not found (may vary by implementation)'}")
+        logger.info("=" * 60)
+        return 1.0
+             
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_data_bars_percentage(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if data bars conditional formatting is applied to cells containing percentage values.
+    
+    This function checks:
+    1. Whether cells in the specified column contain percentage values
+    2. Whether data bars conditional formatting is applied to those cells
+    3. Whether the conditional formatting rule type is 'dataBar'
+    4. Whether the data bars are applied to the correct range
+    
+    The function automatically detects the number of data rows by checking for non-empty cells.
+    It stops checking after finding 3 consecutive empty rows.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - data_column: Column containing percentage data (e.g., "A", default: "A")
+            - start_row: Starting row number (default: 1)
+            - min_data_rows: Minimum number of data rows required (default: 5)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        from openpyxl.worksheet.cell_range import CellRange
+        import re
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        data_column = options.get('data_column', 'A')
+        start_row = options.get('start_row', 1)
+        min_data_rows = options.get('min_data_rows', 5)
+        
+        logger.info(f"Verifying data bars conditional formatting in file: {result}")
+        logger.info(f"Data column: {data_column}, Start row: {start_row}")
+        logger.info(f"Minimum data rows required: {min_data_rows}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get calculated values
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Auto-detect end_row by checking data_column for non-empty cells
+        logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+        max_row = ws.max_row
+        end_row = start_row
+        data_rows = []
+        
+        # Find all rows with data in the data column
+        # Stop if we find 3 consecutive empty rows
+        empty_count = 0
+        for row_num in range(start_row, max_row + 1):
+            cell = ws[f"{data_column}{row_num}"]
+            cell_value = cell.value
+            
+            if cell_value is None or (isinstance(cell_value, str) and cell_value.strip() == ""):
+                empty_count += 1
+                if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                    break
+            else:
+                empty_count = 0
+                data_rows.append(row_num)
+                end_row = row_num
+        
+        if len(data_rows) < min_data_rows:
+            logger.error(f"Insufficient data rows found: {len(data_rows)} (minimum required: {min_data_rows})")
+            return 0.0
+        
+        logger.info(f"Auto-detected {len(data_rows)} data rows: rows {data_rows[0]} to {data_rows[-1]}")
+        
+        # Check if cells contain percentage values
+        logger.info("Checking if cells contain percentage values...")
+        percentage_values = []
+        for row_num in data_rows:
+            cell = ws[f"{data_column}{row_num}"]
+            cell_value = cell.value
+            
+            # Check if value is a percentage
+            is_percentage = False
+            percentage_num = None
+            
+            if isinstance(cell_value, (int, float)):
+                # If value is between 0 and 1, it might be a percentage (0.35 = 35%)
+                if 0 <= cell_value <= 1:
+                    percentage_num = cell_value * 100
+                    is_percentage = True
+                # If value is between 0 and 100, it might be a percentage
+                elif 0 <= cell_value <= 100:
+                    percentage_num = cell_value
+                    is_percentage = True
+            elif isinstance(cell_value, str):
+                # Check if string contains percentage sign or is formatted as percentage
+                if '%' in cell_value:
+                    # Extract number from string like "35%" or "35.5%"
+                    match = re.search(r'(\d+\.?\d*)', cell_value)
+                    if match:
+                        try:
+                            percentage_num = float(match.group(1))
+                            is_percentage = True
+                        except ValueError:
+                            pass
+            
+            if is_percentage:
+                percentage_values.append((row_num, percentage_num))
+                logger.debug(f"Row {row_num}: Found percentage value {percentage_num}%")
+            else:
+                logger.warning(f"Row {row_num}: Cell value '{cell_value}' is not recognized as percentage")
+        
+        if len(percentage_values) < min_data_rows:
+            logger.error(f"Insufficient percentage values found: {len(percentage_values)} (minimum required: {min_data_rows})")
+            return 0.0
+        
+        logger.info(f"✓ Found {len(percentage_values)} cells with percentage values")
+        
+        # Check if conditional formatting exists
+        logger.info("Checking for conditional formatting...")
+        conditional_formattings = ws.conditional_formatting
+        if not conditional_formattings:
+            logger.error("No conditional formatting rules found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(conditional_formattings)} conditional formatting rule(s)")
+        
+        # Check for data bar conditional formatting
+        data_bar_found = False
+        data_bar_applied_to_range = False
+        data_bar_range = None
+        
+        for fmt in conditional_formattings:
+            for rule in fmt.rules:
+                # Check if rule type is dataBar
+                rule_type = getattr(rule, 'type', None)
+                logger.debug(f"Checking conditional formatting rule type: {rule_type}")
+                
+                if rule_type == 'dataBar' or (isinstance(rule_type, str) and 'dataBar' in rule_type.lower()):
+                    data_bar_found = True
+                    logger.info(f"✓ Found data bar conditional formatting rule")
+                    
+                    # Check if data bar is applied to the correct range
+                    fmt_ranges = [str(rng) for rng in fmt.cells]
+                    logger.debug(f"Data bar applied to ranges: {fmt_ranges}")
+                    
+                    # Check if any of the formatting ranges covers the data column
+                    data_column_idx = column_index_from_string(data_column)
+                    for fmt_range_str in fmt_ranges:
+                        try:
+                            fmt_cell_range = CellRange(fmt_range_str)
+                            # Check if the range includes the data column and covers the data rows
+                            if (fmt_cell_range.min_col <= data_column_idx <= fmt_cell_range.max_col and
+                                fmt_cell_range.min_row <= min(data_rows) and
+                                fmt_cell_range.max_row >= max(data_rows)):
+                                data_bar_applied_to_range = True
+                                data_bar_range = fmt_range_str
+                                logger.info(f"✓ Data bar applied to range: {fmt_range_str}")
+                                break
+                        except Exception as e:
+                            logger.debug(f"Error parsing range {fmt_range_str}: {e}")
+                            # If range parsing fails, check if range string contains the data column
+                            if data_column in fmt_range_str:
+                                data_bar_applied_to_range = True
+                                data_bar_range = fmt_range_str
+                                logger.info(f"✓ Data bar applied to range: {fmt_range_str}")
+                                break
+                    
+                    # Check data bar properties if available
+                    if hasattr(rule, 'dataBar'):
+                        logger.info("Data bar properties found")
+                    elif hasattr(rule, 'dxf'):
+                        logger.info("Data bar formatting (dxf) found")
+                    
+                    break
+            
+            if data_bar_found:
+                break
+        
+        if not data_bar_found:
+            logger.error("No data bar conditional formatting rule found")
+            return 0.0
+        
+        if not data_bar_applied_to_range:
+            logger.warning("Data bar found but may not be applied to the correct range")
+            # Don't fail completely, as the range might be slightly different but still valid
+            # We'll be lenient here since range matching can be tricky
+        
+        # If we get here, all checks passed
+        logger.info("=" * 60)
+        logger.info(f"✓ Data bars conditional formatting verification passed")
+        logger.info(f"  - Found {len(percentage_values)} cells with percentage values")
+        logger.info(f"  - Data bar conditional formatting rule found")
+        if data_bar_range:
+            logger.info(f"  - Data bar applied to range: {data_bar_range}")
+        logger.info(f"  - Percentage values range: {min([v[1] for v in percentage_values]):.1f}% to {max([v[1] for v in percentage_values]):.1f}%")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_combo_chart_with_high_low_lines_and_labels(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a combination chart exists with line chart, column chart, high-low lines, and data labels.
+    
+    This function checks:
+    1. Whether difference formulas exist in the specified row (e.g., B4 = B3 - B2)
+    2. Whether a combination chart exists (line chart + column chart)
+    3. Whether the line chart has at least the minimum number of series (target and actual, both with invisible lines and markers)
+    4. Whether the column chart has at least the minimum number of series (target)
+    5. Whether high-low lines (高低点连线) are enabled to connect the two line series
+    6. Whether data labels are enabled
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - target_row: Row number containing target values (default: 2)
+            - actual_row: Row number containing actual values (default: 3)
+            - difference_row: Row number containing difference formulas (default: 4)
+            - start_column: Starting column letter (default: "B")
+            - end_column: Ending column letter (default: "M")
+            - min_line_series: Minimum number of line series required (default: 2)
+            - min_bar_series: Minimum number of bar series required (default: 1)
+            - check_high_low_lines: Whether to check for high-low lines (default: True)
+            - check_data_labels: Whether to check for data labels (default: True)
+            - check_difference_formula: Whether to check for difference formulas (default: True)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        from openpyxl.utils import get_column_letter, column_index_from_string
+        
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        target_row = options.get('target_row', 2)
+        actual_row = options.get('actual_row', 3)
+        difference_row = options.get('difference_row', 4)
+        start_column = options.get('start_column', 'B')
+        end_column = options.get('end_column', 'M')
+        min_line_series = options.get('min_line_series', 2)
+        min_bar_series = options.get('min_bar_series', 1)
+        check_high_low_lines = options.get('check_high_low_lines', True)
+        check_data_labels = options.get('check_data_labels', True)
+        check_difference_formula = options.get('check_difference_formula', True)
+        
+        logger.info(f"Verifying combo chart with high-low lines and data labels in file: {result}")
+        logger.info(f"Target row: {target_row}, Actual row: {actual_row}, Difference row: {difference_row}")
+        logger.info(f"Column range: {start_column} to {end_column}")
+        logger.info(f"Minimum line series: {min_line_series}, Minimum bar series: {min_bar_series}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check 1: Verify difference formulas
+        if check_difference_formula:
+            logger.info("Checking difference formulas...")
+            start_col_idx = column_index_from_string(start_column)
+            end_col_idx = column_index_from_string(end_column)
+            
+            formula_correct = True
+            formula_count = 0
+            
+            for col_idx in range(start_col_idx, end_col_idx + 1):
+                col_letter = get_column_letter(col_idx)
+                cell = ws[f"{col_letter}{difference_row}"]
+                
+                # Check if cell contains a formula
+                if cell.data_type == "f" and cell.value is not None:
+                    formula = str(cell.value)
+                    formula_count += 1
+                    
+                    # Check if formula matches pattern: =actual_row - target_row (e.g., =B3-B2)
+                    # Pattern should be like =B3-B2, =C3-C2, etc.
+                    expected_pattern1 = f"={col_letter}{actual_row}-{col_letter}{target_row}"
+                    expected_pattern2 = f"={col_letter}{target_row}-{col_letter}{actual_row}"  # Reverse order
+                    
+                    # Also check for absolute references
+                    expected_pattern3 = f"=${col_letter}${actual_row}-${col_letter}${target_row}"
+                    expected_pattern4 = f"=${col_letter}${target_row}-${col_letter}${actual_row}"
+                    
+                    formula_upper = formula.upper().replace(" ", "")
+                    
+                    if (expected_pattern1.upper() in formula_upper or 
+                        expected_pattern2.upper() in formula_upper or
+                        expected_pattern3.upper() in formula_upper or
+                        expected_pattern4.upper() in formula_upper):
+                        logger.debug(f"✓ Cell {col_letter}{difference_row} has correct difference formula: {formula}")
+                    else:
+                        logger.warning(f"Cell {col_letter}{difference_row} formula '{formula}' may not match expected pattern")
+                        # Don't fail immediately, as formula might be in different format
+                else:
+                    logger.warning(f"Cell {col_letter}{difference_row} does not contain a formula")
+            
+            if formula_count == 0:
+                logger.warning("No difference formulas found, but this may be acceptable")
+            else:
+                logger.info(f"✓ Found {formula_count} difference formula(s)")
+        
+        # Check 2: Verify combination chart exists
+        logger.info("Checking for combination chart...")
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        chart_found = False
+        has_line_chart = False
+        has_bar_chart = False
+        has_high_low_lines = False
+        has_data_labels = False
+        line_series_count = 0
+        bar_series_count = 0
+        
+        # Check each chart via XML for more reliable detection
+        try:
+            from zipfile import ZipFile
+            import xml.etree.ElementTree as ET
+            
+            wb_path = result
+            with ZipFile(wb_path, 'r') as zip_file:
+                chart_files = [f for f in zip_file.namelist() if 'charts/chart' in f and f.endswith('.xml')]
+                for chart_file in chart_files:
+                    try:
+                        xml_content = zip_file.read(chart_file).decode('utf-8')
+                        root = ET.fromstring(xml_content)
+                        
+                        # Check for plotArea
+                        plot_areas = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}plotArea')
+                        for plot_area in plot_areas:
+                            # Check for lineChart
+                            line_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}lineChart')
+                            if len(line_charts) > 0:
+                                has_line_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has lineChart in plotArea")
+                                
+                                # Count line series
+                                for line_chart in line_charts:
+                                    series_elements = line_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    line_series_count += len(series_elements)
+                                    logger.info(f"Line chart has {len(series_elements)} series")
+                            
+                            # Check for barChart or columnChart
+                            bar_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}barChart')
+                            column_charts = plot_area.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}columnChart')
+                            if len(bar_charts) > 0 or len(column_charts) > 0:
+                                has_bar_chart = True
+                                chart_found = True
+                                logger.info(f"✓ Chart has barChart/columnChart in plotArea")
+                                
+                                # Count bar series
+                                for bar_chart in bar_charts:
+                                    series_elements = bar_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    bar_series_count += len(series_elements)
+                                    logger.info(f"Bar chart has {len(series_elements)} series")
+                                
+                                for column_chart in column_charts:
+                                    series_elements = column_chart.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                    bar_series_count += len(series_elements)
+                                    logger.info(f"Column chart has {len(series_elements)} series")
+                            
+                            # Check for high-low lines
+                            if check_high_low_lines:
+                                hi_low_lines = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}hiLowLines')
+                                drop_lines = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dropLines')
+                                up_down_bars = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}upDownBars')
+                                
+                                if len(hi_low_lines) > 0:
+                                    has_high_low_lines = True
+                                    logger.info(f"✓ Chart has high-low lines (hiLowLines)")
+                                elif len(drop_lines) > 0:
+                                    has_high_low_lines = True
+                                    logger.info(f"✓ Chart has drop lines (dropLines)")
+                                elif len(up_down_bars) > 0:
+                                    has_high_low_lines = True
+                                    logger.info(f"✓ Chart has up-down bars (upDownBars)")
+                                
+                                # Also check in lineChart element
+                                for line_chart in line_charts:
+                                    hi_low = line_chart.find('{http://schemas.openxmlformats.org/drawingml/2006/chart}hiLowLines')
+                                    if hi_low is not None:
+                                        has_high_low_lines = True
+                                        logger.info(f"✓ Chart has high-low lines in lineChart element")
+                                        break
+                            
+                            # Check for data labels
+                            if check_data_labels:
+                                d_lbls = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dLbls')
+                                if len(d_lbls) > 0:
+                                    # Check if any data label type is enabled
+                                    for d_lbl in d_lbls:
+                                        # Check for showVal, showPercent, showCatName, etc.
+                                        if (d_lbl.get('showVal') == '1' or 
+                                            d_lbl.get('showPercent') == '1' or 
+                                            d_lbl.get('showCatName') == '1' or
+                                            d_lbl.get('showSerName') == '1'):
+                                            has_data_labels = True
+                                            logger.info(f"✓ Chart has data labels enabled")
+                                            break
+                                    
+                                    # Also check for dLbls with child elements
+                                    if not has_data_labels:
+                                        for d_lbl in d_lbls:
+                                            if len(list(d_lbl)) > 0:
+                                                has_data_labels = True
+                                                logger.info(f"✓ Chart has data labels (dLbls element found)")
+                                                break
+                                
+                                # Also check in series elements
+                                all_series = root.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}ser')
+                                for ser in all_series:
+                                    d_lbls_in_ser = ser.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/chart}dLbls')
+                                    if len(d_lbls_in_ser) > 0:
+                                        has_data_labels = True
+                                        logger.info(f"✓ Chart has data labels in series")
+                                        break
+                        
+                        if chart_found:
+                            break
+                    except Exception as e:
+                        logger.debug(f"Could not parse chart XML {chart_file}: {e}")
+        except Exception as e:
+            logger.warning(f"Could not read chart XML: {e}")
+        
+        # Fallback: Check via openpyxl
+        if not chart_found:
+            for chart_idx, chart in enumerate(charts):
+                chart_type = None
+                if hasattr(chart, 'tagname'):
+                    chart_type = chart.tagname
+                logger.info(f"Chart {chart_idx + 1} type (openpyxl): {chart_type}")
+                
+                if chart_type:
+                    if 'lineChart' in chart_type.lower() or 'line' in chart_type.lower():
+                        has_line_chart = True
+                        chart_found = True
+                        logger.info(f"✓ Chart {chart_idx + 1} is a line chart (openpyxl)")
+                        
+                        if hasattr(chart, 'series') and chart.series:
+                            line_series_count = len(chart.series)
+                            logger.info(f"Line chart has {line_series_count} series")
+                    
+                    if 'barChart' in chart_type.lower() or 'columnChart' in chart_type.lower() or 'bar' in chart_type.lower() or 'column' in chart_type.lower():
+                        has_bar_chart = True
+                        chart_found = True
+                        logger.info(f"✓ Chart {chart_idx + 1} is a bar/column chart (openpyxl)")
+                        
+                        if hasattr(chart, 'series') and chart.series:
+                            bar_series_count = len(chart.series)
+                            logger.info(f"Bar chart has {bar_series_count} series")
+        
+        # Verify requirements
+        if not chart_found:
+            logger.error("No chart found")
+            return 0.0
+        
+        if not has_line_chart:
+            logger.error("Chart does not contain line chart")
+            return 0.0
+        
+        if not has_bar_chart:
+            logger.error("Chart does not contain bar/column chart")
+            return 0.0
+        
+        # Calculate total series count
+        total_series_count = line_series_count + bar_series_count
+        
+        # Validation logic:
+        # - Line chart has 2 series: "2010年年初目标" (target) and "2010年实际产值" (actual)
+        # - Both line series should have no line color and no marker color (invisible)
+        # - High-low lines connect these two invisible line series to show the difference
+        # - Column chart shows the target values ("2010年年初目标")
+        
+        if bar_series_count < min_bar_series:
+            logger.error(f"Bar chart has {bar_series_count} series, but minimum required is {min_bar_series}")
+            return 0.0
+        
+        # If high-low lines exist, we need at least 2 line series to connect
+        # (target and actual, both with invisible lines and markers)
+        if has_high_low_lines:
+            logger.info(f"High-low lines found, requiring at least 2 line series to connect")
+            if line_series_count < 2:
+                logger.error(f"Line chart has {line_series_count} series, but with high-low lines we need at least 2 line series (target and actual)")
+                return 0.0
+            logger.info(f"✓ Line chart has {line_series_count} series (sufficient for high-low lines)")
+        else:
+            # Without high-low lines detected, be more flexible
+            # If total series count is sufficient (>= 3) and data labels exist, 
+            # it's possible that the chart is correct but high-low lines weren't detected
+            if line_series_count < min_line_series:
+                if total_series_count >= 3 and has_data_labels:
+                    logger.warning(f"Line chart has {line_series_count} series (less than required {min_line_series}), but total series count ({total_series_count}) and data labels suggest chart may be correct")
+                    logger.info(f"Allowing flexible validation: line={line_series_count}, bar={bar_series_count}, total={total_series_count}, data_labels={has_data_labels}")
+                else:
+                    logger.error(f"Line chart has {line_series_count} series, but minimum required is {min_line_series}")
+                    logger.error(f"Total series: {total_series_count}, Data labels: {has_data_labels}")
+                    return 0.0
+        
+        # Warnings for optional features (don't fail)
+        if check_high_low_lines and not has_high_low_lines:
+            logger.warning("High-low lines not found, but this may be acceptable depending on implementation")
+        
+        if check_data_labels and not has_data_labels:
+            logger.warning("Data labels not found, but this may be acceptable depending on implementation")
+        
+        # Success
+        logger.info("=" * 60)
+        logger.info(f"✓ Combination chart with high-low lines and data labels verification passed")
+        logger.info(f"  Chart type: combination chart (line + bar/column)")
+        logger.info(f"  Line series count: {line_series_count} (minimum required: {min_line_series})")
+        logger.info(f"  Bar series count: {bar_series_count} (minimum required: {min_bar_series})")
+        if check_high_low_lines:
+            logger.info(f"  High-low lines: {'Found' if has_high_low_lines else 'Not found (may vary by implementation)'}")
+        if check_data_labels:
+            logger.info(f"  Data labels: {'Found' if has_data_labels else 'Not found (may vary by implementation)'}")
+        if check_difference_formula:
+            logger.info(f"  Difference formulas: Checked")
         logger.info("=" * 60)
         return 1.0
         

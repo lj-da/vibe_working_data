@@ -1,0 +1,74 @@
+{
+  "id": "a3800a41-b5ff-415d-8733-083e69718491",
+  "snapshot": "libreoffice_calc",
+  "instruction": "[求助]如何绘制有滚动条的图表",
+  "method": "首先需要定义名称来创建动态数据范围。在名称管理器中定义三个名称：G1=OFFSET(Sheet1!$D$4,0,0,Sheet1!$F$1,1)，用于动态控制预测值；H1=OFFSET(Sheet1!$C$4,0,0,Sheet1!$F$1,1)，用于动态控制实际金额；I1=OFFSET(Sheet1!$B$4,0,0,Sheet1!$F$1,1)，用于动态控制月份。注意滚动条控制的单元格是F1。然后创建柱状图，将图表的数据源设置为使用这些定义的名称（G1、H1、I1）。插入滚动条控件，将滚动条链接到F1单元格。通过拖动滚动条来改变F1的数据，图表会根据F1的值动态显示对应数量的数据点，达到动态显示的效果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/748.xlsx",
+            "path": "/home/user/Desktop/scrollable_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/a3800a41-b5ff-415d-8733-083e69718491",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "scrollable_chart.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_with_scrollbar",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/scrollable_chart.xlsx",
+      "dest": "scrollable_chart.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "barChart",
+      "check_named_ranges": true,
+      "named_range_prefixes": ["G1", "H1", "I1"],
+      "check_offset_formula": true,
+      "control_cell": "F1"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

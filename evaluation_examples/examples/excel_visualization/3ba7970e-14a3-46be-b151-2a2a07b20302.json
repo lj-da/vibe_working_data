@@ -1,0 +1,74 @@
+{
+  "id": "3ba7970e-14a3-46be-b151-2a2a07b20302",
+  "snapshot": "libreoffice_calc",
+  "instruction": "这个复合图是怎么画出来的",
+  "method": "Q1:双击坐标轴-对齐-在方向设置中点一个那个红点，是自动的选项上的点消失，强制水平-确定。此时可能会标签会隔着显示，再双击坐标轴-刻度-分类数（分类轴刻度标签）设置为1-确定。Q2:双击曲线-选项-勾上高低点连线-确定即可",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/786.xlsx",
+            "path": "/home/user/Desktop/786.xlsx"
+          }
+        ]
+      }
+    }
+   
+  ],
+  "trajectory": "trajectories/3ba7970e-14a3-46be-b151-2a2a07b20302",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "786.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_with_high_low_lines",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/786.xlsx",
+      "dest": "786.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "lineChart",
+      "min_series_count": 2,
+      "check_data_labels": true,
+      "check_high_low_lines": true
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

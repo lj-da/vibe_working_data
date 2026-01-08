@@ -1,0 +1,73 @@
+{
+  "id": "98408262-07eb-4cb0-8126-a54137df25df",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问，怎么将数做成组合柱状图，要求数据清晰，并附带数据表",
+  "method": "步骤1：插入柱状图。选中表格数据（包括表头和数据行），点击菜单栏的\"插入\"选项卡，选择\"柱状图\"，选择\"簇状柱形图\"，创建原始柱状图。步骤2：设置图例格式。选中图表，点击\"图表设计\"选项卡，选择\"快速布局\"，选择\"布局5\"，这样会在图表下方添加数据表。步骤3：删除不必要的信息，进行美化。删除图表左侧的\"坐标轴标题\"；删除\"图表标题\"或者重新编辑图表标题；删除水平网格线；并对柱状图进行颜色填充，使图表更加美观。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/349.xlsx",
+            "path": "/home/user/Desktop/bar_chart_with_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/98408262-07eb-4cb0-8126-a54137df25df",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_with_table.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_data_table",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_with_table.xlsx",
+      "dest": "bar_chart_with_table.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "barChart",
+      "min_series_count": 3,
+      "check_data_table": true,
+      "check_axis_title": false
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,79 @@
+{
+  "id": "3a734e63-9fa8-4428-9656-aac731a85e82",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何制作饼图",
+  "method": "首先选中销量列（B列）中的任意一个单元格，然后点击菜单栏的\"数据\"选项，选择\"排序\"功能，将数据按照销量从大到小进行降序排列。排序完成后，点击菜单栏的\"插入\"选项，在图表类型中选择\"饼图\"，然后选择\"二维饼图\"。创建饼图后，右键点击饼图或通过图表工具栏选择\"添加数据标签\"选项，这样可以在饼图的每个扇区上显示对应的数值或百分比标签。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/119.xlsx",
+            "path": "/home/user/pie_chart_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "/home/user/pie_chart_data.xlsx"
+      }
+    }
+  ],
+  "trajectory": "trajectories/3a734e63-9fa8-4428-9656-aac731a85e82",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "pie_chart_data.xlsx - WPS表格",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_pie_chart_sorted_data",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/pie_chart_data.xlsx",
+      "dest": "pie_chart_data.xlsx"
+    },
+    "options": {
+      "data_column": "B",
+      "start_row": 2,
+      "category_column": "A",
+      "expected_chart_type": "pieChart"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
