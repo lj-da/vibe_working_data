@@ -1,0 +1,73 @@
+{
+  "id": "6457b62b-f4a0-4193-a392-f3221dff736d",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助Excel大神，怎么提取名字",
+  "method": "使用MID函数结合FIND函数来提取文件名中的名字。在目标单元格（如B1）中输入公式=MID(A1,FIND(\"班\",A1)+1,FIND(\".psd\",A1)-FIND(\"班\",A1)-1)。该公式的工作原理：1) FIND(\"班\",A1)定位到\"班\"字在A1单元格中的位置；2) FIND(\".psd\",A1)定位到\".psd\"在A1单元格中的位置；3) FIND(\"班\",A1)+1确定提取的起始位置（\"班\"字之后）；4) FIND(\".psd\",A1)-FIND(\"班\",A1)-1计算需要提取的字符数量（从\"班\"之后到\".psd\"之前的字符数）；5) MID函数从A1单元格中提取指定位置和长度的字符串，即名字部分。如果文件名格式为\"192.168.140.34_24秋2班曹书博.psd\"，公式会提取出\"曹书博\"。公式可以向下复制到其他行（如B2、B3等），相对引用会自动调整，每行都会从对应的A列单元格中提取名字。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/3.xlsx",
+            "path": "/home/user/Desktop/extract_name.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6457b62b-f4a0-4193-a392-f3221dff736d",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "extract_name.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_mid_find_extract_name",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/extract_name.xlsx",
+      "dest": "extract_name.xlsx"
+    },
+    "options": {
+      "check_column": "B",
+      "start_row": 1,
+      "source_column": "A",
+      "data_column": "A"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

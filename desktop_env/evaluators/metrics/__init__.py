@@ -217,6 +217,9 @@ from .table import (
     verify_seat_number_arrangement
     
 )
+from .table_processing import (
+    verify_mid_find_extract_name
+)
 from .thunderbird import (
     check_thunderbird_prefs,
     check_thunderbird_filter,
