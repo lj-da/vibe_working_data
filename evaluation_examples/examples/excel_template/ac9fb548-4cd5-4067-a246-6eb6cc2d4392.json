@@ -1,0 +1,93 @@
+{
+  "id": "ac9fb548-4cd5-4067-a246-6eb6cc2d4392",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成个人股票投资明细表excel模板",
+  "method": "打开Excel文件后，创建一个个人股票投资明细表模板。模板应包含以下核心字段：盈亏、收益率、名称、股票代码、买入日期、买入数量、金额、当日价格、持仓、盈亏比、总计等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"个人股票投资明细表\"，表头部分（包含名称、股票代码、买入日期、买入数量、金额、当日价格、持仓、盈亏、盈亏比、收益率等列），数据行部分（包含不同股票的投资信息），汇总行部分（包含总计信息）。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写个人股票投资的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/230.xlsx",
+            "path": "/home/user/Desktop/personal_stock_investment_detail_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ac9fb548-4cd5-4067-a246-6eb6cc2d4392",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "personal_stock_investment_detail_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/personal_stock_investment_detail_table.xlsx",
+      "dest": "personal_stock_investment_detail_table.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "盈亏",
+        "收益率",
+        "名称",
+        "股票代码",
+        "买入日期",
+        "买入数量",
+        "金额",
+        "当日价格",
+        "持仓",
+        "盈亏比",
+        "总计"
+      ],
+      "optional_fields": [
+        "个人股票投资明细表"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 0.9
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

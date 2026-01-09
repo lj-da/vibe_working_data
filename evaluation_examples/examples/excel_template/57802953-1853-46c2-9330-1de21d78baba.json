@@ -1,0 +1,101 @@
+{
+  "id": "57802953-1853-46c2-9330-1de21d78baba",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成服装采买进度表模板",
+  "method": "打开Excel文件后，创建一个服装采买进度表模板。模板应包含以下核心字段：类别、名称（订货名称）、大类、部门、订量、结算额等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"服装采买进度表\"，表头部分（包含类别、订货名称、大类等列，以及部门A、部门B、部门C等，每个部门下包含订量和结算额两列），数据行部分（包含已下单、6月、7月下单等不同类别，以及翻单、快反等订货名称，鞋、服装、配件等大类），汇总行部分（包含小计、22年全预算、22年剩余预算等）。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写服装采买的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/261.xlsx",
+            "path": "/home/user/Desktop/apparel_procurement_progress_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/57802953-1853-46c2-9330-1de21d78baba",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "apparel_procurement_progress_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/apparel_procurement_progress_table.xlsx",
+      "dest": "apparel_procurement_progress_table.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "类别",
+        "名称",
+        "大类",
+        "部门",
+        "订量",
+        "结算额"
+      ],
+      "optional_fields": [
+        "服装采买进度表",
+        "订货名称",
+        "部门A",
+        "部门B",
+        "部门C",
+        "小计",
+        "22年全预算",
+        "22年剩余预算",
+        "已下单",
+        "翻单",
+        "快反",
+        "鞋",
+        "服装",
+        "配件"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

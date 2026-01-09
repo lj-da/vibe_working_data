@@ -1,0 +1,89 @@
+{
+  "id": "f5193598-7dc0-4509-9f38-88908d9cdd9b",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成服装面料备胚表模板",
+  "method": "打开Excel文件后，创建一个服装面料备胚表模板。模板应包含以下核心字段：针梭织、面料、克重、备注、成衣件数、色胚、汇总等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"服装面料备胚表\"，表头部分（包含针梭织、面料、克重、备注、成衣件数、色胚、汇总等列），数据行部分（包含不同面料的信息），汇总行部分（包含汇总信息）。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写服装面料备胚的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/252.xlsx",
+            "path": "/home/user/Desktop/apparel_fabric_preparation_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/f5193598-7dc0-4509-9f38-88908d9cdd9b",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "apparel_fabric_preparation_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/apparel_fabric_preparation_table.xlsx",
+      "dest": "apparel_fabric_preparation_table.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "针梭织",
+        "面料",
+        "克重",
+        "备注",
+        "成衣件数",
+        "色胚",
+        "汇总"
+      ],
+      "optional_fields": [
+        "服装面料备胚表"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

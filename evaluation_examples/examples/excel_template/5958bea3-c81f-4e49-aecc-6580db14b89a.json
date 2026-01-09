@@ -1,0 +1,106 @@
+{
+  "id": "5958bea3-c81f-4e49-aecc-6580db14b89a",
+  "snapshot": "libreoffice_calc",
+  "instruction": "创建一个活动方案项目执行流程表excel模板",
+  "method": "打开Excel文件后，创建一个活动方案项目执行流程表模板。模板应包含以下核心字段：活动主题、活动时间、活动地点、负责人、环节、内容、活动总结等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含推动策划、推动执行、推动方案、活动总结等主要环节，每个环节下可以包含具体的步骤和内容。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写活动方案的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/197.xlsx",
+            "path": "/home/user/Desktop/activity_plan_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/5958bea3-c81f-4e49-aecc-6580db14b89a",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "activity_plan_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/activity_plan_template.xlsx",
+      "dest": "activity_plan_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "活动主题",
+        "活动时间",
+        "活动地点",
+        "负责人",
+        "环节",
+        "内容",
+        "活动总结"
+      ],
+      "optional_fields": [
+        "推动策划",
+        "推动执行",
+        "推动方案",
+        "明确活动意向",
+        "活动动机策略",
+        "相关部门开会",
+        "准备方案草稿",
+        "方案一次提交",
+        "方案修改",
+        "方案二次提交",
+        "执行方案草稿",
+        "方案确认",
+        "物料准备",
+        "人员分工",
+        "现场布置",
+        "活动前准备",
+        "人员安排",
+        "推动进行"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
