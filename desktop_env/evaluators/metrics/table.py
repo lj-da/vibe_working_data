@@ -24758,4 +24758,546 @@ def verify_seat_number_arrangement(result: str, expected: str = None, **options)
         return 0.0
 
 
+def verify_iferror_regex_extract(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if IFERROR(REGEX(...)) formulas exist in specified column to extract text with error handling.
+
+    This function checks:
+    1. Whether cells in specified column contain IFERROR function wrapping REGEX
+    2. Whether REGEX function uses capture group pattern (e.g., .*水笔(\d+).*)
+    3. Whether REGEX function uses replacement pattern (e.g., $1元)
+    4. Whether IFERROR has empty string as second parameter
+    5. Whether formulas reference the corresponding source column cell
+
+    The function automatically detects the number of data rows by checking the data column
+    for non-empty cells. It stops checking after finding 3 consecutive empty rows.
+
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_column: Column to check (e.g., "C")
+            - start_row: Starting row number (default: 2)
+            - expected_pattern_text: Expected text pattern in regex (e.g., "水笔")
+            - data_column: Column to check for data to determine end_row (default: "B")
+
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+
+        check_column = options.get('check_column', 'C')
+        start_row = options.get('start_row', 2)
+        expected_pattern_text = options.get('expected_pattern_text', '水笔')
+        data_column = options.get('data_column', 'B')
+
+        logger.info(f"Verifying IFERROR(REGEX(...)) formulas in file: {result}")
+        logger.info(f"Column to check: {check_column}")
+        logger.info(f"Start row: {start_row}")
+        logger.info(f"Expected pattern text: {expected_pattern_text}")
+        logger.info(f"Data column: {data_column}")
+
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+
+        # Auto-detect end_row by checking data_column for non-empty cells
+        logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+        max_row = ws.max_row
+        end_row = start_row  # Start from start_row
+
+        # Find the last row with data in the data column
+        # Check up to max_row, but stop if we find 3 consecutive empty rows
+        empty_count = 0
+        for row_num in range(start_row, max_row + 1):
+            data_cell = ws[f"{data_column}{row_num}"]
+            if data_cell.value is None or (isinstance(data_cell.value, str) and data_cell.value.strip() == ""):
+                empty_count += 1
+                if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                    break
+            else:
+                empty_count = 0
+                end_row = row_num  # Update end_row to the last row with data
+
+        logger.info(f"Auto-detected end row: {end_row}")
+
+        # Check each row in the specified column
+        all_passed = True
+        logger.info(f"Checking column {check_column} (rows {start_row} to {end_row})")
+
+        for row_num in range(start_row, end_row + 1):
+            cell_coord = f"{check_column}{row_num}"
+            try:
+                cell = ws[cell_coord]
+                logger.debug(f"Checking cell {cell_coord}")
+
+                # Check if cell contains a formula
+                if cell.data_type != "f":
+                    logger.warning(f"Cell {cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+
+                # Get formula text
+                formula_text = None
+                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
+                    formula_text = cell._value
+                elif hasattr(cell, "formula"):
+                    formula_text = cell.formula
+                else:
+                    # Try to get from value attribute
+                    if cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
+                        formula_text = cell.value
+
+                if formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {cell_coord}")
+                    all_passed = False
+                    continue
+
+                formula_upper = formula_text.upper()
+                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
+
+                # Check 1: Formula contains IFERROR function
+                if 'IFERROR' not in formula_upper:
+                    logger.warning(f"Cell {cell_coord} formula does not contain IFERROR function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 2: Formula contains REGEX function (inside IFERROR)
+                # Support both REGEX and LibreOffice internal format _xlfn.ORG.LIBREOFFICE.REGEX
+                has_regex = 'REGEX' in formula_upper or '_XLFN.ORG.LIBREOFFICE.REGEX' in formula_upper
+                if not has_regex:
+                    logger.warning(f"Cell {cell_coord} formula does not contain REGEX function")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 3: IFERROR structure - should have two parameters
+                iferror_match = re.search(r'IFERROR\s*\([^)]+\)', formula_text, re.IGNORECASE)
+                if not iferror_match:
+                    logger.warning(f"Cell {cell_coord} formula does not have correct IFERROR structure")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 4: IFERROR second parameter should be empty string ""
+                # Handle various formats: ,"" or , "" or ,'' or , ''
+                # Also handle LibreOffice format with spaces: REGEX(...) ,""
+                # Extract IFERROR parameters: IFERROR(param1, param2)
+                iferror_params_match = re.search(r'IFERROR\s*\((.*)\)', formula_text, re.IGNORECASE)
+                if iferror_params_match:
+                    params_str = iferror_params_match.group(1)
+                    # Split by comma, but need to handle nested commas in strings
+                    # Simple approach: find the last comma (should separate the two parameters)
+                    # For IFERROR(REGEX(...), ""), the last comma separates REGEX call from ""
+                    last_comma_pos = params_str.rfind(',')
+                    if last_comma_pos != -1:
+                        second_param = params_str[last_comma_pos + 1:].strip()
+                        # Check if second parameter is empty string "" or ''
+                        if second_param in ['""', "''", '""', "''"]:
+                            has_empty_string = True
+                        else:
+                            has_empty_string = False
+                    else:
+                        has_empty_string = False
+                else:
+                    has_empty_string = False
+
+                if not has_empty_string:
+                    logger.warning(f"Cell {cell_coord} IFERROR should have empty string as second parameter")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 5: REGEX function call structure
+                # Support both REGEX and LibreOffice internal format
+                regex_match = re.search(r'(REGEX|_XLFN\.ORG\.LIBREOFFICE\.REGEX)\s*\([^)]+\)', formula_text, re.IGNORECASE)
+                if not regex_match:
+                    logger.warning(f"Cell {cell_coord} formula does not have correct REGEX structure")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 6: Formula contains expected pattern text (e.g., "水笔")
+                if expected_pattern_text not in formula_text:
+                    logger.warning(f"Cell {cell_coord} formula does not contain pattern text '{expected_pattern_text}'")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 7: Formula contains capture group pattern (\d+)
+                has_capture_group = bool(re.search(r'\(\\d\+\)|\(\\\\d\+\)', formula_text))
+                if not has_capture_group:
+                    logger.warning(f"Cell {cell_coord} REGEX formula should contain capture group (\\d+)")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 8: Formula contains replacement pattern $1
+                has_replacement = '"$1' in formula_text or "'$1" in formula_text
+                if not has_replacement:
+                    logger.warning(f"Cell {cell_coord} REGEX formula should contain replacement pattern $1")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check 9: Formula references the corresponding source column cell
+                expected_source_cell = f"{data_column}{row_num}"
+                source_cell_pattern = rf'{data_column}{row_num}\b'
+                if not re.search(source_cell_pattern, formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {cell_coord} formula does not reference source cell {expected_source_cell}")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+
+                logger.info(f"✓ Cell {cell_coord} has valid IFERROR(REGEX(...)) formula: {formula_text}")
+
+            except Exception as e:
+                logger.error(f"Error checking cell {cell_coord}: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                all_passed = False
+
+        if all_passed:
+            logger.info("=" * 60)
+            logger.info(f"✓ All cells in column {check_column} contain correct IFERROR(REGEX(...)) formulas")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ IFERROR(REGEX(...)) formula verification failed")
+            logger.error("=" * 60)
+            return 0.0
+
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_id_extract_gender_age_birthday(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if formulas exist to extract gender, age, and birthday from ID numbers.
+
+    This function checks:
+    1. Gender column (C): IF(MOD(MID(B3,17,1),2),"男","女")
+    2. Age column (D): DATEDIF(TEXT(MID(B3,7,8),"0-00-00"),TODAY(),"Y")
+    3. Birthday column (E): --TEXT(MID(B3,7,8),"0-00-00")
+
+    The function automatically detects the number of data rows by checking the ID column
+    for non-empty cells. It stops checking after finding 3 consecutive empty rows.
+
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - id_column: Column containing ID numbers (e.g., "B")
+            - gender_column: Column for gender formulas (e.g., "C")
+            - age_column: Column for age formulas (e.g., "D")
+            - birthday_column: Column for birthday formulas (e.g., "E")
+            - start_row: Starting row number (default: 3)
+            - data_column: Column to check for data to determine end_row (default: "B")
+
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        import re
+
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+
+        id_column = options.get('id_column', 'B')
+        gender_column = options.get('gender_column', 'C')
+        age_column = options.get('age_column', 'D')
+        birthday_column = options.get('birthday_column', 'E')
+        start_row = options.get('start_row', 3)
+        data_column = options.get('data_column', 'B')
+
+        logger.info(f"Verifying ID extraction formulas in file: {result}")
+        logger.info(f"ID column: {id_column}")
+        logger.info(f"Gender column: {gender_column}")
+        logger.info(f"Age column: {age_column}")
+        logger.info(f"Birthday column: {birthday_column}")
+        logger.info(f"Start row: {start_row}")
+
+        # Load workbook to get formulas
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+
+        # Auto-detect end_row by checking data_column for non-empty cells
+        logger.info(f"Auto-detecting end row by checking column {data_column} for data...")
+        max_row = ws.max_row
+        end_row = start_row  # Start from start_row
+
+        # Find the last row with data in the data column
+        # Check up to max_row, but stop if we find 3 consecutive empty rows
+        empty_count = 0
+        for row_num in range(start_row, max_row + 1):
+            data_cell = ws[f"{data_column}{row_num}"]
+            if data_cell.value is None or (isinstance(data_cell.value, str) and data_cell.value.strip() == ""):
+                empty_count += 1
+                if empty_count >= 3:  # Stop after 3 consecutive empty rows
+                    break
+            else:
+                empty_count = 0
+                end_row = row_num  # Update end_row to the last row with data
+
+        logger.info(f"Auto-detected end row: {end_row}")
+
+        # Check each row
+        all_passed = True
+        logger.info(f"Checking rows {start_row} to {end_row}")
+
+        for row_num in range(start_row, end_row + 1):
+            try:
+                # Check gender column (C)
+                gender_cell_coord = f"{gender_column}{row_num}"
+                gender_cell = ws[gender_cell_coord]
+
+                if gender_cell.data_type != "f":
+                    logger.warning(f"Cell {gender_cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+
+                gender_formula_text = None
+                if hasattr(gender_cell, "_value") and isinstance(gender_cell._value, str) and gender_cell._value.startswith("="):
+                    gender_formula_text = gender_cell._value
+                elif hasattr(gender_cell, "formula"):
+                    gender_formula_text = gender_cell.formula
+                elif gender_cell.value is not None and isinstance(gender_cell.value, str) and gender_cell.value.startswith("="):
+                    gender_formula_text = gender_cell.value
+
+                if gender_formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {gender_cell_coord}")
+                    all_passed = False
+                    continue
+
+                gender_formula_upper = gender_formula_text.upper()
+                logger.debug(f"Cell {gender_cell_coord} formula: {gender_formula_text}")
+
+                # Check gender formula: IF(MOD(MID(B3,17,1),2),"男","女")
+                if 'IF' not in gender_formula_upper:
+                    logger.warning(f"Cell {gender_cell_coord} formula does not contain IF function")
+                    all_passed = False
+                    continue
+
+                if 'MOD' not in gender_formula_upper:
+                    logger.warning(f"Cell {gender_cell_coord} formula does not contain MOD function")
+                    all_passed = False
+                    continue
+
+                if 'MID' not in gender_formula_upper:
+                    logger.warning(f"Cell {gender_cell_coord} formula does not contain MID function")
+                    all_passed = False
+                    continue
+
+                # Check MID(B3,17,1) pattern
+                mid_pattern = rf'MID\s*\(\s*{id_column}{row_num}\s*,\s*17\s*,\s*1\s*\)'
+                if not re.search(mid_pattern, gender_formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {gender_cell_coord} formula should contain MID({id_column}{row_num},17,1)")
+                    logger.warning(f"Formula: {gender_formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check for "男" and "女" in formula
+                if '"男"' not in gender_formula_text and "'男'" not in gender_formula_text:
+                    logger.warning(f"Cell {gender_cell_coord} formula should contain \"男\"")
+                    logger.warning(f"Formula: {gender_formula_text}")
+                    all_passed = False
+                    continue
+
+                if '"女"' not in gender_formula_text and "'女'" not in gender_formula_text:
+                    logger.warning(f"Cell {gender_cell_coord} formula should contain \"女\"")
+                    logger.warning(f"Formula: {gender_formula_text}")
+                    all_passed = False
+                    continue
+
+                logger.info(f"✓ Cell {gender_cell_coord} has valid gender formula: {gender_formula_text}")
+
+                # Check age column (D)
+                age_cell_coord = f"{age_column}{row_num}"
+                age_cell = ws[age_cell_coord]
+
+                if age_cell.data_type != "f":
+                    logger.warning(f"Cell {age_cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+
+                age_formula_text = None
+                if hasattr(age_cell, "_value") and isinstance(age_cell._value, str) and age_cell._value.startswith("="):
+                    age_formula_text = age_cell._value
+                elif hasattr(age_cell, "formula"):
+                    age_formula_text = age_cell.formula
+                elif age_cell.value is not None and isinstance(age_cell.value, str) and age_cell.value.startswith("="):
+                    age_formula_text = age_cell.value
+
+                if age_formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {age_cell_coord}")
+                    all_passed = False
+                    continue
+
+                age_formula_upper = age_formula_text.upper()
+                logger.debug(f"Cell {age_cell_coord} formula: {age_formula_text}")
+
+                # Check age formula: DATEDIF(TEXT(MID(B3,7,8),"0-00-00"),TODAY(),"Y")
+                if 'DATEDIF' not in age_formula_upper:
+                    logger.warning(f"Cell {age_cell_coord} formula does not contain DATEDIF function")
+                    all_passed = False
+                    continue
+
+                if 'TEXT' not in age_formula_upper:
+                    logger.warning(f"Cell {age_cell_coord} formula does not contain TEXT function")
+                    all_passed = False
+                    continue
+
+                if 'TODAY' not in age_formula_upper:
+                    logger.warning(f"Cell {age_cell_coord} formula does not contain TODAY function")
+                    all_passed = False
+                    continue
+
+                if 'MID' not in age_formula_upper:
+                    logger.warning(f"Cell {age_cell_coord} formula does not contain MID function")
+                    all_passed = False
+                    continue
+
+                # Check MID(B3,7,8) pattern
+                mid_pattern_age = rf'MID\s*\(\s*{id_column}{row_num}\s*,\s*7\s*,\s*8\s*\)'
+                if not re.search(mid_pattern_age, age_formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {age_cell_coord} formula should contain MID({id_column}{row_num},7,8)")
+                    logger.warning(f"Formula: {age_formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check TEXT format "0-00-00"
+                # Use pattern that matches until the quote to handle nested functions like MID(B3,7,8)
+                text_format_pattern1 = r'TEXT\s*\([^"]+,\s*"0-00-00"'
+                text_format_pattern2 = r"TEXT\s*\([^']+,\s*'0-00-00'"
+                if not re.search(text_format_pattern1, age_formula_text, re.IGNORECASE) and \
+                   not re.search(text_format_pattern2, age_formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {age_cell_coord} TEXT function should use format \"0-00-00\"")
+                    logger.warning(f"Formula: {age_formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check DATEDIF third parameter "Y"
+                # Use a more flexible pattern that handles nested functions
+                # Check if DATEDIF contains "Y" as the third parameter (after two commas)
+                # Pattern: DATEDIF(...,...,"Y") or DATEDIF(...,...,'Y')
+                # We'll count commas to find the third parameter
+                datedif_match = re.search(r'DATEDIF\s*\((.*)\)', age_formula_text, re.IGNORECASE)
+                if datedif_match:
+                    datedif_params = datedif_match.group(1)
+                    # Count commas to find the third parameter
+                    # Simple approach: check if the last part before closing paren is "Y" or 'Y'
+                    # More robust: find the pattern ,"Y" or ,'Y' before the closing paren
+                    if not re.search(r',\s*"Y"\s*\)', age_formula_text, re.IGNORECASE) and \
+                       not re.search(r",\s*'Y'\s*\)", age_formula_text, re.IGNORECASE):
+                        logger.warning(f"Cell {age_cell_coord} DATEDIF function should use \"Y\" parameter")
+                        logger.warning(f"Formula: {age_formula_text}")
+                        all_passed = False
+                        continue
+                else:
+                    logger.warning(f"Cell {age_cell_coord} could not parse DATEDIF function")
+                    logger.warning(f"Formula: {age_formula_text}")
+                    all_passed = False
+                    continue
+
+                logger.info(f"✓ Cell {age_cell_coord} has valid age formula: {age_formula_text}")
+
+                # Check birthday column (E)
+                birthday_cell_coord = f"{birthday_column}{row_num}"
+                birthday_cell = ws[birthday_cell_coord]
+
+                if birthday_cell.data_type != "f":
+                    logger.warning(f"Cell {birthday_cell_coord} does not contain a formula")
+                    all_passed = False
+                    continue
+
+                birthday_formula_text = None
+                if hasattr(birthday_cell, "_value") and isinstance(birthday_cell._value, str) and birthday_cell._value.startswith("="):
+                    birthday_formula_text = birthday_cell._value
+                elif hasattr(birthday_cell, "formula"):
+                    birthday_formula_text = birthday_cell.formula
+                elif birthday_cell.value is not None and isinstance(birthday_cell.value, str) and birthday_cell.value.startswith("="):
+                    birthday_formula_text = birthday_cell.value
+
+                if birthday_formula_text is None:
+                    logger.warning(f"Could not extract formula from cell {birthday_cell_coord}")
+                    all_passed = False
+                    continue
+
+                birthday_formula_upper = birthday_formula_text.upper()
+                logger.debug(f"Cell {birthday_cell_coord} formula: {birthday_formula_text}")
+
+                # Check birthday formula: TEXT(MID(B3,7,8),"0-00-00")
+                if 'TEXT' not in birthday_formula_upper:
+                    logger.warning(f"Cell {birthday_cell_coord} formula does not contain TEXT function")
+                    all_passed = False
+                    continue
+
+                if 'MID' not in birthday_formula_upper:
+                    logger.warning(f"Cell {birthday_cell_coord} formula does not contain MID function")
+                    all_passed = False
+                    continue
+
+                # Check MID(B3,7,8) pattern
+                mid_pattern_birthday = rf'MID\s*\(\s*{id_column}{row_num}\s*,\s*7\s*,\s*8\s*\)'
+                if not re.search(mid_pattern_birthday, birthday_formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {birthday_cell_coord} formula should contain MID({id_column}{row_num},7,8)")
+                    logger.warning(f"Formula: {birthday_formula_text}")
+                    all_passed = False
+                    continue
+
+                # Check TEXT format "0-00-00"
+                # Use pattern that matches until the quote to handle nested functions like MID(B3,7,8)
+                text_format_pattern1 = r'TEXT\s*\([^"]+,\s*"0-00-00"'
+                text_format_pattern2 = r"TEXT\s*\([^']+,\s*'0-00-00'"
+                if not re.search(text_format_pattern1, birthday_formula_text, re.IGNORECASE) and \
+                   not re.search(text_format_pattern2, birthday_formula_text, re.IGNORECASE):
+                    logger.warning(f"Cell {birthday_cell_coord} TEXT function should use format \"0-00-00\"")
+                    logger.warning(f"Formula: {birthday_formula_text}")
+                    all_passed = False
+                    continue
+
+                logger.info(f"✓ Cell {birthday_cell_coord} has valid birthday formula: {birthday_formula_text}")
+
+            except Exception as e:
+                logger.error(f"Error checking row {row_num}: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                all_passed = False
+
+        if all_passed:
+            logger.info("=" * 60)
+            logger.info(f"✓ All rows contain correct ID extraction formulas (gender, age, birthday)")
+            logger.info("=" * 60)
+            return 1.0
+        else:
+            logger.error("=" * 60)
+            logger.error(f"✗ ID extraction formula verification failed")
+            logger.error("=" * 60)
+            return 0.0
+
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
 
