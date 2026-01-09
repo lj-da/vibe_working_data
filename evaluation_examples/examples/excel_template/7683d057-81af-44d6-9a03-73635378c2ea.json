@@ -1,0 +1,126 @@
+{
+  "id": "7683d057-81af-44d6-9a03-73635378c2ea",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成面试登记表电子表格模板",
+  "method": "打开Excel文件后，创建一个面试登记表模板。模板应包含以下核心字段：联系方式、姓名、性别、民族、政治面貌、籍贯、应聘岗位、期望薪资、出生日期、1寸照片等基本字段。可以使用合并单元格来美化模板布局，将编号和面试日期区域、个人信息区域、教育背景区域、工作经历区域、家庭成员区域、兴趣爱好和个人特长区域、本人承诺和签字区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如面试登记表、编号、面试日期、户籍地、身份证号、居住地址、最高学历、毕业院校、所学专业、外语水平、计算机等级、身高、婚姻状况、学习经历、起止年月、学校名称、学历、工作经历、公司名称、职位、薪资水平、家庭成员、与本人关系、年龄、兴趣爱好、个人特长、本人承诺、本人签字、日期、年、月、日等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/217.xlsx",
+            "path": "/home/user/Desktop/interview_registration_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/7683d057-81af-44d6-9a03-73635378c2ea",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "interview_registration_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/interview_registration_form.xlsx",
+      "dest": "interview_registration_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "联系方式",
+        "姓名",
+        "性别",
+        "民族",
+        "政治面貌",
+        "籍贯",
+        "应聘岗位",
+        "期望薪资",
+        "出生日期",
+        "1寸照片"
+      ],
+      "optional_fields": [
+        "面试登记表",
+        "登记表",
+        "编号",
+        "面试日期",
+        "户籍地",
+        "身份证号",
+        "居住地址",
+        "最高学历",
+        "毕业院校",
+        "所学专业",
+        "外语水平",
+        "计算机等级",
+        "身高",
+        "婚姻状况",
+        "学习经历",
+        "起止年月",
+        "学校名称",
+        "学历",
+        "工作经历",
+        "公司名称",
+        "职位",
+        "薪资水平",
+        "家庭成员",
+        "与本人关系",
+        "年龄",
+        "兴趣爱好",
+        "个人特长",
+        "本人承诺",
+        "本人签字",
+        "日期",
+        "年",
+        "月",
+        "日",
+        "照片",
+        "寸"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
