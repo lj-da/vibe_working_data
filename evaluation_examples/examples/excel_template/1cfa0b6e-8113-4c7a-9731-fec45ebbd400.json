@@ -1,0 +1,87 @@
+{
+  "id": "1cfa0b6e-8113-4c7a-9731-fec45ebbd400",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成福利发放登记表模板",
+  "method": "打开Excel文件后，创建一个福利发放登记表模板。模板应包含以下核心字段：日期、姓名、物品名称、领取人签字、备注等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"福利发放登记表\"（可以使用蓝色背景和白色字体突出显示），主表格包含日期、姓名、物品名称、领取人签字、备注等列，表格应有适当的行数供填写数据。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写福利发放的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/232.xlsx",
+            "path": "/home/user/Desktop/welfare_distribution_registration_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/1cfa0b6e-8113-4c7a-9731-fec45ebbd400",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "welfare_distribution_registration_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/welfare_distribution_registration_form.xlsx",
+      "dest": "welfare_distribution_registration_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "日期",
+        "姓名",
+        "物品名称",
+        "领取人签字",
+        "备注"
+      ],
+      "optional_fields": [
+        "福利发放登记表"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

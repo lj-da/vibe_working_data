@@ -1,0 +1,95 @@
+{
+  "id": "07c1f2a5-9aad-4bcc-bedc-014c3ab08b41",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成会议纪要模板",
+  "method": "打开Excel文件后，创建一个会议纪要模板。模板应包含以下核心字段：会议名称、时间、地点、主持、记录人、参与人员、缺席人员、会议内容、决议等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"会议纪要\"，基本信息部分（包含会议名称、时间、地点、主持、记录人等），参会人员部分（包含参与人员、缺席人员等），会议内容部分（包含会议讨论的主要内容和议题），决议部分（包含会议形成的决议和决定），可以根据需要添加其他可选字段，如会议编号、会议类型、会议主题、附件等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写会议纪要的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/206.xlsx",
+            "path": "/home/user/Desktop/meeting_minutes_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/07c1f2a5-9aad-4bcc-bedc-014c3ab08b41",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "meeting_minutes_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/meeting_minutes_template.xlsx",
+      "dest": "meeting_minutes_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "会议名称",
+        "时间",
+        "地点",
+        "主持",
+        "记录人",
+        "参与人员",
+        "缺席人员",
+        "会议内容",
+        "决议"
+      ],
+      "optional_fields": [
+        "会议纪要",
+        "会议编号",
+        "会议类型",
+        "会议主题",
+        "附件"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

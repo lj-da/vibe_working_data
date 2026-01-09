@@ -1,0 +1,102 @@
+{
+  "id": "fffdb47c-b4bd-4801-871b-25f57a3868ee",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮忙生成一份，工作周报表模板",
+  "method": "打开Excel文件后，创建一个工作周报表模板。模板应包含以下核心字段：日期、总结（上周总结）、下周注意事项、本周工作（本周工作记录）、问题及建议解决办法、下周工作（下周工作计划）等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"工作周报表\"，日期字段（显示周报日期范围），上周总结部分（包含编号和上周完成主要工作），下周工作注意事项部分（包含编号和下周主要事项），本周工作记录部分（按星期一到星期日，包含具体时间和工作内容记录），本周工作中存在问题及建议解决办法部分（包含编号、存在问题、提议解决办法、是否等），下周工作计划部分（按星期一到星期天，包含具体时间、工作内容记录、完成、未完成等），以及工作说明和备注部分。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写工作周报的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/321.xlsx",
+            "path": "/home/user/Desktop/work_weekly_report.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fffdb47c-b4bd-4801-871b-25f57a3868ee",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "work_weekly_report.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/work_weekly_report.xlsx",
+      "dest": "work_weekly_report.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "日期",
+        "总结",
+        "本周工作",
+        "问题及建议解决办法",
+        "下周工作"
+      ],
+      "optional_fields": [
+        "工作周报表",
+        "上周总结",
+        "本周工作记录",
+        "下周工作计划",
+        "工作说明",
+        "备注",
+        "编号",
+        "具体时间",
+        "工作内容记录",
+        "完成",
+        "未完成",
+        "存在问题",
+        "提议解决办法",
+        "是否",
+        "上周完成主要工作",
+        "下周主要事项"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 0.9
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

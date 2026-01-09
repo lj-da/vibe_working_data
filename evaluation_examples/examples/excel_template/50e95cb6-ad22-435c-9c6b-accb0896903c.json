@@ -1,0 +1,110 @@
+{
+  "id": "50e95cb6-ad22-435c-9c6b-accb0896903c",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成立项申请表模板",
+  "method": "打开Excel文件后，创建一个立项申请表模板。模板应包含以下核心字段：项目概况、品类竞争环境、用户分析、竞品分析、产品简介，以及品类、开发号、产品名称、申请时间、上架时间等基本信息字段。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含项目概况（包含品类、开发号+产品名称、申请时间、上架时间）、品类竞争环境、用户分析（包含年龄段、用途）、竞品分析（包含销售趋势、颜色尺码、Review等子部分）、产品简介（包含基础信息和产品优势）等主要部分。可以根据需要添加其他可选字段，如售价、目标销量、成本管控、可接受最高成本、面料、首单数量、目标分类、核心关键词等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写项目立项的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/260.xlsx",
+            "path": "/home/user/Desktop/project_application_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/50e95cb6-ad22-435c-9c6b-accb0896903c",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "project_application_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/project_application_form.xlsx",
+      "dest": "project_application_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "项目概况",
+        "品类竞争环境",
+        "用户分析",
+        "竞品分析",
+        "产品简介",
+        "品类",
+        "开发号",
+        "产品名称",
+        "申请时间",
+        "上架时间"
+      ],
+      "optional_fields": [
+        "年龄段",
+        "用途",
+        "产品类型",
+        "淡旺季",
+        "颜色",
+        "尺码",
+        "客人关心的核心问题",
+        "基础信息",
+        "产品优势",
+        "售价",
+        "目标销量",
+        "成本管控",
+        "可接受最高成本",
+        "面料",
+        "首单数量",
+        "目标分类",
+        "核心关键词",
+        "销售趋势",
+        "Review"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

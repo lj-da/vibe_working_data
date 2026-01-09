@@ -1,0 +1,98 @@
+{
+  "id": "35d7f8ed-5b1b-4f64-a03b-58c392117183",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成发文单模板",
+  "method": "打开Excel文件后，创建一个发文单模板。模板应包含以下核心字段：密级、签发人、核稿人、主板单位、会签、标题、主题词等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"发文单\"，基本信息部分（包含密级、签发人、核稿人、主板单位、会签等），正文部分（包含标题、主题词等），以及签名和日期部分。可以根据需要添加其他可选字段，如发文日期、发文编号、主送、抄送、附件、拟稿人、审核人、印发份数等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写发文的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/298.xlsx",
+            "path": "/home/user/Desktop/document_issuance_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/35d7f8ed-5b1b-4f64-a03b-58c392117183",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "document_issuance_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/document_issuance_form.xlsx",
+      "dest": "document_issuance_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "密级",
+        "签发人",
+        "核稿人",
+        "主办单位",
+        "会签",
+        "标题",
+        "主题词"
+      ],
+      "optional_fields": [
+        "发文单",
+        "发文日期",
+        "发文编号",
+        "主送",
+        "抄送",
+        "附件",
+        "拟稿人",
+        "审核人",
+        "印发份数",
+        "单位"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

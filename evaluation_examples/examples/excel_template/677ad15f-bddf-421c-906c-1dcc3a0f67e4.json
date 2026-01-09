@@ -1,0 +1,106 @@
+{
+  "id": "677ad15f-bddf-421c-906c-1dcc3a0f67e4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮我生成一个报价单模板把",
+  "method": "打开Excel文件后，创建一个报价单模板。模板应包含以下核心字段：产品名称、数量、单价、金额、备注、产品类型、规格、合计金额、报价人、审批等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"报价单\"，基本信息部分（包含报价单位、联系人、联系电话、客户名称、报价日期、邮箱等），产品详情表格（包含序号、产品名称、产品类型、规格、数量、单价、金额、备注等列），合计金额部分（包含合计金额(小写)、合计金额(大写)），备注部分（包含有效期限、交货地址、货运方式、付款方式、报价单内容确认签名等），以及签名部分（包含报价人、审批）。可以根据需要添加其他可选字段。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写报价的各项信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/102.xlsx",
+            "path": "/home/user/Desktop/quotation_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/677ad15f-bddf-421c-906c-1dcc3a0f67e4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "quotation_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/quotation_form.xlsx",
+      "dest": "quotation_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "产品名称",
+        "数量",
+        "单价",
+        "金额",
+        "备注",
+        "产品类型",
+        "规格",
+        "合计金额",
+        "报价人",
+        "审批"
+      ],
+      "optional_fields": [
+        "报价单",
+        "序号",
+        "报价单位",
+        "联系人",
+        "联系电话",
+        "客户名称",
+        "报价日期",
+        "邮箱",
+        "合计金额(小写)",
+        "合计金额(大写)",
+        "有效期限",
+        "交货地址",
+        "货运方式",
+        "付款方式",
+        "报价单内容确认签名"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
