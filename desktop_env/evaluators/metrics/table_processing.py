@@ -1,18 +1,52 @@
 import logging
 import os.path
+import re
 
 import openpyxl
 
 logger = logging.getLogger("desktopenv.metric.table")
 
 
+def extract_name(filename):
+    """
+    从A列文件名中提取中文姓名
+    支持格式: 
+    1. IP地址 + 数字 + 班级标识(秋2班/秋2/秋中专2班/秋二班) + 姓名 + 扩展名
+    2. IP地址 + 数字 + 姓名 + 扩展名（无班级标识）
+    """
+    if not filename or not isinstance(filename, str):
+        return None
+    
+    # 方法1: 匹配有"秋"字的格式，更精确地匹配班级标识
+    # 匹配: 秋 + (可选:中专) + (可选:一/二/2) + 班 + 姓名
+    pattern1 = r'秋(?:中专)?(?:[一二2])?班([\u4e00-\u9fa5]+V?)\.'
+    match = re.search(pattern1, filename)
+    if match:
+        return match.group(1)
+    
+    # 方法2: 匹配"秋"后直接跟数字或"中专"再跟姓名（没有"班"字）
+    pattern2 = r'秋(?:中专)?(?:[一二2])?([\u4e00-\u9fa5]+V?)\.'
+    match = re.search(pattern2, filename)
+    if match:
+        return match.group(1)
+    
+    # 方法3: 匹配没有"秋"的情况，数字后直接跟中文姓名
+    # 匹配: 数字 + (可选:下划线+数字) + (可选:单独下划线) + 中文姓名
+    pattern3 = r'\.\d+(?:_\d+)?_?([\u4e00-\u9fa5]+V?)\.'
+    match = re.search(pattern3, filename)
+    if match:
+        return match.group(1)
+    
+    return None
+
+
 def verify_mid_find_extract_name(result: str, expected: str = None, **options) -> float:
     """
-    Verify if formulas exist in specified column to extract names.
+    Verify if formulas exist in specified column to extract names and if the extracted values match expected names.
     
     This function checks:
     1. Whether cells in specified column contain formulas (any formula)
-    2. Whether the extracted values are non-empty (indicating successful extraction)
+    2. Whether the extracted values match the expected names extracted from source column using regex
     
     The function automatically detects the number of data rows by checking the data column
     (default: A column) for non-empty cells. It stops checking after finding 3 consecutive
@@ -40,14 +74,16 @@ def verify_mid_find_extract_name(result: str, expected: str = None, **options) -
         source_column = options.get('source_column', 'A')
         data_column = options.get('data_column', 'A')
         
-        logger.info(f"Verifying formula existence in column {check_column} for name extraction in file: {result}")
+        logger.info(f"Verifying formula existence and name extraction in column {check_column} in file: {result}")
         logger.info(f"Source column: {source_column}")
         logger.info(f"Start row: {start_row}")
         
-        # Load workbook to get formulas
+        # Load workbook to get formulas and values
         try:
             wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
             ws = wb.active
+            wb_data = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get calculated values
+            ws_data = wb_data.active
         except Exception as e:
             logger.error(f"Failed to load workbook: {e}")
             return 0.0
@@ -117,19 +153,50 @@ def verify_mid_find_extract_name(result: str, expected: str = None, **options) -
                 
                 logger.debug(f"Cell {cell_coord} has formula: {formula_text}")
                 
-                # Verify that the extracted value is non-empty (indicating successful extraction)
-                # Load with data_only=True to get calculated values
-                wb_data = openpyxl.load_workbook(result, data_only=True)
-                ws_data = wb_data.active
+                # Get the extracted value from B column
                 extracted_value = ws_data[cell_coord].value
-                if extracted_value is None or (isinstance(extracted_value, str) and extracted_value.strip() == ""):
+                if extracted_value is None:
+                    extracted_value = ""
+                elif not isinstance(extracted_value, str):
+                    extracted_value = str(extracted_value)
+                extracted_value = extracted_value.strip()
+                
+                if extracted_value == "":
                     logger.warning(f"Cell {cell_coord} formula extracted empty value, extraction may have failed")
                     logger.warning(f"Formula: {formula_text}")
                     all_passed = False
                     continue
                 
+                # Get the source filename from A column
+                source_filename = source_cell.value
+                if source_filename is None:
+                    source_filename = ""
+                elif not isinstance(source_filename, str):
+                    source_filename = str(source_filename)
+                
+                # Extract expected name from source filename using regex
+                expected_name = extract_name(source_filename)
+                
+                if expected_name is None:
+                    logger.warning(f"Could not extract name from source filename: {source_filename}")
+                    logger.warning(f"Cell {cell_coord} extracted value: {extracted_value}")
+                    # Still check if extracted value is non-empty, but don't fail if we can't extract expected
+                    passed_count += 1
+                    logger.info(f"✓ Cell {cell_coord} has formula and extracted value: {extracted_value} (expected name extraction failed)")
+                    continue
+                
+                # Compare extracted value with expected name
+                if extracted_value != expected_name:
+                    logger.warning(f"Cell {cell_coord} extracted value '{extracted_value}' does not match expected name '{expected_name}'")
+                    logger.warning(f"Source filename: {source_filename}")
+                    logger.warning(f"Formula: {formula_text}")
+                    all_passed = False
+                    continue
+                
                 passed_count += 1
-                logger.info(f"✓ Cell {cell_coord} has formula and extracted value: {extracted_value}")
+                logger.info(f"✓ Cell {cell_coord} has formula and correctly extracted name: {extracted_value}")
+                logger.debug(f"  Source filename: {source_filename}")
+                logger.debug(f"  Formula: {formula_text}")
                 
             except Exception as e:
                 logger.error(f"Error checking cell {cell_coord}: {e}")
@@ -141,7 +208,7 @@ def verify_mid_find_extract_name(result: str, expected: str = None, **options) -
         
         if all_passed and passed_count == checked_count:
             logger.info("=" * 60)
-            logger.info(f"✓ All {passed_count} cells in column {check_column} contain formulas and extracted values")
+            logger.info(f"✓ All {passed_count} cells in column {check_column} contain formulas and correctly extracted names")
             logger.info(f"  - All cells passed verification")
             logger.info("=" * 60)
             return 1.0

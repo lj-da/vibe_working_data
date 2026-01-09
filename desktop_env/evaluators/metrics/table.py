@@ -953,6 +953,7 @@ def verify_second_row_deleted_without_gold(result: str, expected: str = None, **
         return 0.0
 
 
+# 以下为新增的judge，用于验证Excel数据处理
 def verify_regexp_extract(result: str, expected: str = None, **options) -> float:
     """
     Verify if REGEX formulas exist in specified columns (B and C) with correct patterns.
