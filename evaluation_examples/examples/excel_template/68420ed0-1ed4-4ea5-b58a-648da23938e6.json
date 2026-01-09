@@ -1,0 +1,101 @@
+{
+  "id": "68420ed0-1ed4-4ea5-b58a-648da23938e6",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成银行利息测算模板",
+  "method": "打开Excel文件后，创建一个银行贷款还本付息动态模型模板。模板应包含以下核心字段：期限、偿还金额、支付利息、偿还本金、贷款金额（或贷款余额）、合同条款、利率、贷款期限、还款额、还款总额、还款利息等基本字段。可以使用合并单元格来美化模板布局，将还款计划表和合同条款表组织成清晰的表格结构。可以根据需要添加其他可选字段，如还款方式（等额本息/等额本金）、提前还款金额、逾期利息等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/216.xlsx",
+            "path": "/home/user/Desktop/loan_interest_calculation.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/68420ed0-1ed4-4ea5-b58a-648da23938e6",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "loan_interest_calculation.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/loan_interest_calculation.xlsx",
+      "dest": "loan_interest_calculation.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "期限",
+        "偿还金额",
+        "支付利息",
+        "偿还本金",
+        "贷款金额",
+        "合同条款",
+        "利率",
+        "贷款期限",
+        "还款额",
+        "还款总额",
+        "还款利息"
+      ],
+      "optional_fields": [
+        "还款方式",
+        "等额本息",
+        "等额本金",
+        "提前还款金额",
+        "逾期利息",
+        "万元",
+        "XX银行",
+        "还本付息",
+        "动态模型"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

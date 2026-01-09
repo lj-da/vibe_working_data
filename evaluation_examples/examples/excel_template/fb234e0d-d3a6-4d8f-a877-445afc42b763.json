@@ -1,0 +1,111 @@
+{
+  "id": "fb234e0d-d3a6-4d8f-a877-445afc42b763",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成培训调查问卷表模板",
+  "method": "打开Excel文件后，创建一个培训反映调查问卷模板。模板应包含以下核心字段：培训反映调查问卷、卓越、优秀、良好、需改进、不足、原因、您对本次培训的总体评价、培训内容与您的需求匹配度、本次培训的课程安排等基本字段。可以使用合并单元格来美化模板布局，将标题区域、基本信息区域、评价表格区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如培训内容、培训时间、部门、职务、本次培训形式、本次培训的时间分配、培训教师的水平、培训的组织、本次培训做得较好的方面、本次培训需改进的方面、您认为培训的哪些部分最有用等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/283.xlsx",
+            "path": "/home/user/Desktop/training_feedback_questionnaire.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fb234e0d-d3a6-4d8f-a877-445afc42b763",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "training_feedback_questionnaire.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/training_feedback_questionnaire.xlsx",
+      "dest": "training_feedback_questionnaire.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "培训反映调查问卷",
+        "卓越",
+        "优秀",
+        "良好",
+        "需改进",
+        "不足",
+        "原因",
+        "您对本次培训的总体评价",
+        "培训内容与您的需求匹配度",
+        "本次培训的课程安排"
+      ],
+      "optional_fields": [
+        "培训调查问卷",
+        "调查问卷",
+        "问卷",
+        "培训内容",
+        "培训时间",
+        "部门",
+        "职务",
+        "本次培训形式",
+        "本次培训的时间分配",
+        "培训教师的水平",
+        "培训的组织",
+        "本次培训做得较好的方面",
+        "本次培训需改进的方面",
+        "您认为培训的哪些部分最有用",
+        "培训",
+        "评价",
+        "总体",
+        "匹配度",
+        "课程",
+        "安排"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 2,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

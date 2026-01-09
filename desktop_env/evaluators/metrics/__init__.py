@@ -275,6 +275,10 @@ from .table_visualization import (
     verify_combination_chart_auto_data_labels,
     verify_data_bar_conditional_formatting
 )
+from .table_template import (
+    verify_template_fields
+    
+)
 
 def infeasible():
     pass

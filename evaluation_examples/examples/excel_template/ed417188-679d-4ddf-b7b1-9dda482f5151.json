@@ -1,0 +1,103 @@
+{
+  "id": "ed417188-679d-4ddf-b7b1-9dda482f5151",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成一份转正审批表模板",
+  "method": "打开Excel文件后，创建一个转正审批表模板。模板应包含以下核心字段：姓名、入职时间、试用部门、试用岗位、约定使用期限、试用期工资、部门意见、根据考核内容同意该员工转正、签字日期、人事意见等基本字段。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。可以根据需要添加其他可选字段，如员工编号、转正日期、转正后工资、考核结果、备注等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/200.xlsx",
+            "path": "/home/user/Desktop/probation_approval_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ed417188-679d-4ddf-b7b1-9dda482f5151",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "probation_approval_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/probation_approval_form.xlsx",
+      "dest": "probation_approval_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "姓名",
+        "入职时间",
+        "试用部门",
+        "试用岗位",
+        "约定使用期限",
+        "试用期工资",
+        "部门意见",
+        "根据考核内容",
+        "同意该员工转正",
+        "签字",
+        "日期",
+        "人事意见"
+      ],
+      "optional_fields": [
+        "员工编号",
+        "转正日期",
+        "转正后工资",
+        "考核结果",
+        "备注",
+        "审批流程",
+        "转正审批表",
+        "试用期",
+        "考核内容",
+        "审批意见"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

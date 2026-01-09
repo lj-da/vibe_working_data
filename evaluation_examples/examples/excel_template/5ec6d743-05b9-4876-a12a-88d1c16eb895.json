@@ -1,0 +1,100 @@
+{
+  "id": "5ec6d743-05b9-4876-a12a-88d1c16eb895",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成议程表模板",
+  "method": "打开Excel文件后，创建一个议程表模板。模板应包含以下核心字段：日期、时间段、内容、参与人数、负责部门等基本字段。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。可以根据需要添加其他可选字段，如全天、客户报到、参会客户、行政管理部、培训、产品预览、午餐休息、晚餐休息、酒店休息、客户返程、议程表等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/237.xlsx",
+            "path": "/home/user/Desktop/agenda_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/5ec6d743-05b9-4876-a12a-88d1c16eb895",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "agenda_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/agenda_table.xlsx",
+      "dest": "agenda_table.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "日期",
+        "时间段",
+        "内容",
+        "参与人数",
+        "负责部门"
+      ],
+      "optional_fields": [
+        "全天",
+        "客户报到",
+        "参会客户",
+        "行政管理部",
+        "培训",
+        "产品预览",
+        "午餐休息",
+        "晚餐休息",
+        "酒店休息",
+        "客户返程",
+        "议程表",
+        "品牌",
+        "商品运营部",
+        "意见录入"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.0,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.0,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

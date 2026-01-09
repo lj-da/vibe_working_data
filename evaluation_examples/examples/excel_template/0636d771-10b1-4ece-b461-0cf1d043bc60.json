@@ -1,0 +1,99 @@
+{
+  "id": "0636d771-10b1-4ece-b461-0cf1d043bc60",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成研发中心项目工程投标报价表模板",
+  "method": "打开Excel文件后，创建一个研发中心项目劳务分包工程投标报价表模板。模板应包含以下核心字段：序号、项目名称、暂定工程量、综合单价(元)、合价(元)、计量单位等基本字段。可以使用合并单元格来美化模板布局，将表头和数据区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如年份、研发中心、项目、劳务分包、工程、投标报价、单位、单价、总价等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/278.xlsx",
+            "path": "/home/user/Desktop/bid_quotation_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/0636d771-10b1-4ece-b461-0cf1d043bc60",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bid_quotation_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bid_quotation_form.xlsx",
+      "dest": "bid_quotation_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "序号",
+        "项目名称",
+        "暂定工程量",
+        "综合单价",
+        "合价",
+        "计量单位"
+      ],
+      "optional_fields": [
+        "元",
+        "2024年",
+        "研发中心",
+        "项目",
+        "劳务分包",
+        "工程",
+        "投标报价",
+        "表",
+        "单位",
+        "单价",
+        "总价",
+        "工程量"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 1,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

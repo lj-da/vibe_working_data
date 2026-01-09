@@ -1,0 +1,117 @@
+{
+  "id": "63a2ac3e-11f1-4a63-b14e-66d70532dddf",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成员工个人绩效计划表模板",
+  "method": "打开Excel文件后，创建一个新员工个人绩效计划表模板。模板应包含以下核心字段：员工姓名、职位名称、所属单位、员工编号、级别、汇报对象、考核期间、考核日、工作指标、指标标准等基本字段。可以使用合并单元格来美化模板布局，将员工信息区域、绩效指标表格和签名区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如调整标准、权重、完成日期、考核依据、业绩指标、态度指标（纪律、协作性、责任心、积极性）、能力指标（专业知识、工作技能、执行力、创新能力、沟通能力、表达能力、协调能力）、员工签字、主管领导签字等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/269.xlsx",
+            "path": "/home/user/Desktop/employee_performance_plan.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/63a2ac3e-11f1-4a63-b14e-66d70532dddf",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "employee_performance_plan.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/employee_performance_plan.xlsx",
+      "dest": "employee_performance_plan.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "员工姓名",
+        "职位名称",
+        "所属单位",
+        "员工编号",
+        "级别",
+        "汇报对象",
+        "考核期间",
+        "考核日",
+        "工作指标",
+        "指标标准"
+      ],
+      "optional_fields": [
+        "调整标准",
+        "权重",
+        "完成日期",
+        "考核依据",
+        "业绩指标",
+        "态度指标",
+        "能力指标",
+        "纪律",
+        "协作性",
+        "责任心",
+        "积极性",
+        "专业知识",
+        "工作技能",
+        "执行力",
+        "创新能力",
+        "沟通能力",
+        "表达能力",
+        "协调能力",
+        "员工签字",
+        "主管领导签字",
+        "年",
+        "月",
+        "日",
+        "新员工",
+        "个人绩效计划表",
+        "至"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

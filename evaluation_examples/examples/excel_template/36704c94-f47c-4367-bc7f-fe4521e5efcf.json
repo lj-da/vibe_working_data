@@ -1,0 +1,134 @@
+{
+  "id": "36704c94-f47c-4367-bc7f-fe4521e5efcf",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成消费者调研表模板",
+  "method": "打开Excel文件后，创建一个消费者问卷调研表模板。模板应包含以下核心字段：日期、购买因素、填是或否、消费者年龄段、小于30岁、30-40岁、大于40岁、消费者职业、学生、上班族、家庭主妇、老年人、其他等基本字段。可以使用合并单元格来美化模板布局，将日期列、购买因素列、年龄段列和职业列组织成清晰的表格结构。可以根据需要添加其他可选字段，如日期编号、性别、收入水平、教育程度、婚姻状况、家庭人口、居住地区、居住类型、购买频率、消费金额、购买渠道、品牌偏好等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/249.xlsx",
+            "path": "/home/user/Desktop/consumer_survey_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/36704c94-f47c-4367-bc7f-fe4521e5efcf",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "consumer_survey_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/consumer_survey_form.xlsx",
+      "dest": "consumer_survey_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "日期",
+        "购买因素",
+        "填是或否",
+        "消费者年龄段",
+        "小于30岁",
+        "30-40岁",
+        "大于40岁",
+        "消费者职业",
+        "学生",
+        "上班族",
+        "家庭主妇",
+        "老年人",
+        "其他"
+      ],
+      "optional_fields": [
+        "消费者问卷调研表",
+        "问卷",
+        "调研",
+        "表",
+        "日期编号",
+        "性别",
+        "男",
+        "女",
+        "收入水平",
+        "月收入",
+        "教育程度",
+        "高中",
+        "大专",
+        "本科",
+        "研究生",
+        "婚姻状况",
+        "未婚",
+        "已婚",
+        "离异",
+        "丧偶",
+        "家庭人口",
+        "居住地区",
+        "城市",
+        "省份",
+        "区域",
+        "居住类型",
+        "自有住房",
+        "租房",
+        "购买频率",
+        "每天",
+        "每周",
+        "每月",
+        "偶尔",
+        "消费金额",
+        "购买渠道",
+        "线上",
+        "线下",
+        "混合",
+        "品牌偏好"
+        
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 2,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

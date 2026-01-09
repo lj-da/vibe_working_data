@@ -1,0 +1,104 @@
+{
+  "id": "98247779-2bc3-4217-9a85-66247ba28517",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成人员任免申请单模板",
+  "method": "打开Excel文件后，创建一个人员任免申请单模板。模板应包含以下核心字段：申请人、部门、申请时间、任职者姓名、任职前岗位、任职后岗位、免职者姓名、免职前岗位、免职后岗位、任免原因等基本字段。可以使用合并单元格来美化模板布局，将申请人信息区域、任职/免职信息区域、任免原因区域和审批签名区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如部门经理、行政人事部、总经理、签名、人员任免申请单、姓名、岗位、日期、时间等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/273.xlsx",
+            "path": "/home/user/Desktop/personnel_appointment_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/98247779-2bc3-4217-9a85-66247ba28517",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "personnel_appointment_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/personnel_appointment_form.xlsx",
+      "dest": "personnel_appointment_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "申请人",
+        "部门",
+        "申请时间",
+        "任职者姓名",
+        "任职前岗位",
+        "任职后岗位",
+        "免职者姓名",
+        "免职前岗位",
+        "免职后岗位",
+        "任免原因"
+      ],
+      "optional_fields": [
+        "人员任免申请单",
+        "申请单",
+        "部门经理",
+        "行政人事部",
+        "总经理",
+        "签名",
+        "姓名",
+        "岗位",
+        "日期",
+        "时间",
+        "任职",
+        "免职",
+        "原因"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
