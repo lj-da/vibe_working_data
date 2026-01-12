@@ -1,0 +1,94 @@
+{
+  "id": "c34056a9-c58e-4e2a-b573-b894b0721420",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据薪酬宽带画出薪酬宽带图，用曲线画出中间值，在薪酬宽带图里用点画出员工的工资的分布情况",
+  "method": "首先选中D2:I10数据区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"簇状柱形图\"，创建包含5个系列的柱形图。创建完成后，选中任意一个系列，右键点击选择\"设置数据系列格式\"，将系列重叠调至100%。然后再次选中任意一个系列，右键点击选择\"选择数据\"，调整这些系列的次序，让系列\"1档\"显示在最外，系列\"2档\"、\"3档\"、\"4档\"、\"5档\"依次向内，系列\"5档\"在最内。接下来调整\"1档\"系列的格式：右键点击\"1档\"系列，选择\"设置数据系列格式\"，将边框设置为\"无\"，填充设置为\"白色\"。然后添加散点系列：1、在图表上右键点击选择\"选择数据\"，点击\"添加\"按钮，添加一个新系列，系列名称可以叫\"薪资\"，先使用C3单元格作为数据占位。2、在图表上选中刚加入的\"薪资\"系列，右键点击选择\"更改图表类型\"，将\"薪资\"系列改为散点图，并在系列选项中将其设置到次Y轴。3、再次右键点击图表选择\"选择数据\"，选中\"薪资\"系列，点击\"编辑\"按钮，更改其数据：X数据选择A3:A83，Y数据选择B3:B83。4、添加次X轴并进行调整，使次X轴与主X轴刻度对齐。次X轴可以设置成不显示。5、使用相同方法添加\"中位数\"折线系列：添加新系列，系列名称叫\"中位数\"，数据与3档系列数据一致（E3:E10），图表类型改为折线图。6、最后美化图表：设置各个系列的填充和边框颜色，删除网格线。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/874.xlsx",
+            "path": "/home/user/Desktop/salary_band_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "with open('/home/user/Desktop/labels.txt', 'w', encoding='utf-8') as f: f.write('中位数')"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/c34056a9-c58e-4e2a-b573-b894b0721420",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "salary_band_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_salary_band_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/salary_band_chart.xlsx",
+      "dest": "salary_band_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "data_range": "D2:I10",
+      "series_ranges": {
+        "1档": "E3:E10",
+        "2档": "F3:F10",
+        "3档": "G3:G10",
+        "4档": "H3:H10",
+        "5档": "I3:I10"
+      },
+      "category_range": "D3:D10",
+      "salary_scatter_x_range": "A3:A83",
+      "salary_scatter_y_range": "B3:B83",
+      "median_series_range": "G3:G10",
+      "secondary_x_axis_min": 42.5,
+      "secondary_x_axis_max": 50.5
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

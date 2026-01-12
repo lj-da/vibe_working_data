@@ -1,0 +1,75 @@
+{
+  "id": "99b1e115-1dbd-40d6-b749-1e6e5d9f89b5",
+  "snapshot": "libreoffice_calc",
+  "instruction": "创建一个条形图：X轴为月份，每个品牌两年里同一个月的销售累成一条柱形，分颜色表示。表格里有年份、月份、品牌及销售数据四个条件。",
+  "method": "首先在Sheet1中准备好包含年份、月份、品牌、类别和数据2的数据源。然后切换到Sheet2，创建数据透视表：选择Sheet1的数据源，将类别、品牌、月份设置为行字段（三个行字段），将年份设置为列字段，将数据2设置为值字段进行求和（求和项:数据2）。调整透视表的布局，使数据按照要求排列。透视表创建完成后，在透视表中插入透视图：选中透视表的任意单元格，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"条形图\"或\"柱形图\"。在图表向导中，确保X轴为月份，每个品牌在同一个月的数据累加成一条柱形，不同品牌用不同颜色表示。完成透视图的创建和格式化。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/662.xlsx",
+            "path": "/home/user/Desktop/pivot_chart_data.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/99b1e115-1dbd-40d6-b749-1e6e5d9f89b5",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "pivot_chart_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_pivot_table_with_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/pivot_chart_data.xlsx",
+      "dest": "pivot_chart_data.xlsx"
+    },
+    "options": {
+      "sheet_idx": 1,
+      "source_sheet": "Sheet1",
+      "pivot_table_name": null,
+      "row_fields": ["类别", "品牌", "月份"],
+      "col_fields": ["年份"],
+      "data_fields": ["数据2"]
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

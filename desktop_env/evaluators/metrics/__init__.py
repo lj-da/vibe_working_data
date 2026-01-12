@@ -290,7 +290,15 @@ from .table_visualization import (
     verify_bar_chart_axis_cross_value,
     verify_bar_chart_year_over_year_analysis,
     verify_combination_chart_auto_data_labels,
-    verify_data_bar_conditional_formatting
+    verify_data_bar_conditional_formatting,
+    verify_chart_data_labels_with_series_name,
+    verify_nested_chart_with_secondary_axis,
+    verify_nested_chart_three_series,
+    verify_nested_chart_with_helper_column,
+    verify_sales_analysis_chart_four_series,
+    verify_bar_chart_with_error_bars_and_scatter,
+    verify_salary_band_chart,
+    verify_pivot_table_with_chart
 )
 from .table_template import (
     verify_template_fields

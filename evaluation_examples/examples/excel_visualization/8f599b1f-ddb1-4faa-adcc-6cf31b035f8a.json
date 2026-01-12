@@ -1,0 +1,99 @@
+{
+  "id": "8f599b1f-ddb1-4faa-adcc-6cf31b035f8a",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮我根据提供的数据生成一个套娃图表",
+  "method": "首先打开Excel文件，查看数据表格。然后选中包含所有数据的区域（A1:F5），点击菜单栏的\"插入\"选项，选择\"图表\"，创建柱状图。创建图表后，需要添加五个系列：产品A、产品B、产品C、产品D、合计。在图表上右键点击选择\"选择数据\"，添加系列\"产品A\"，设置值为B2:B5，水平轴标签为A2:A5。然后添加系列\"产品B\"，设置值为C2:C5，水平轴标签为A2:A5。接着添加系列\"产品C\"，设置值为D2:D5，水平轴标签为A2:A5。再添加系列\"产品D\"，设置值为E2:E5，水平轴标签为A2:A5。最后添加系列\"合计\"，设置值为F2:F5，水平轴标签为A2:A5。接下来设置坐标轴：选中\"产品A\"系列，右键点击选择\"设置数据系列格式\"，在系列选项中将其设置到次坐标轴（次Y轴）。同样将\"产品B\"、\"产品C\"、\"产品D\"系列也设置到次坐标轴。\"合计\"系列保持使用主坐标轴。然后设置次坐标轴的最大值：右键点击次坐标轴，选择\"设置坐标轴格式\"，将最大值设置为1600。最后设置合计系列的分类间距：选中\"合计\"系列，右键点击选择\"设置数据系列格式\"，在系列选项中调整分类间距，将其设置为10%到70%之间的任意值（例如50%）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/131.xlsx",
+            "path": "/home/user/Desktop/nested_chart_data.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/8f599b1f-ddb1-4faa-adcc-6cf31b035f8a",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "nested_chart_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_nested_chart_with_secondary_axis",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/nested_chart_data.xlsx",
+      "dest": "nested_chart_data.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "series_config": {
+        "产品A": {
+          "value_range": "B2:B5",
+          "category_range": "A2:A5",
+          "use_secondary_axis": true
+        },
+        "产品B": {
+          "value_range": "C2:C5",
+          "category_range": "A2:A5",
+          "use_secondary_axis": true
+        },
+        "产品C": {
+          "value_range": "D2:D5",
+          "category_range": "A2:A5",
+          "use_secondary_axis": true
+        },
+        "产品D": {
+          "value_range": "E2:E5",
+          "category_range": "A2:A5",
+          "use_secondary_axis": true
+        },
+        "合计": {
+          "value_range": "F2:F5",
+          "category_range": "A2:A5",
+          "use_secondary_axis": false,
+          "gap_width_min": 10,
+          "gap_width_max": 70
+        }
+      },
+      "secondary_axis_max": 1600
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

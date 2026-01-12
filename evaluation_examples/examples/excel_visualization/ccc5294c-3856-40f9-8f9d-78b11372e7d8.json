@@ -1,0 +1,99 @@
+{
+  "id": "ccc5294c-3856-40f9-8f9d-78b11372e7d8",
+  "snapshot": "libreoffice_calc",
+  "instruction": "麻烦给数据做成柱状图，需求如下：1.图表种要求存误差线, 2.添加散点图数据标签选达成率",
+  "method": "首先打开Excel文件，查看数据表格。选中包含所有数据的区域（A1:E6），点击菜单栏的\"插入\"选项，选择\"图表\"，创建柱状图。创建图表后，需要添加三个系列：目标、已完成、达成率。在图表上右键点击选择\"选择数据\"，添加系列\"目标\"，设置值为B2:B6，水平轴标签为A2:A6。然后添加系列\"已完成\"，设置值为C2:C6，水平轴标签为A2:A6。接着添加系列\"达成率\"，设置值为B2:B6，水平轴标签为A2:A6。接下来设置图表类型：选中\"达成率\"系列，右键点击选择\"更改图表类型\"，将其改为散点图。目标系列和已完成系列保持为柱状图。然后为\"已完成\"系列添加误差线：选中\"已完成\"系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中设置：正误差、无线端、误差量指定值为D2:D6，负误差设置为0，线条前后端均添加箭头。接下来为\"达成率\"系列添加误差线：选中\"达成率\"系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中设置：Y误差线正偏差、无线端、固定值0.32，X误差线与Y误差线一致（正偏差、无线端、固定值0.32）。最后为\"达成率\"系列添加数据标签：选中\"达成率\"系列，右键点击选择\"添加数据标签\"，然后右键点击数据标签，选择\"设置数据标签格式\"，勾选\"单元格中的值\"，选择E2:E6作为标签来源，位置设置为靠上。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/324.xlsx",
+            "path": "/home/user/Desktop/bar_chart_with_error_bars.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ccc5294c-3856-40f9-8f9d-78b11372e7d8",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_with_error_bars.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_error_bars_and_scatter",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_with_error_bars.xlsx",
+      "dest": "bar_chart_with_error_bars.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "series_config": {
+        "目标": {
+          "value_range": "B2:B6",
+          "chart_type": "bar",
+          "use_secondary_axis": false,
+          "has_error_bars": false
+        },
+        "已完成": {
+          "value_range": "C2:C6",
+          "chart_type": "bar",
+          "use_secondary_axis": false,
+          "has_error_bars": true,
+          "error_bar_positive_range": "D2:D6",
+          "error_bar_negative_value": 0,
+          "error_bar_no_cap": true,
+          "error_bar_arrows": true
+        },
+        "达成率": {
+          "value_range": "B2:B6",
+          "chart_type": "scatter",
+          "use_secondary_axis": false,
+          "has_error_bars": true,
+          "error_bar_y_positive_value": 0.32,
+          "error_bar_x_positive_value": 0.32,
+          "error_bar_no_cap": true,
+          "has_data_labels": true,
+          "data_label_range": "E2:E6",
+          "data_label_position": "top"
+        }
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
