@@ -1,0 +1,86 @@
+{
+  "id": "368ef2ad-74aa-476b-ac05-ff03a70cb016",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎么根据工号找到这个员工的信息",
+  "method": "使用DGET函数来根据工号查找员工信息。在目标单元格（如B21）中输入公式=DGET($A$1:$F$18,B1,$A$20:$A$21)。该公式的工作原理：1) $A$1:$F$18是数据库范围，包含所有员工数据（包括表头行）；2) B1是要提取的字段，引用表头行中的\"姓名\"字段；3) $A$20:$A$21是条件范围，A20包含字段名\"工号\"，A21包含要查找的工号值（如19734461）；4) DGET函数会在数据库范围中查找满足条件（工号等于A21的值）的记录，然后返回指定字段（B1，即\"姓名\"）的值；5) 对于其他字段（性别、部门、职位、工资），需要在对应的单元格中输入类似的公式，只是将B1改为对应的字段引用（C1、D1、E1、F1），例如C21=DGET($A$1:$F$18,C1,$A$20:$A$21)用于提取性别，D21=DGET($A$1:$F$18,D1,$A$20:$A$21)用于提取部门，以此类推；6) 这样就能根据A21中的工号，在B21到F21中分别显示对应的姓名、性别、部门、职位和工资信息。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nB21=DGET($A$1:$F$18,B1,$A$20:$A$21)\nC21=DGET($A$1:$F$18,C1,$A$20:$A$21)\nD21=DGET($A$1:$F$18,D1,$A$20:$A$21)\nE21=DGET($A$1:$F$18,E1,$A$20:$A$21)\nF21=DGET($A$1:$F$18,F1,$A$20:$A$21)\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/46.xlsx",
+            "path": "/home/user/Desktop/employee_lookup.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/368ef2ad-74aa-476b-ac05-ff03a70cb016",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "employee_lookup.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_dget_lookup",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/employee_lookup.xlsx",
+      "dest": "employee_lookup.xlsx"
+    },
+    "options": {
+      "result_start_cell": "B21",
+      "result_end_cell": "F21",
+      "criteria_id_cell": "A21",
+      "database_start_row": 2,
+      "database_end_row": 18,
+      "id_column": "A",
+      "header_row": 1
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

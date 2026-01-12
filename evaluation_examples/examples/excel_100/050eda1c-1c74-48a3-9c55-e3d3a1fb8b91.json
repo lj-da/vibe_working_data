@@ -1,0 +1,86 @@
+{
+  "id": "050eda1c-1c74-48a3-9c55-e3d3a1fb8b91",
+  "snapshot": "libreoffice_calc",
+  "instruction": "怎样能快速找出发票列+库存列=0的行？",
+  "method": "使用IF函数结合数组公式来快速找出发票列+库存列=0的行。在目标单元格（如D2）中输入公式=IF(B$2:B$29+$C2:C29=0,0)。该公式的工作原理：1) B$2:B$29+$C2:C29是数组运算，B$2:B$29是发票列的范围（列相对引用，行绝对引用），$C2:C29是库存列的范围（列绝对引用，行相对引用）；2) B$2:B$29+$C2:C29会对每一行进行相加运算，生成一个数组，其中每个元素是B列和C列对应行的和；3) B$2:B$29+$C2:C29=0判断数组中的每个元素是否等于0，返回一个布尔数组；4) IF函数根据布尔数组的结果，如果为真（和为0），返回0；如果为假（和不为0），返回False（因为IF函数没有指定value_if_false参数，默认返回False）；5) 由于使用了混合引用（B$2和$C2），当公式复制到其他行时，引用会自动调整，但范围保持不变，这样就能对整个数据范围进行计算；6) 将公式复制到D列的其他行（如D3、D4等），公式会自动填充，每行都会判断对应的B列和C列的和是否为0，如果为0显示0，否则显示False。这样就能快速找出所有发票列+库存列=0的行（显示0的行）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nD2=IF(B$2:B$29+$C2:C29=0,0)\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/52.xlsx",
+            "path": "/home/user/Desktop/find_zero_sum_rows.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/050eda1c-1c74-48a3-9c55-e3d3a1fb8b91",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "find_zero_sum_rows.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_array_sum_zero",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/find_zero_sum_rows.xlsx",
+      "dest": "find_zero_sum_rows.xlsx"
+    },
+    "options": {
+      "formula_cell": "D2",
+      "result_column": "D",
+      "invoice_column": "B",
+      "inventory_column": "C",
+      "start_row": 2,
+      "end_row": 29,
+      "data_column": "B"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

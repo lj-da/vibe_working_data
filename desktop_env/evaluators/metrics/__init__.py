@@ -222,7 +222,17 @@ from .table_processing import (
     verify_sum_sumif_fruit_sales,
     verify_if_unique_dates,
     verify_average_with_empty_cells,
-    verify_text_if_growth_rate
+    verify_text_if_growth_rate,
+    verify_torow_lookup,
+    verify_sumif_inventory,
+    verify_sumif_product_quantity,
+    verify_clean_remove_newlines,
+    verify_groupby_drop_sum,
+    verify_dget_lookup,
+    verify_if_sumif_admission,
+    verify_hlookup_match_date,
+    verify_if_array_sum_zero,
+    verify_text_convert_to_wan
 )
 from .thunderbird import (
     check_thunderbird_prefs,

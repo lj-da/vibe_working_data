@@ -1,0 +1,89 @@
+{
+  "id": "0ed46d14-88a3-4f4a-bdba-01fc44967030",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何快速计算总分并判断是否达标",
+  "method": "使用IF函数结合SUMIF函数来计算总分并判断是否达标。在目标单元格（如F3）中输入公式=IF(SUMIF(A:A,E3,C:C)>=280,\"录取\",\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\")。该公式的工作原理：1) SUMIF(A:A,E3,C:C)计算总分，在A列中查找与E3（学生姓名）匹配的所有行，然后对C列（分数）中对应位置的数值求和；2) SUMIF(A:A,E3,C:C)>=280判断总分是否大于等于280（录取分数线）；3) 如果条件为真（总分>=280），IF函数返回\"录取\"；4) 如果条件为假（总分<280），IF函数返回\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\"，即\"相差\"加上（280减去总分）再加上\"分\"，例如如果总分为271，则返回\"相差9分\"；5) 将公式复制到F列的其他行（如F4、F5等），相对引用会自动调整（E3变为E4、E5等），确保每行都能根据E列对应的学生姓名计算总分并判断是否达标。这样就能快速计算每个学生的总分并显示录取状态或相差的分数。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nF3=IF(SUMIF(A:A,E3,C:C)>=280,\"录取\",\"相差\"&280-SUMIF(A:A,E3,C:C)&\"分\")\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/47.xlsx",
+            "path": "/home/user/Desktop/admission_status.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/0ed46d14-88a3-4f4a-bdba-01fc44967030",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "admission_status.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_if_sumif_admission",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/admission_status.xlsx",
+      "dest": "admission_status.xlsx"
+    },
+    "options": {
+      "result_column": "F",
+      "name_column": "E",
+      "source_name_column": "A",
+      "source_score_column": "C",
+      "threshold": 280,
+      "start_row": 3,
+      "end_row": 5,
+      "source_start_row": 2,
+      "source_end_row": 10,
+      "data_column": "E"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

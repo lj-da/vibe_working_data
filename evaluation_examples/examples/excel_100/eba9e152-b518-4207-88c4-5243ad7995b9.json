@@ -1,0 +1,88 @@
+{
+  "id": "eba9e152-b518-4207-88c4-5243ad7995b9",
+  "snapshot": "libreoffice_calc",
+  "instruction": "不懂函数求助！这种用什么函数啊，怎么计算报价",
+  "method": "使用TOROW函数结合数组公式来查找报价。在目标单元格（如E1）中输入公式=TOROW(B5:H13/(A5:A13&B4:H4=B1&B2),2)。该公式的工作原理：1) A5:A13&B4:H4=B1&B2创建一个条件数组，将供应商列（A5:A13）和控制模式行（B4:H4）组合，然后与B1（供应商名称）和B2（控制模式）进行比较，返回一个布尔数组；2) B5:H13/(A5:A13&B4:H4=B1&B2)将数据区域B5:H13除以条件数组，当条件为真时返回对应的数据值，当条件为假时返回错误值；3) TOROW函数将结果数组转换为一行，第二个参数2表示忽略错误值，只返回有效的数值；4) 这样就能根据B1中的供应商名称和B2中的控制模式，在数据表格B5:H13中查找对应的报价值；5) 例如，如果B1=\"供应商D\"，B2=\"感应\"，公式会在A5:A13中找到\"供应商D\"所在的行，在B4:H4中找到\"感应\"所在的列，然后返回交叉点的值作为报价。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nE1=TOROW(B5:H13/(A5:A13&B4:H4=B1&B2),2)\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/16.xlsx",
+            "path": "/home/user/Desktop/supplier_quotation.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/eba9e152-b518-4207-88c4-5243ad7995b9",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "supplier_quotation.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_torow_lookup",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/supplier_quotation.xlsx",
+      "dest": "supplier_quotation.xlsx"
+    },
+    "options": {
+      "check_cell": "E1",
+      "supplier_cell": "B1",
+      "mode_cell": "B2",
+      "supplier_column": "A",
+      "mode_row": 4,
+      "data_start_row": 5,
+      "data_start_column": "B",
+      "data_end_row": 13,
+      "data_end_column": "H"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

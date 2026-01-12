@@ -1,0 +1,88 @@
+{
+  "id": "68d91bf8-68df-4bc0-8a35-c4b0588e44da",
+  "snapshot": "libreoffice_calc",
+  "instruction": "想请问一下怎么把原重量相同的净重求和啊",
+  "method": "使用GROUPBY函数结合DROP函数来对相同原重量的净重求和。在目标单元格（如D3）中输入公式=DROP(GROUPBY(B:B,A:A,SUM,0,0),-1)。该公式的工作原理：1) GROUPBY(B:B,A:A,SUM,0,0)是GROUPBY函数，第一个参数B:B是按原重量列进行分组，第二个参数A:A是要聚合的净重列，第三个参数SUM表示对每组进行求和，第四个参数0表示不包含标题行，第五个参数0表示不包含总计行；2) GROUPBY函数会按照B列（原重量）的值进行分组，然后对每组中对应的A列（净重）值进行求和，返回一个两列数组，第一列是原重量，第二列是对应的净重之和；3) DROP(...,-1)函数会删除数组的最后一行，因为GROUPBY可能会在结果末尾添加一个空行或总计行；4) 公式的结果是一个数组，会填充到D3及以下的行和E列，D列显示原重量，E列显示对应的净重之和；5) 例如，如果B列中有多个28.88的原重量，对应的A列净重分别是0.026、0.011、0.297、17.411，GROUPBY会将它们分组并求和，结果在E列显示17.745（0.026+0.011+0.297+17.411），D列显示28.88。这样就能快速对相同原重量的净重进行求和。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nD3=DROP(GROUPBY(B:B,A:A,SUM,0,0),-1)\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/35.xlsx",
+            "path": "/home/user/Desktop/groupby_sum_weights.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/68d91bf8-68df-4bc0-8a35-c4b0588e44da",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "groupby_sum_weights.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_groupby_drop_sum",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/groupby_sum_weights.xlsx",
+      "dest": "groupby_sum_weights.xlsx"
+    },
+    "options": {
+      "formula_cell": "D3",
+      "result_weight_column": "D",
+      "result_sum_column": "E",
+      "source_weight_column": "B",
+      "source_net_column": "A",
+      "source_start_row": 4,
+      "source_end_row": 33,
+      "result_start_row": 3,
+      "result_end_row": 10
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,90 @@
+{
+  "id": "131709e2-d41d-4575-a262-3e6af050de07",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何查询产品在指定日期的入库量",
+  "method": "使用HLOOKUP函数结合MATCH函数来查询产品在指定日期的入库量。在目标单元格（如F3）中输入公式=HLOOKUP(E3,$A$1:$C$6,MATCH($E$2,$A$1:$A$6))。该公式的工作原理：1) MATCH($E$2,$A$1:$A$6)在A1:A6中查找E2单元格中的日期（如\"2024/7/30\"），返回该日期在范围中的相对位置（行号），例如如果日期在A5，则返回5；2) HLOOKUP(E3,$A$1:$C$6,MATCH(...))进行水平查找，E3是查找值（产品名称，如\"黄瓜\"），$A$1:$C$6是查找范围，MATCH返回的行号用于确定返回哪一行的值；3) HLOOKUP会在第一行（A1:C1）中查找E3的值（\"黄瓜\"），找到后返回对应列的第MATCH行的值；4) 例如，如果E2=\"2024/7/30\"（在A5，MATCH返回5），E3=\"黄瓜\"（在B1），则HLOOKUP返回B5的值（88）；5) 将公式复制到F列的其他行（如F4），相对引用会自动调整（E3变为E4），确保每行都能根据E列对应的产品名称和E2的日期查询对应的入库量。这样就能快速查询指定日期下各产品的入库量。",
+  "source": "original",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nF3=HLOOKUP(E3,$A$1:$C$6,MATCH($E$2,$A$1:$A$6))\nEOF"
+        ]
+      }
+    },
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/51.xlsx",
+            "path": "/home/user/Desktop/product_date_lookup.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/131709e2-d41d-4575-a262-3e6af050de07",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "product_date_lookup.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_hlookup_match_date",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/product_date_lookup.xlsx",
+      "dest": "product_date_lookup.xlsx"
+    },
+    "options": {
+      "result_column": "F",
+      "product_column": "E",
+      "date_cell": "E2",
+      "table_start_cell": "A1",
+      "table_end_cell": "C6",
+      "date_column": "A",
+      "result_start_row": 3,
+      "result_end_row": 4,
+      "table_start_row": 1,
+      "table_end_row": 6,
+      "header_row": 1
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
