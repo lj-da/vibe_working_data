@@ -6,11 +6,21 @@
   "source": "original",
   "config": [
     {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nB1=MID(A1,FIND(\"班\",A1)+LEN(\"班\"),FIND(\".\",A1,FIND(\"班\",A1))-FIND(\"班\",A1)-LEN(\"班\"))\nB3=MID(A3,FIND(\"秋2\",A3)+LEN(\"秋2\"),FIND(\".\",A3,FIND(\"秋2\",A3))-FIND(\"秋2\",A3)-LEN(\"秋2\"))\nB23=MID(A23,FIND(\"_\",A23)+LEN(\"_\"),FIND(\".\",A23,FIND(\"_\",A23))-FIND(\"_\",A23)-LEN(\"_\"))\nEOF"
+        ]
+      }
+    },
+    {
       "type": "download",
       "parameters": {
         "files": [
           {
-            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/3.xlsx",
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100/3(1).xlsx",
             "path": "/home/user/Desktop/extract_name.xlsx"
           }
         ]

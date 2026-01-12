@@ -218,7 +218,11 @@ from .table import (
     
 )
 from .table_processing import (
-    verify_mid_find_extract_name
+    verify_mid_find_extract_name,
+    verify_sum_sumif_fruit_sales,
+    verify_if_unique_dates,
+    verify_average_with_empty_cells,
+    verify_text_if_growth_rate
 )
 from .thunderbird import (
     check_thunderbird_prefs,
