@@ -1,0 +1,91 @@
+{
+  "id": "9d383e59-4b87-4869-a16c-7e8e8607c5ac",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求一份客户数据统计excel模板，要求有序号，月份，日期，订单金额等",
+  "method": "打开Excel文件后，创建一个客户数据统计模板。模板应包含以下核心字段：序号、月份、日期、订单金额等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"销售数据\"或\"客户数据统计\"，表头部分（包含序号、月份、日期、客户、订单金额、业务员、已收款金额等列），数据行部分（包含多行数据，序号列从1开始递增，月份和日期列包含具体的时间信息，订单金额列包含数值数据）。可以根据需要添加其他可选字段，如客户、业务员、已收款金额、备注等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写客户数据统计的各项信息。字段应分布在多行多列中，形成清晰的表格结构。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/404.xlsx",
+            "path": "/home/user/Desktop/customer_data_statistics_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/9d383e59-4b87-4869-a16c-7e8e8607c5ac",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "customer_data_statistics_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/customer_data_statistics_template.xlsx",
+      "dest": "customer_data_statistics_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "序号",
+        "月份",
+        "日期",
+        "订单金额"
+      ],
+      "optional_fields": [
+        "销售数据",
+        "客户数据统计",
+        "客户",
+        "业务员",
+        "已收款金额",
+        "收款金额",
+        "备注"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 4,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

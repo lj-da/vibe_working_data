@@ -1,0 +1,103 @@
+{
+  "id": "920138f0-eb43-48ba-a1af-6d766c7580cc",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成收款对账表模板",
+  "method": "打开Excel文件后，创建一个收款对账表模板。模板应包含以下核心字段：日期、合同号、商品名称、数量、单价、总金额、发货记录、开票情况、金额等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"收款对账表\"或\"收款对账表(带开票明细)\"，表头部分（包含订单日期、合同号、商品名称、数量、单价、总金额、发货记录、开票情况、跟单员、备注等列），发货记录部分（包含第一次发货、第二次发货等子列，每个子列包含发货日期和数量），开票情况部分（包含第一次开票、第二次开票等子列，每个子列包含开票日期和开票金额），数据行部分（包含多行订单数据，每行记录一个订单的详细信息）。可以根据需要添加其他可选字段，如订单日期、发货日期、开票日期、第一次发货、第二次发货、第一次开票、第二次开票、是否完成发货、跟单员、备注、汇款资料等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写收款对账的各项信息。字段应分布在多行多列中，形成清晰的表格结构。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/280.xlsx",
+            "path": "/home/user/Desktop/payment_reconciliation_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/920138f0-eb43-48ba-a1af-6d766c7580cc",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "payment_reconciliation_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/payment_reconciliation_template.xlsx",
+      "dest": "payment_reconciliation_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "日期",
+        "合同号",
+        "商品名称",
+        "数量",
+        "单价",
+        "总金额",
+        "发货记录",
+        "开票情况",
+        "金额"
+      ],
+      "optional_fields": [
+        "收款对账表",
+        "收款对账表(带开票明细)",
+        "订单日期",
+        "发货日期",
+        "开票日期",
+        "第一次发货",
+        "第二次发货",
+        "第一次开票",
+        "第二次开票",
+        "是否完成发货",
+        "跟单员",
+        "备注",
+        "汇款资料",
+        "截止日期"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 4,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 0.8
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

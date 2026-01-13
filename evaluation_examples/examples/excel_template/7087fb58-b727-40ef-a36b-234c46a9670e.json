@@ -1,0 +1,97 @@
+{
+  "id": "7087fb58-b727-40ef-a36b-234c46a9670e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求大神，做一个PDCA复盘表模板",
+  "method": "打开Excel文件后，创建一个PDCA复盘表模板。模板应包含以下核心字段：计划、执行、检查、处理、完成时间、任务、是否完成等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含标题\"PDCA复盘表\"或\"PDCA复盘模板\"，表头部分（包含任务、计划、执行、检查、处理、完成时间、是否完成等列），数据行部分（包含多行任务数据，每行记录一个任务的PDCA循环信息）。可以根据需要添加其他可选字段，如序号、负责人、开始时间、状态、备注、改进措施、下步计划等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于填写PDCA复盘的各项信息。字段应分布在多行多列中，形成清晰的表格结构。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/379.xlsx",
+            "path": "/home/user/Desktop/pdca_review_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/7087fb58-b727-40ef-a36b-234c46a9670e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "pdca_review_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/pdca_review_template.xlsx",
+      "dest": "pdca_review_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "计划",
+        "执行",
+        "检查",
+        "处理",
+        "完成时间",
+        "任务",
+        "是否完成"
+      ],
+      "optional_fields": [
+        "PDCA复盘表",
+        "PDCA复盘模板",
+        "序号",
+        "负责人",
+        "开始时间",
+        "状态",
+        "备注",
+        "改进措施",
+        "下步计划",
+        "日期"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 0.8
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

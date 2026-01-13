@@ -1,0 +1,90 @@
+{
+  "id": "635350cb-90b8-4009-a030-f78ce60ef54b",
+  "snapshot": "libreoffice_calc",
+  "instruction": "考编人必备的整理模板，方便整理各教育局学校等发布信息",
+  "method": "打开Excel文件后，创建一个考编人整理模板。模板应包含以下核心字段：地区、考核形式、报名时间、岗位、笔试确定时间等。可以使用合并单元格来美化模板布局，将相关字段组织成清晰的表格结构。模板应包含表头部分（包含序号、地区、考核形式、报名时间、是否报名、报名岗位、笔试确认时间、是否确认等列），数据行部分（包含多行数据，序号列从1开始递增，地区列填写各教育局学校所在地区，考核形式列填写考核方式，报名时间列填写报名时间信息，岗位列填写报名岗位，笔试确认时间列填写笔试确认时间）。可以根据需要添加其他可选字段，如序号、是否报名、报名岗位、笔试确认时间、是否确认、备注等。确保模板有适当的边框、对齐等格式设置，使模板美观易用，便于整理各教育局学校等发布的考编信息。字段应分布在多行多列中，形成清晰的表格结构。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/308.xlsx",
+            "path": "/home/user/Desktop/exam_registration_organizer_template.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/635350cb-90b8-4009-a030-f78ce60ef54b",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "exam_registration_organizer_template.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/exam_registration_organizer_template.xlsx",
+      "dest": "exam_registration_organizer_template.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "地区",
+        "考核形式",
+        "报名时间",
+        "岗位",
+        "笔试确认时间"
+      ],
+      "optional_fields": [
+        "序号",
+        "是否报名",
+        "报名岗位",
+        "是否确认",
+        "备注"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 4,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
