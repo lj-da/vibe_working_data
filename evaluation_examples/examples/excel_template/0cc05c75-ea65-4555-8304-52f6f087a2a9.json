@@ -1,0 +1,133 @@
+{
+  "id": "0cc05c75-ea65-4555-8304-52f6f087a2a9",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成一个销售订单模板",
+  "method": "打开Excel文件后，创建一个销售订单模板。模板应包含以下核心字段：订单编号、制单日期、购货单位、联系人、联系电话、传真、电子邮件、邮政编码、单位地址、交货方式、交货日期、付款方式、收款日期、经办人、序号、编码、品名、规格、摘要、单位、单价、数量、金额、金额合计、备注、客户代表、销售部经理、总经理、签字、日期等基本字段。可以使用合并单元格来美化模板布局，将标题区域、订单基本信息区域、客户信息区域、交易条款区域、商品明细表格区域、金额汇总区域、备注和审批签章区域组织成清晰的表格结构。可以根据需要添加其他可选字段，如销售订单、公司名称、税率、税额、折扣率、折扣金额、订单状态、待确认、已确认、已发货、已完成、发票信息、发票类型、开票状态、物流信息、快递公司、运单号、大写、元等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/188.xlsx",
+            "path": "/home/user/Desktop/sales_order_form.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/0cc05c75-ea65-4555-8304-52f6f087a2a9",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sales_order_form.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/sales_order_form.xlsx",
+      "dest": "sales_order_form.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "订单编号",
+        "制单日期",
+        "购货单位",
+        "联系人",
+        "联系电话",
+        "传真",
+        "电子邮件",
+        "邮政编码",
+        "单位地址",
+        "交货方式",
+        "交货日期",
+        "付款方式",
+        "收款日期",
+        "经办人",
+        "序号",
+        "编码",
+        "品名",
+        "规格",
+        "摘要",
+        "单位",
+        "单价",
+        "数量",
+        "金额"
+      ],
+      "optional_fields": [
+        "销售订单",
+        "订单",
+        "公司名称",
+        "税率",
+        "税额",
+        "折扣率",
+        "折扣金额",
+        "订单状态",
+        "待确认",
+        "已确认",
+        "已发货",
+        "已完成",
+        "发票信息",
+        "发票类型",
+        "开票状态",
+        "物流信息",
+        "快递公司",
+        "运单号",
+        "大写",
+        "元",
+        "¥",
+        "金额合计",
+        "备注",
+        "客户代表",
+        "销售部经理",
+        "总经理",
+        "签字",
+        "日期"
+        
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 3,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

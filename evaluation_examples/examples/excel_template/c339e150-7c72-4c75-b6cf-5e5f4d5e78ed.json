@@ -1,0 +1,107 @@
+{
+  "id": "c339e150-7c72-4c75-b6cf-5e5f4d5e78ed",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮我制作一份利润分析表模板",
+  "method": "打开Excel文件后，创建一个财务收支利润总报表模板。模板应包含以下核心字段：单位名称、部门、制表人、1月、2月、3月、4月、5月、6月、7月、8月、9月、10月、11月、12月、平均、收入额、支出额、毛利润、毛利润率、其它成本支出、净利润、净利润中等基本字段。可以使用合并单元格来美化模板布局，将标题区域、单位信息区域、月份列标题和财务指标行标题组织成清晰的表格结构。可以根据需要添加其他可选字段，如20XX年财务收支利润总报表、财务收支利润总报表、利润分析表、同比增长率、环比增长率、预算金额、预算完成率、累计金额、税费支出、管理费用、销售费用、财务费用、年、月等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/104.xlsx",
+            "path": "/home/user/Desktop/profit_analysis_report.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/c339e150-7c72-4c75-b6cf-5e5f4d5e78ed",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "profit_analysis_report.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/profit_analysis_report.xlsx",
+      "dest": "profit_analysis_report.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "单位名称",
+        "部门",
+        "制表人",
+        "收入额",
+        "支出额",
+        "毛利润",
+        "毛利润率",
+        "其它成本支出",
+        "净利润",
+        "净利润率"
+      ],
+      "optional_fields": [
+        "20XX年财务收支利润总报表",
+        "财务收支利润总报表",
+        "利润分析表",
+        "同比增长率",
+        "环比增长率",
+        "预算金额",
+        "预算完成率",
+        "累计金额",
+        "税费支出",
+        "管理费用",
+        "销售费用",
+        "财务费用",
+        "年",
+        "月",
+        "XX",
+        "收人额"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 2,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

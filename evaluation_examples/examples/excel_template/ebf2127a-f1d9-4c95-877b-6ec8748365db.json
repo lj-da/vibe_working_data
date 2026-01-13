@@ -1,0 +1,118 @@
+{
+  "id": "ebf2127a-f1d9-4c95-877b-6ec8748365db",
+  "snapshot": "libreoffice_calc",
+  "instruction": "生成商品大盘存货分析表模板",
+  "method": "打开Excel文件后，创建一个商品大盘存货分析表模板。模板应包含以下核心字段：序号、SKU、货号、颜色、大类、年度、季节、系列、主推款、上柜日期、吊牌价、总期货量、总吊牌额、订单分类、总部订单、客户订单、卖货订单、直营订单、直营订单分级等基本字段。可以使用合并单元格来美化模板布局，将标题区域、基础维度列、商品信息列、库存数据列和订单分类列组织成清晰的表格结构。可以根据需要添加其他可选字段，如商品大盘存货分析表、存货分析表、库存数量、可用库存、在途数量、销售数量、库存周转率、售罄率、库龄分析、安全库存、补货建议、30天内、60天内、90天以上、六月份、月等。确保模板有适当的边框、对齐等格式设置，使模板美观易用。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_template/238.xlsx",
+            "path": "/home/user/Desktop/inventory_analysis_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/ebf2127a-f1d9-4c95-877b-6ec8748365db",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "inventory_analysis_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_template_fields",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/inventory_analysis_table.xlsx",
+      "dest": "inventory_analysis_table.xlsx"
+    },
+    "options": {
+      "core_fields": [
+        "序号",
+        "SKU",
+        "货号",
+        "颜色",
+        "大类",
+        "年度",
+        "季节",
+        "系列",
+        "主推款",
+        "上柜日期",
+        "吊牌价",
+        "总期货量",
+        "总吊牌额",
+        "订单分类",
+        "客户订单",
+        "直营订单",
+        "直营订单分级"
+      ],
+      "optional_fields": [
+        "商品大盘存货分析表",
+        "存货分析表",
+        "卖货订单",
+        "总部订单",
+        "分析表",
+        "库存数量",
+        "可用库存",
+        "在途数量",
+        "销售数量",
+        "库存周转率",
+        "售罄率",
+        "库龄分析",
+        "安全库存",
+        "补货建议",
+        "30天内",
+        "60天内",
+        "90天以上",
+        "六月份",
+        "月",
+        "春夏秋冬"
+      ],
+      "case_sensitive": false,
+      "check_borders": true,
+      "min_border_ratio": 0.7,
+      "check_layout": true,
+      "min_rows": 1,
+      "min_columns": 2,
+      "min_formatting_ratio": 0.5,
+      "core_field_ratio": 1.0
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

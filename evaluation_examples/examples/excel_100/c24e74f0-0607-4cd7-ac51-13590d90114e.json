@@ -75,6 +75,11 @@
       "start_row": 2,
       "end_row": 5,
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100_cache/d059db89-496c-54f2-a1db-10147b555b7f_convert_to_wan.xlsx",
+      "path": "d059db89-496c-54f2-a1db-10147b555b7f_convert_to_wan.xlsx"
     }
   },
   "proxy": false,
