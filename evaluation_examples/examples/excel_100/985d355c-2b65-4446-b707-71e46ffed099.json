@@ -2,7 +2,7 @@
   "id": "985d355c-2b65-4446-b707-71e46ffed099",
   "snapshot": "libreoffice_calc",
   "instruction": "因为公司的财务制度，上月26日到本月25日为一个月。比如：2月=1月26日~2月25日，3月=2月26日~3月25日。有没有办法进行一个换算呢？考虑到年份。（换算到B列）专门做2列来用vLOOKUP进行查询是一个办法。但是感觉比较麻烦。有没有更简单的方法呢？",
-  "method": "使用YEAR、DAY、MONTH、IF函数和字符串连接符&来将日期转换为财务月份格式。具体步骤：1) 在B1单元格中输入公式=(YEAR(A1)+(DAY(A1)>25))&\"\/\"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))，该公式会根据A1的日期计算对应的财务月份；2) 公式的逻辑：YEAR(A1)+(DAY(A1)>25)用于计算年份，如果日期大于25日，则年份加1（因为跨年了）；3) DAY(A1)>25判断日期是否大于25日，返回TRUE(1)或FALSE(0)；4) (DAY(A1)>25)+MONTH(A1)计算财务月份，如果日期大于25日，月份加1；5) IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))用于处理跨年情况，如果月份超过12，则返回1（表示1月），否则返回计算后的月份；6) 使用&\"\/\"&将年份和月份连接成\"年/月\"格式；7) 将公式填充到B1:B58范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能将标准日期转换为财务月份格式（上月26日到本月25日为一个月）。",
+  "method": "使用YEAR、DAY、MONTH、IF函数和字符串连接符&来将日期转换为财务月份格式。具体步骤：1) 在B1单元格中输入公式=(YEAR(A1)+(DAY(A1)>25))&\"/\"&IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))，该公式会根据A1的日期计算对应的财务月份；2) 公式的逻辑：YEAR(A1)+(DAY(A1)>25)用于计算年份，如果日期大于25日，则年份加1（因为跨年了）；3) DAY(A1)>25判断日期是否大于25日，返回TRUE(1)或FALSE(0)；4) (DAY(A1)>25)+MONTH(A1)计算财务月份，如果日期大于25日，月份加1；5) IF(((DAY(A1)>25)+MONTH(A1))>12,--(DAY(A1)>25),((DAY(A1)>25)+MONTH(A1)))用于处理跨年情况，如果月份超过12，则返回1（表示1月），否则返回计算后的月份；6) 使用&\"/\"&将年份和月份连接成\"年/月\"格式；7) 将公式填充到B1:B58范围内的所有单元格，确保每个单元格都包含正确的公式，少一个都不行。这样就能将标准日期转换为财务月份格式（上月26日到本月25日为一个月）。",
   "source": "original",
   "config": [
     {
@@ -78,11 +78,20 @@
     "options": {
       "formula_range": "B1:B58",
       "source_column": "A",
-      "expected_functions": ["YEAR", "DAY", "MONTH", "IF"]
+      "expected_functions": [
+        "YEAR",
+        "DAY",
+        "MONTH",
+        "IF"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/985d355c-2b65-4446-b707-71e46ffed099/financial_month_convert_data.xlsx",
+      "dest": "financial_month_convert_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -82,11 +82,17 @@
       "condition_column": "C",
       "condition_value": "A",
       "non_empty_column": "B",
-      "expected_functions": ["SUMPRODUCT"]
+      "expected_functions": [
+        "SUMPRODUCT"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/44a7b622-ceaa-4d41-89b5-491bb3eb0264/sumproduct_condition_count.xlsx",
+      "dest": "sumproduct_condition_count.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

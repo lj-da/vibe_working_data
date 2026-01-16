@@ -93,10 +93,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.9
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fffdb47c-b4bd-4801-871b-25f57a3868ee/work_weekly_report.xlsx",
+      "dest": "work_weekly_report.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

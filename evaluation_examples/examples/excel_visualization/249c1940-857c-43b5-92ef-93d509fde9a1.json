@@ -1,0 +1,77 @@
+{
+  "id": "249c1940-857c-43b5-92ef-93d509fde9a1",
+  "snapshot": "wps",
+  "instruction": "各位高手，麻烦帮忙看看附件中的图表，如何将红色的那个直线左右延申，就是要穿过最左边和最右边的柱子，麻烦告知以下操作步骤，谢谢了",
+  "method": "1. 点中红色水平线，右键，\"添加趋势线\"；2. 趋势线设置\"趋势预测\"，向前 0.5 个周期，向后 0.5 个周期；3. 设置趋势线的颜色为红色、线条为实线。把原来的红色水平线设为无色填充。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/629.xlsx",
+            "path": "/home/user/Desktop/trendline_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/249c1940-857c-43b5-92ef-93d509fde9a1",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "trendline_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_with_trendline_forecast",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/trendline_chart.xlsx",
+      "dest": "trendline_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "forward_period": 0.5,
+      "backward_period": 0.5
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/249c1940-857c-43b5-92ef-93d509fde9a1/trendline_chart.xlsx",
+      "dest": "trendline_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -85,11 +85,20 @@
       "sum_range": "$F:$F",
       "criteria_column": "H",
       "data_column": "G",
-      "expected_functions": ["UNIQUE", "INDEX", "COUNTA", "SUMIF"]
+      "expected_functions": [
+        "UNIQUE",
+        "INDEX",
+        "COUNTA",
+        "SUMIF"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2338359a-57d1-4f48-b035-6a1206a85b50/unique_sumif_material_summary.xlsx",
+      "dest": "unique_sumif_material_summary.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

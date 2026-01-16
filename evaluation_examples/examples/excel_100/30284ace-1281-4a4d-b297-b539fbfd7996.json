@@ -75,10 +75,14 @@
       "start_row": 2,
       "end_row": 4,
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/30284ace-1281-4a4d-b297-b539fbfd7996/remove_newlines.xlsx",
+      "dest": "remove_newlines.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -115,7 +115,6 @@
         "线下",
         "混合",
         "品牌偏好"
-        
       ],
       "case_sensitive": false,
       "check_borders": true,
@@ -125,10 +124,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/36704c94-f47c-4367-bc7f-fe4521e5efcf/consumer_survey_form.xlsx",
+      "dest": "consumer_survey_form.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

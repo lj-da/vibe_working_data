@@ -81,25 +81,41 @@
       "expected_departments": {
         "销售部": {
           "merge_count": 3,
-          "personnel": ["张三", "李四", "王五"]
+          "personnel": [
+            "张三",
+            "李四",
+            "王五"
+          ]
         },
         "市场部": {
           "merge_count": 1,
-          "personnel": ["吴十"]
+          "personnel": [
+            "吴十"
+          ]
         },
         "技术部": {
           "merge_count": 2,
-          "personnel": ["赵六", "钱七"]
+          "personnel": [
+            "赵六",
+            "钱七"
+          ]
         },
         "人事部": {
           "merge_count": 2,
-          "personnel": ["孙八", "周九"]
+          "personnel": [
+            "孙八",
+            "周九"
+          ]
         }
       }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5a645e30-c49a-4b28-ad2c-ba99b3947070/department_merge.xlsx",
+      "dest": "department_merge.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -114,7 +114,6 @@
         "总经理",
         "签字",
         "日期"
-        
       ],
       "case_sensitive": false,
       "check_borders": true,
@@ -124,10 +123,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0cc05c75-ea65-4555-8304-52f6f087a2a9/sales_order_form.xlsx",
+      "dest": "sales_order_form.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

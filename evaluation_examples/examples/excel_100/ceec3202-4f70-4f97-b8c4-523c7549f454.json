@@ -90,10 +90,14 @@
       "source_range_b": "$B$2:$B$1000",
       "source_range_a": "A:A",
       "source_range_c": "C:C"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ceec3202-4f70-4f97-b8c4-523c7549f454/product_sales_summary.xlsx",
+      "dest": "product_sales_summary.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

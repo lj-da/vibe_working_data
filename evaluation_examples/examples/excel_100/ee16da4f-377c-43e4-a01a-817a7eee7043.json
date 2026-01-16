@@ -79,12 +79,27 @@
       "c1_cell": "C1",
       "d1_cell": "D1",
       "source_range": "A1:A49",
-      "expected_functions_c1": ["DROP", "SORT", "HSTACK", "LEN"],
-      "expected_functions_d1": ["DROP", "SORT", "HSTACK", "LEN", "SUBSTITUTE"]
+      "expected_functions_c1": [
+        "DROP",
+        "SORT",
+        "HSTACK",
+        "LEN"
+      ],
+      "expected_functions_d1": [
+        "DROP",
+        "SORT",
+        "HSTACK",
+        "LEN",
+        "SUBSTITUTE"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ee16da4f-377c-43e4-a01a-817a7eee7043/drop_sort_hstack_data.xlsx",
+      "dest": "drop_sort_hstack_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

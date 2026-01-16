@@ -89,10 +89,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.6
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/19e71f28-e6c1-4d79-b666-741622b1f9fb/payroll_statement.xlsx",
+      "dest": "payroll_statement.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

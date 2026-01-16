@@ -1,0 +1,79 @@
+{
+  "id": "875959f0-b23b-4114-95fd-ec99bfd79293",
+  "snapshot": "wps",
+  "instruction": "用表格里的品类和月销量做一个动态的曲线图表",
+  "method": "选取A1:J21的数据，插入折线图，右键选择数据，加入数据，系列名称为空，值为data,在加入一个系列名称为空，值为zhuzi，轴分类修改为=x,在插入组合框，设置对象格式为J1:J8,单元格链接为K2,插入条形框，最小值为0，最大值为8，系列10设置为条形图",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/584.xlsx",
+            "path": "/home/user/Desktop/dynamic_line_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/875959f0-b23b-4114-95fd-ec99bfd79293",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "dynamic_line_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_dynamic_line_chart_with_controls",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/dynamic_line_chart.xlsx",
+      "dest": "dynamic_line_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_line_series": 9,
+      "expected_bar_series": 1,
+      "check_combobox": true,
+      "check_scrollbar": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/875959f0-b23b-4114-95fd-ec99bfd79293/dynamic_line_chart.xlsx",
+      "dest": "dynamic_line_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

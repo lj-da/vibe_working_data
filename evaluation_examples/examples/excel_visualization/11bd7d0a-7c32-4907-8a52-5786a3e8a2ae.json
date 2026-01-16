@@ -61,7 +61,10 @@
     },
     "options": {
       "sheet_idx": 0,
-      "expected_series_names": ["实际", "计划"],
+      "expected_series_names": [
+        "实际",
+        "计划"
+      ],
       "target_series_name": "实际",
       "formula_column": "D",
       "formula_start_row": 2,
@@ -70,10 +73,14 @@
       "error_bar_positive_range": "D2:D5",
       "error_bar_negative_value": 0,
       "error_bar_arrow_enabled": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/11bd7d0a-7c32-4907-8a52-5786a3e8a2ae/sales_plan_comparison_chart.xlsx",
+      "dest": "sales_plan_comparison_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

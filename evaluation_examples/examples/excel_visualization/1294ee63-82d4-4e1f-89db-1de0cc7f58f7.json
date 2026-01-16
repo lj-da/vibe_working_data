@@ -63,10 +63,14 @@
       "data_column": "A",
       "start_row": 1,
       "min_data_rows": 5
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1294ee63-82d4-4e1f-89db-1de0cc7f58f7/percentage_data_bars.xlsx",
+      "dest": "percentage_data_bars.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

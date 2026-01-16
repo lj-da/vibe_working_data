@@ -83,11 +83,21 @@
       "source_column2": "G",
       "source_range2": "G1:G6",
       "separator": ",",
-      "expected_functions": ["INDEX", "ROUNDUP", "ROW", "MOD", "ROWS"]
+      "expected_functions": [
+        "INDEX",
+        "ROUNDUP",
+        "ROW",
+        "MOD",
+        "ROWS"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/87842910-52cc-442d-ad15-a8a4b479d723/tocol_torow_merge.xlsx",
+      "dest": "tocol_torow_merge.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

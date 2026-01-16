@@ -74,10 +74,14 @@
       "formula_base_pattern": "=B2-B3",
       "data_label_range": "B4:J4",
       "expected_series_count": 2
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3efabed7-947d-47b4-b129-ccecd80476c7/line_chart_high_low_lines.xlsx",
+      "dest": "line_chart_high_low_lines.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

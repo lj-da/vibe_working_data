@@ -78,13 +78,28 @@
     "options": {
       "check_range": "C2:C4",
       "source_column": "B",
-      "expected_functions": ["IF", "TODAY"],
-      "expected_conditions": [">=30", "<=0"],
-      "expected_text_patterns": ["还有", "天到期", "已过期", "天后到期"]
+      "expected_functions": [
+        "IF",
+        "TODAY"
+      ],
+      "expected_conditions": [
+        ">=30",
+        "<=0"
+      ],
+      "expected_text_patterns": [
+        "还有",
+        "天到期",
+        "已过期",
+        "天后到期"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b925c13b-6300-400b-a912-5a4794afc35b/contract_expiry_data.xlsx",
+      "dest": "contract_expiry_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

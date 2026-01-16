@@ -79,15 +79,21 @@
       "check_column": "D",
       "start_row": 2,
       "source_column": "B",
-      "expected_functions": ["VALUE"],
+      "expected_functions": [
+        "VALUE"
+      ],
       "data_column": "B",
       "sort_column": "D",
       "allow_ascending": true,
       "allow_descending": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/67fcc126-d178-44a9-8f47-8487e13aa2e4/value_sort_column.xlsx",
+      "dest": "value_sort_column.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

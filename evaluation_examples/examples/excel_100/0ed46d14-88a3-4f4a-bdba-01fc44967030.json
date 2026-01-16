@@ -80,10 +80,14 @@
       "source_start_row": 2,
       "source_end_row": 10,
       "data_column": "E"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0ed46d14-88a3-4f4a-bdba-01fc44967030/admission_status.xlsx",
+      "dest": "admission_status.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

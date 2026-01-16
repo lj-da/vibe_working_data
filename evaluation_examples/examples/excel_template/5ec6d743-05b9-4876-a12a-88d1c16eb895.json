@@ -91,10 +91,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.0,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5ec6d743-05b9-4876-a12a-88d1c16eb895/agenda_table.xlsx",
+      "dest": "agenda_table.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

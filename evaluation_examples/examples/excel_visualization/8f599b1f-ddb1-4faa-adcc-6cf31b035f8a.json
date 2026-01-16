@@ -91,6 +91,11 @@
         }
       },
       "secondary_axis_max": 1600
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8f599b1f-ddb1-4faa-adcc-6cf31b035f8a/nested_chart_data.xlsx",
+      "dest": "nested_chart_data.xlsx"
     }
   },
   "proxy": false,

@@ -67,16 +67,25 @@
     },
     "options": {
       "check_cell": "D11",
-      "expected_values": ["张三", "李四", "王武", "赵六"],
+      "expected_values": [
+        "张三",
+        "李四",
+        "王武",
+        "赵六"
+      ],
       "validation_type": "cell range",
       "expected_source": "$B$1:$B$48",
       "no_spaces": true,
       "allow_blank": false,
       "show_dropdown": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/38f10b82-ad3b-4812-ad53-2322bb6c4fd2/data_validation_list.xlsx",
+      "dest": "data_validation_list.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

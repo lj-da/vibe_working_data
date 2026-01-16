@@ -99,10 +99,14 @@
         }
       },
       "data_range": "B2:B4771"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3f84883e-3d06-438c-bd76-7917b61b1b58/maxifs_minifs.xlsx",
+      "dest": "maxifs_minifs.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -92,6 +92,11 @@
       "primary_axis_max": 350,
       "secondary_axis_min": -2,
       "secondary_axis_max": 0.7
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/21bcead8-b327-4af6-bb50-58df0103c412/sales_analysis_chart.xlsx",
+      "dest": "sales_analysis_chart.xlsx"
     }
   },
   "proxy": false,

@@ -81,10 +81,14 @@
       "condition1_font_color": "red",
       "condition2_formula_pattern": "COUNT(FIND(\"中江\",D1))",
       "condition2_font_color": "blue"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e60e5303-b2d5-4900-8ccf-84d9e657413d/conditional_formatting_data.xlsx",
+      "dest": "conditional_formatting_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -81,10 +81,14 @@
       "source_range_end": "D2",
       "start_row": 2,
       "end_row": 10
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ea71985a-ad3a-4487-bada-27754e5f513e/student_grade_sum.xlsx",
+      "dest": "student_grade_sum.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

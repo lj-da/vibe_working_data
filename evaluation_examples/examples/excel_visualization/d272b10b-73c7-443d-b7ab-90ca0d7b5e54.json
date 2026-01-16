@@ -1,0 +1,80 @@
+{
+  "id": "d272b10b-73c7-443d-b7ab-90ca0d7b5e54",
+  "snapshot": "wps",
+  "instruction": "求助高手指教怎么做这个销售同比环比的动态图表",
+  "method": "在A16:A21输入[4,销售数量,销售金额,资金回笼,三包索赔,其他]内容，在A23输入公式：=\"2017年/2018年\"&INDEX($A$17:$A$20,$A$16)，按照ctrl+F3进入名称管理器分别输入4个管理器，公式为：=OFFSET('Sheet1 (2)'!$A$1,1,('Sheet1 (2)'!$A$16-1)*5+1,12,1)，按住F11插入空白图表，编辑数据",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/879.xlsx",
+            "path": "/home/user/Desktop/dynamic_combo_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/d272b10b-73c7-443d-b7ab-90ca0d7b5e54",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "dynamic_combo_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_chart_with_combobox",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/dynamic_combo_chart.xlsx",
+      "dest": "dynamic_combo_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 1,
+      "expected_bar_series": 2,
+      "expected_line_series": 2,
+      "bar_use_primary_axis": true,
+      "line_use_secondary_axis": true,
+      "check_combobox": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d272b10b-73c7-443d-b7ab-90ca0d7b5e54/dynamic_combo_chart.xlsx",
+      "dest": "dynamic_combo_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

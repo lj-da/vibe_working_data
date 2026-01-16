@@ -1,0 +1,80 @@
+{
+  "id": "1fbd0652-318d-4652-823b-fceeed3e265d",
+  "snapshot": "wps",
+  "instruction": "按照工位，工序制成一个柱状图，工序颜色对应L列",
+  "method": "选取A1:H3的数据，作出柱状图，图例为A2:A3,并显示数据标签",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/696.xlsx",
+            "path": "/home/user/Desktop/bar_chart_with_labels.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/1fbd0652-318d-4652-823b-fceeed3e265d",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_with_labels.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_category_axis_and_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_with_labels.xlsx",
+      "dest": "bar_chart_with_labels.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_chart_type": "barChart",
+      "category_axis_range": "B1:H1",
+      "legend_range": "A2:A3",
+      "check_data_labels": true,
+      "strict_legend_check": false
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1fbd0652-318d-4652-823b-fceeed3e265d/bar_chart_with_labels.xlsx",
+      "dest": "bar_chart_with_labels.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -83,6 +83,11 @@
       "min_columns": 4,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/9d383e59-4b87-4869-a16c-7e8e8607c5ac/customer_data_statistics_template.xlsx",
+      "dest": "customer_data_statistics_template.xlsx"
     }
   },
   "proxy": false,

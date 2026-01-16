@@ -79,10 +79,14 @@
       "check_range": "B2:B4",
       "source_column": "A",
       "expected_function": "CLEAN"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6c5abe95-cd34-4f16-83dc-23cb604d0b29/clean_newlines_data.xlsx",
+      "dest": "clean_newlines_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

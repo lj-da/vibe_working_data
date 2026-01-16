@@ -1,0 +1,79 @@
+{
+  "id": "046fbb0c-29a8-4aed-b5df-a4e11e10e5ca",
+  "snapshot": "wps",
+  "instruction": "横轴显示时间，在一个图内同时显示计划时间段和实际时间段的比较图，不知道该如何实现？",
+  "method": "B到D列作为系列，A2：A9为轴，做出堆叠条形图，横坐标边界为40179-40283，纵坐标为逆序类别",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/681.xlsx",
+            "path": "/home/user/Desktop/gantt_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/046fbb0c-29a8-4aed-b5df-a4e11e10e5ca",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "gantt_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_stacked_bar_chart_with_axis_ranges",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/gantt_chart.xlsx",
+      "dest": "gantt_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_grouping": "stacked",
+      "x_axis_min": 40179,
+      "x_axis_max": 40283,
+      "check_inverted_categories": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/046fbb0c-29a8-4aed-b5df-a4e11e10e5ca/gantt_chart.xlsx",
+      "dest": "gantt_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -70,10 +70,14 @@
       "check_high_low_lines": true,
       "check_data_labels": true,
       "check_difference_formula": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/21c89dd0-aee4-4f33-94d7-7b7976620a16/target_actual_difference_chart.xlsx",
+      "dest": "target_actual_difference_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

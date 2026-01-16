@@ -79,11 +79,19 @@
       "formula_range": "F2:G25",
       "source_column": "A",
       "expected_formula_pattern": "=INDEX($A:$A,COLUMN(A1)+ROW(A1)*2-1)&\"\"",
-      "expected_functions": ["INDEX", "COLUMN", "ROW"]
+      "expected_functions": [
+        "INDEX",
+        "COLUMN",
+        "ROW"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2319c425-ae9a-4104-a15d-7eab84634cf0/index_column_row_data.xlsx",
+      "dest": "index_column_row_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -81,10 +81,14 @@
       "font_color": "red",
       "reference_string": "老赵，老钱，老孙，老李",
       "base_cell": "A1"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/9e39047e-c3ad-4678-aefc-2672ae33b8fb/find_compare_conditional_formatting.xlsx",
+      "dest": "find_compare_conditional_formatting.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

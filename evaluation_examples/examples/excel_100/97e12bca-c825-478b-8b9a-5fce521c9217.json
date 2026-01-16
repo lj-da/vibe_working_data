@@ -77,14 +77,20 @@
     },
     "options": {
       "check_range": "E3:E6",
-      "expected_functions": ["SUMIF"],
+      "expected_functions": [
+        "SUMIF"
+      ],
       "sumif_range": "$A$2:$A$13",
       "sumif_criteria_col": "D",
       "sumif_sum_range": "$B$2:$B$13"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/97e12bca-c825-478b-8b9a-5fce521c9217/product_category_sum.xlsx",
+      "dest": "product_category_sum.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

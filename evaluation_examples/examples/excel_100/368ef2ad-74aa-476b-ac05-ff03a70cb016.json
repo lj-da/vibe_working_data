@@ -77,10 +77,14 @@
       "database_end_row": 18,
       "id_column": "A",
       "header_row": 1
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/368ef2ad-74aa-476b-ac05-ff03a70cb016/employee_lookup.xlsx",
+      "dest": "employee_lookup.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

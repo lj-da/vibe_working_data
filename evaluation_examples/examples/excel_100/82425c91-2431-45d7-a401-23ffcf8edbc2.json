@@ -81,12 +81,27 @@
       "source_column_a": "A",
       "source_column_b": "B",
       "source_range_a": "$A$2:$A$25",
-      "expected_functions_header": ["INDEX", "UNIQUE", "FILTER", "COLUMN"],
-      "expected_functions_data": ["IFERROR", "INDEX", "SMALL", "IF", "ROW"]
+      "expected_functions_header": [
+        "INDEX",
+        "UNIQUE",
+        "FILTER",
+        "COLUMN"
+      ],
+      "expected_functions_data": [
+        "IFERROR",
+        "INDEX",
+        "SMALL",
+        "IF",
+        "ROW"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/82425c91-2431-45d7-a401-23ffcf8edbc2/index_match_small_data.xlsx",
+      "dest": "index_match_small_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

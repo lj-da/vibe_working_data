@@ -298,7 +298,24 @@ from .table_visualization import (
     verify_sales_analysis_chart_four_series,
     verify_bar_chart_with_error_bars_and_scatter,
     verify_salary_band_chart,
-    verify_pivot_table_with_chart
+    verify_pivot_table_with_chart,
+    verify_scatter_chart_axis_labels,
+    verify_dual_axis_line_chart,
+    verify_wps_line_chart_high_low_lines_with_data_labels,
+    verify_stacked_bar_chart_with_axis_legend,
+    verify_bar_chart_with_category_axis_and_labels,
+    verify_line_chart_dual_axis_ranges,
+    verify_combo_chart_with_combobox,
+    verify_dynamic_line_chart_with_controls,
+    verify_dynamic_bar_chart_with_index_formulas,
+    verify_chart_with_trendline_forecast,
+    verify_stacked_bar_chart_with_axis_ranges,
+    verify_combo_chart_with_error_bars,
+    verify_combo_column_line_chart_with_data_labels,
+    verify_multiple_charts_with_axis_range,
+    verify_combo_chart_with_data_labels_price_change,
+    verify_line_chart_high_low_lines_with_difference_labels,
+    verify_percentage_stacked_bar_chart_with_legend_order
 )
 from .table_template import (
     verify_template_fields

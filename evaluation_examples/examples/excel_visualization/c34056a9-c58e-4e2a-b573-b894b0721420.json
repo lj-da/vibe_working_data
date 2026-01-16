@@ -85,10 +85,14 @@
       "median_series_range": "G3:G10",
       "secondary_x_axis_min": 42.5,
       "secondary_x_axis_max": 50.5
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c34056a9-c58e-4e2a-b573-b894b0721420/salary_band_chart.xlsx",
+      "dest": "salary_band_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

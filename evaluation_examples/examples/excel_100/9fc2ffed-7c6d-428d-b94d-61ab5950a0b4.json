@@ -78,10 +78,14 @@
     "options": {
       "source_range": "E6:E35",
       "target_range": "G6:G35"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/9fc2ffed-7c6d-428d-b94d-61ab5950a0b4/column_format_match.xlsx",
+      "dest": "column_format_match.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

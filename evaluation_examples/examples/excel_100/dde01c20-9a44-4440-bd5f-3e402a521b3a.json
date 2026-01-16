@@ -71,10 +71,14 @@
       "expected_function": "REGEX",
       "expected_pattern": "(\\d+)(\\D+)",
       "expected_replace_pattern": "$2$1"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/dde01c20-9a44-4440-bd5f-3e402a521b3a/regexp_replace_data.xlsx",
+      "dest": "regexp_replace_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

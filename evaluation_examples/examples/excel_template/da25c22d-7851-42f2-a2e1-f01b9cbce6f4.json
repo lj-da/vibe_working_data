@@ -84,10 +84,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.75
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/da25c22d-7851-42f2-a2e1-f01b9cbce6f4/administrative_work_monthly_report.xlsx",
+      "dest": "administrative_work_monthly_report.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

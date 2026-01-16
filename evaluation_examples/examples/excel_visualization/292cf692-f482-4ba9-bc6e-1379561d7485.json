@@ -1,0 +1,78 @@
+{
+  "id": "292cf692-f482-4ba9-bc6e-1379561d7485",
+  "snapshot": "wps",
+  "instruction": "平均线如何画出来?",
+  "method": "在图中添加用均值作的散点图,然后设置横误差线",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/720.xlsx",
+            "path": "/home/user/Desktop/average_line_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/292cf692-f482-4ba9-bc6e-1379561d7485",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "average_line_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_chart_with_error_bars",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/average_line_chart.xlsx",
+      "dest": "average_line_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "check_line_chart": true,
+      "check_scatter_chart": true,
+      "check_error_bars": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/292cf692-f482-4ba9-bc6e-1379561d7485/average_line_chart.xlsx",
+      "dest": "average_line_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -1,0 +1,78 @@
+{
+  "id": "28f2d475-5bb8-445c-b636-2f763df5a197",
+  "snapshot": "wps",
+  "instruction": "散点图、柱形折线图如何在一张图里面展现，有2组数据，黄色部分先用散点图展现。灰色部分是一组数据，金额先用柱形展示，降幅想用折线展现。5个因素，2组内容咋在一张图表中完成？",
+  "method": "1. 价格：折线，主坐标\n2. 数量：柱形图，次坐标\n3. 价格差：折线的涨跌柱\n4. 价格变化%的数据标签：数据源中在两根折线中间插入一列，取其平均值，做折线，折线为无线条，显示数据标签，然后用标签工具替换成你需要的价格变化%",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/833.xlsx",
+            "path": "/home/user/Desktop/combo_chart_price_change.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/28f2d475-5bb8-445c-b636-2f763df5a197",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combo_chart_price_change.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_chart_with_data_labels_price_change",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combo_chart_price_change.xlsx",
+      "dest": "combo_chart_price_change.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_line_series": 3,
+      "expected_column_series": 2,
+      "data_label_range": "K5:K24"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/28f2d475-5bb8-445c-b636-2f763df5a197/combo_chart_price_change.xlsx",
+      "dest": "combo_chart_price_change.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

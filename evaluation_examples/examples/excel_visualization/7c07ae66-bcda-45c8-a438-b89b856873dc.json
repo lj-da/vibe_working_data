@@ -70,10 +70,14 @@
       "series_name": "月均",
       "forward_periods": 0.5,
       "backward_periods": 0.5
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7c07ae66-bcda-45c8-a438-b89b856873dc/combination_chart_trendline.xlsx",
+      "dest": "combination_chart_trendline.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

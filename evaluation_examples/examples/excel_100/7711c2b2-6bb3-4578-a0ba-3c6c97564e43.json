@@ -80,12 +80,23 @@
       "b1_formula_range": "B1",
       "b2_b25_range": "B2:B25",
       "source_column": "A",
-      "expected_functions_b1": ["MIDB", "FINDB"],
-      "expected_functions_b2": ["SUMPRODUCT", "MID", "FIND"]
+      "expected_functions_b1": [
+        "MIDB",
+        "FINDB"
+      ],
+      "expected_functions_b2": [
+        "SUMPRODUCT",
+        "MID",
+        "FIND"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7711c2b2-6bb3-4578-a0ba-3c6c97564e43/tv_episode_data.xlsx",
+      "dest": "tv_episode_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

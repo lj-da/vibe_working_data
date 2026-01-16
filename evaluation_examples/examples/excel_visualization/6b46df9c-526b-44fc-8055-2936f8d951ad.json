@@ -1,0 +1,77 @@
+    {
+  "id": "6b46df9c-526b-44fc-8055-2936f8d951ad",
+  "snapshot": "wps",
+  "instruction": "如何设置两行的横坐标轴标签：如何让部门2的横坐标轴也像部门1那样？部门1在编辑水平坐标轴的时候可以直接选择一二两行，可以直接出现两行标签。但是部门2就不行了，编辑水平坐标轴的时候选择1和3两行，并不能显示出3行的数据。请问该怎么做？",
+  "method": "在A2和A3插入一行，复制第一行年份内容即可。如需美观可将复制内容设置成无色字体，最后在再拉小行距",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/808(1).xlsx",
+            "path": "/home/user/Desktop/multi_chart_axis_labels.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6b46df9c-526b-44fc-8055-2936f8d951ad",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "multi_chart_axis_labels.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_multiple_charts_with_axis_range",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/multi_chart_axis_labels.xlsx",
+      "dest": "multi_chart_axis_labels.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_chart_count": 2,
+      "expected_axis_range": "B3:G4"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6b46df9c-526b-44fc-8055-2936f8d951ad/multi_chart_axis_labels.xlsx",
+      "dest": "multi_chart_axis_labels.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

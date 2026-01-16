@@ -82,10 +82,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/55f34e7f-79ab-4d68-8acd-a8a8e0d6edad/universal_checklist_template.xlsx",
+      "dest": "universal_checklist_template.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -88,10 +88,14 @@
       "data_range_start": 2,
       "data_range_end": 19,
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3ce77fb4-475c-431b-ab28-f50c25468568/cross_sheet_lookup.xlsx",
+      "dest": "cross_sheet_lookup.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

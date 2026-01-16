@@ -80,11 +80,20 @@
       "source_column": "A",
       "target_column": "D",
       "rows_per_group": 4,
-      "expected_functions": ["IFERROR", "INDEX", "ROW", "COLUMN"]
+      "expected_functions": [
+        "IFERROR",
+        "INDEX",
+        "ROW",
+        "COLUMN"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/36132ce5-ce60-48c9-b38a-778fa8065053/transpose_data.xlsx",
+      "dest": "transpose_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

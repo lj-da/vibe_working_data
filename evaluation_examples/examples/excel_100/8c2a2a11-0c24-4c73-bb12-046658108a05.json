@@ -76,15 +76,27 @@
       "dest": "remove_spaces.xlsx"
     },
     "options": {
-      "check_columns": ["C", "D"],
-      "source_columns": ["A", "B"],
+      "check_columns": [
+        "C",
+        "D"
+      ],
+      "source_columns": [
+        "A",
+        "B"
+      ],
       "start_row": 2,
-      "expected_functions": ["SUBSTITUTE"],
+      "expected_functions": [
+        "SUBSTITUTE"
+      ],
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8c2a2a11-0c24-4c73-bb12-046658108a05/remove_spaces.xlsx",
+      "dest": "remove_spaces.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

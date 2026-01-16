@@ -67,16 +67,24 @@
     },
     "options": {
       "check_range": "R2:Y16",
-      "expected_functions": ["SUMIF", "OFFSET", "MATCH"],
+      "expected_functions": [
+        "SUMIF",
+        "OFFSET",
+        "MATCH"
+      ],
       "sumif_range": "$A:$A",
       "sumif_criteria_col": "Q",
       "offset_base": "$A$1",
       "match_lookup_value_row": 1,
       "match_lookup_array": "$B$1:$N$1"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/05805140-e73e-4f52-8a39-69bd65661666/grade_query.xlsx",
+      "dest": "grade_query.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -79,10 +79,14 @@
       "data_start_column": "B",
       "data_end_row": 13,
       "data_end_column": "H"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/eba9e152-b518-4207-88c4-5243ad7995b9/supplier_quotation.xlsx",
+      "dest": "supplier_quotation.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

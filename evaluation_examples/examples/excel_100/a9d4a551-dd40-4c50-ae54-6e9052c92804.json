@@ -81,10 +81,14 @@
       "condition1_fill_color": "green",
       "condition2_formula_pattern": "NOT(AND($B13 + $D13 <= E13, E13 <= $B13 + $C13))",
       "condition2_fill_color": "red"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a9d4a551-dd40-4c50-ae54-6e9052c92804/measurement_tolerance_data.xlsx",
+      "dest": "measurement_tolerance_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

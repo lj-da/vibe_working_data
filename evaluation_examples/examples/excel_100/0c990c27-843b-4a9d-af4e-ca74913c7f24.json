@@ -78,6 +78,11 @@
     "options": {
       "formula_columns": ["B", "D", "E", "F"],
       "expected_functions": ["IF", "COUNTIF", "LOOKUP", "ROW", "UNIQUE", "TEXTJOIN", "FILTER", "TEXTSPLIT"]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0c990c27-843b-4a9d-af4e-ca74913c7f24/multi_formula_data.xlsx",
+      "dest": "multi_formula_data.xlsx"
     }
   },
   "proxy": false,

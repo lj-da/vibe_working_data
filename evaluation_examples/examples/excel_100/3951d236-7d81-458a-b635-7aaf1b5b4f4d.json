@@ -80,12 +80,19 @@
       "start_row": 2,
       "text_column": "B",
       "number_column": "C",
-      "expected_functions": ["SUM", "VALUE"],
+      "expected_functions": [
+        "SUM",
+        "VALUE"
+      ],
       "data_column": "B"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3951d236-7d81-458a-b635-7aaf1b5b4f4d/sum_value_text_conversion.xlsx",
+      "dest": "sum_value_text_conversion.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

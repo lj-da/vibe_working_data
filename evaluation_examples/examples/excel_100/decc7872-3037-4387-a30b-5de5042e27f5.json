@@ -93,10 +93,14 @@
           "month": 6
         }
       }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/decc7872-3037-4387-a30b-5de5042e27f5/sumproduct_month_customer.xlsx",
+      "dest": "sumproduct_month_customer.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

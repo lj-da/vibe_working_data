@@ -67,14 +67,40 @@
     },
     "options": {
       "sheet_idx": 0,
-      "expected_x_values": [1, 2, 3, 4, 5],
-      "expected_y_values": [10, 8, 3, 11, 19, 22, 6, 9, 1, 7, 5, 2, 8, 6, 9],
+      "expected_x_values": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected_y_values": [
+        10,
+        8,
+        3,
+        11,
+        19,
+        22,
+        6,
+        9,
+        1,
+        7,
+        5,
+        2,
+        8,
+        6,
+        9
+      ],
       "chart_type": "lineChart",
       "tolerance": 0.01
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/72a75955-4f2e-4dbf-acdd-0a9fa853bc73/line_chart_single_series.xlsx",
+      "dest": "line_chart_single_series.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

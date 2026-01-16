@@ -82,7 +82,14 @@
       "table_array": "A:C",
       "col_index": 3,
       "range_lookup": 0,
-      "expected_functions": ["VLOOKUP"]
+      "expected_functions": [
+        "VLOOKUP"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d7a79edb-2326-4c57-a4e1-ab965cb80c78/vlookup_sheet2_data.xlsx",
+      "dest": "vlookup_sheet2_data.xlsx"
     }
   },
   "proxy": false,

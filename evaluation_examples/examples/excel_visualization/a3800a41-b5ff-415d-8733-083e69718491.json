@@ -62,13 +62,21 @@
     "options": {
       "expected_chart_type": "barChart",
       "check_named_ranges": true,
-      "named_range_prefixes": ["G1", "H1", "I1"],
+      "named_range_prefixes": [
+        "G1",
+        "H1",
+        "I1"
+      ],
       "check_offset_formula": true,
       "control_cell": "F1"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a3800a41-b5ff-415d-8733-083e69718491/scrollable_chart.xlsx",
+      "dest": "scrollable_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

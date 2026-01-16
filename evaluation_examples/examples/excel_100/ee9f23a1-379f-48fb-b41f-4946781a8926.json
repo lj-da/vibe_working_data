@@ -67,10 +67,18 @@
     },
     "options": {
       "target_column": "C",
-      "source_columns": ["A", "B"],
+      "source_columns": [
+        "A",
+        "B"
+      ],
       "separator": " ",
       "start_row": 1,
       "header_row": 1
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ee9f23a1-379f-48fb-b41f-4946781a8926/merge_columns_data.xlsx",
+      "dest": "merge_columns_data.xlsx"
     }
   },
   "proxy": false,

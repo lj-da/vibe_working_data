@@ -77,17 +77,25 @@
     },
     "options": {
       "check_cell": "B7",
-      "expected_functions": ["SUM", "VLOOKUP", "INDEX"],
+      "expected_functions": [
+        "SUM",
+        "VLOOKUP",
+        "INDEX"
+      ],
       "vlookup_lookup_value": "\"客户1\"",
       "vlookup_table_array": "B2:D3",
       "vlookup_col_index": 3,
       "vlookup_range_lookup": 0,
       "index_array": "D2:D3",
       "index_row_num": 2
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4abfa051-3b17-45ee-a07c-cb3a46c823ee/vlookup_groupby_data.xlsx",
+      "dest": "vlookup_groupby_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

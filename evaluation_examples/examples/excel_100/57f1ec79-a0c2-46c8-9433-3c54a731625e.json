@@ -70,14 +70,21 @@
       "start_row": 1,
       "relationship_column": "E",
       "birth_date_column": "D",
-      "expected_functions": ["COUNTIF", "IF"],
+      "expected_functions": [
+        "COUNTIF",
+        "IF"
+      ],
       "household_head_text": "户主",
       "spouse_text": "夫妻",
       "data_column": "E"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/57f1ec79-a0c2-46c8-9433-3c54a731625e/household_sort.xlsx",
+      "dest": "household_sort.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

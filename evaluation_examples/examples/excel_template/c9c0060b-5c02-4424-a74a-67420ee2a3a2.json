@@ -116,10 +116,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c9c0060b-5c02-4424-a74a-67420ee2a3a2/family_income_expenditure_record.xlsx",
+      "dest": "family_income_expenditure_record.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

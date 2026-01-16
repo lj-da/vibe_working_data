@@ -97,10 +97,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5958bea3-c81f-4e49-aecc-6580db14b89a/activity_plan_template.xlsx",
+      "dest": "activity_plan_template.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

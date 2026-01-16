@@ -77,16 +77,22 @@
     },
     "options": {
       "check_range": "C2:C10",
-      "expected_functions": ["SUMPRODUCT"],
+      "expected_functions": [
+        "SUMPRODUCT"
+      ],
       "condition1_range": "$F$2:$F$7",
       "condition1_col": "A",
       "condition2_range": "$G$1:$J$1",
       "condition2_col": "B",
       "sum_range": "$G$2:$J$7"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b29c3a4b-33bb-4225-83d5-7f11232ea0f5/price_extract_data.xlsx",
+      "dest": "price_extract_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

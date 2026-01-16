@@ -72,10 +72,14 @@
       "expected_formula_pattern": "REGEX(A",
       "regex_pattern": "[a-zA-Z0-9]{10}",
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6e9f80be-04fd-4618-8515-ef09691c9b6f/order_data.xlsx",
+      "dest": "order_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -83,6 +83,11 @@
       },
       "primary_axis_max": 500,
       "secondary_axis_min": -2
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b51530aa-6bd0-4d6b-84b4-8fe99eace93e/nested_chart_three_series.xlsx",
+      "dest": "nested_chart_three_series.xlsx"
     }
   },
   "proxy": false,

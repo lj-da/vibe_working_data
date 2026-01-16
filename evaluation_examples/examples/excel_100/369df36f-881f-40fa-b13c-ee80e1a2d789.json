@@ -78,13 +78,21 @@
     "options": {
       "formula_range": "B2:B33",
       "source_column": "A",
-      "expected_functions": ["RIGHT", "MATCH", "LEFT"],
+      "expected_functions": [
+        "RIGHT",
+        "MATCH",
+        "LEFT"
+      ],
       "expected_pattern": "*",
       "row_array_pattern": "ROW($1:$99)"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/369df36f-881f-40fa-b13c-ee80e1a2d789/invoice_tax_code_data.xlsx",
+      "dest": "invoice_tax_code_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

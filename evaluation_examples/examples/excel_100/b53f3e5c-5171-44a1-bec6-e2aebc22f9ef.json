@@ -78,7 +78,10 @@
     "options": {
       "formula_range": "G7:AS19",
       "sum_range": "G20:AS20",
-      "expected_functions": ["SUMPRODUCT", "MID"],
+      "expected_functions": [
+        "SUMPRODUCT",
+        "MID"
+      ],
       "class_range": "$A$6:$A$313",
       "size_range": "$C$6:$C$313",
       "quantity_range": "$D$6:$D$313",
@@ -86,10 +89,14 @@
       "size_column": "F",
       "start_row": 7,
       "end_row": 19
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b53f3e5c-5171-44a1-bec6-e2aebc22f9ef/sumproduct_mid_class_size_sum.xlsx",
+      "dest": "sumproduct_mid_class_size_sum.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -92,10 +92,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/57802953-1853-46c2-9330-1de21d78baba/apparel_procurement_progress_table.xlsx",
+      "dest": "apparel_procurement_progress_table.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

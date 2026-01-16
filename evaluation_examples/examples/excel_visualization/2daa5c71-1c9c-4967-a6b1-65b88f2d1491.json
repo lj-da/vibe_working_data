@@ -1,0 +1,76 @@
+{
+  "id": "2daa5c71-1c9c-4967-a6b1-65b88f2d1491",
+  "snapshot": "wps",
+  "instruction": "麻烦生成一份数据蝶状图；要求部分于部门对比，\"男\"\"女\"人力分布情况",
+  "method": "1.添加辅助1、辅助2、标签数据系列；\n2.选中部门-标签各数据区域，插入百分比堆积条形图；\n3.选择数据，调整对应数据系列顺序；\n4.设置数据系列填充色，添加数据标签，适当美化；\n最后添加标题、调整图例位置，一个清晰美观的对比分析蝴蝶图久搞定啦",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/329.xlsx",
+            "path": "/home/user/Desktop/butterfly_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/2daa5c71-1c9c-4967-a6b1-65b88f2d1491",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "butterfly_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_percentage_stacked_bar_chart_with_legend_order",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/butterfly_chart.xlsx",
+      "dest": "butterfly_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_legend_order": ["辅助1", "男性", "标签", "女性", "辅助2"]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2daa5c71-1c9c-4967-a6b1-65b88f2d1491/butterfly_chart.xlsx",
+      "dest": "butterfly_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

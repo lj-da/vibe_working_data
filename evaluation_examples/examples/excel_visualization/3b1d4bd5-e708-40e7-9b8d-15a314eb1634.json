@@ -1,0 +1,76 @@
+{
+  "id": "3b1d4bd5-e708-40e7-9b8d-15a314eb1634",
+  "snapshot": "wps",
+  "instruction": "求教：柱状图和柱状堆积图中如何再添加一折线图",
+  "method": "直接添加一个系列，鼠标右键 图表类型 折线图，折线图可以和柱状图放在同一坐标系的，将保留率具体的值计算出来公式为：C8=C6/C7,在C9增加值公式为：=60000*C8*6",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/755.xlsx",
+            "path": "/home/user/Desktop/combo_column_line_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/3b1d4bd5-e708-40e7-9b8d-15a314eb1634",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combo_column_line_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_column_line_chart_with_data_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combo_column_line_chart.xlsx",
+      "dest": "combo_column_line_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "data_label_range": "C8:G8"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3b1d4bd5-e708-40e7-9b8d-15a314eb1634/combo_column_line_chart.xlsx",
+      "dest": "combo_column_line_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -76,15 +76,36 @@
       "dest": "name_count_summary_data.xlsx"
     },
     "options": {
-      "expected_names": ["冯文荣", "王伟荣", "单瓞绵", "董水军", "张无忌"],
-      "expected_counts": [52, 77, 51, 51, 25],
-      "exclude_columns": ["A", "C", "B", "D"],
+      "expected_names": [
+        "冯文荣",
+        "王伟荣",
+        "单瓞绵",
+        "董水军",
+        "张无忌"
+      ],
+      "expected_counts": [
+        52,
+        77,
+        51,
+        51,
+        25
+      ],
+      "exclude_columns": [
+        "A",
+        "C",
+        "B",
+        "D"
+      ],
       "search_start_row": 1,
       "search_end_row": 1000
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6db104d5-b4fd-456b-8937-026ed7d0dc76/name_count_summary_data.xlsx",
+      "dest": "name_count_summary_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

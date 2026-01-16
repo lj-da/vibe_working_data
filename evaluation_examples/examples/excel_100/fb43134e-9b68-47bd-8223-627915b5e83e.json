@@ -79,15 +79,32 @@
       "check_range": "B3:B6",
       "name_col": "A",
       "name_start_row": 3,
-      "expected_functions": ["COUNT", "FIND", "LET", "VSTACK", "FILTER", "CHOOSECOLS"],
-      "sheet_names": ["Sheet1", "Sheet2", "Sheet3", "Sheet4", "Sheet5"],
+      "expected_functions": [
+        "COUNT",
+        "FIND",
+        "LET",
+        "VSTACK",
+        "FILTER",
+        "CHOOSECOLS"
+      ],
+      "sheet_names": [
+        "Sheet1",
+        "Sheet2",
+        "Sheet3",
+        "Sheet4",
+        "Sheet5"
+      ],
       "sheet_range": "A$1:H$17",
       "search_text": "夜",
       "result_sheet_name": "Sheet6"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb43134e-9b68-47bd-8223-627915b5e83e/night_shift_schedule.xlsx",
+      "dest": "night_shift_schedule.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

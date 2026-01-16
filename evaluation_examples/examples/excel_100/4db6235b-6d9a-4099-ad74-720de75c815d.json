@@ -77,17 +77,24 @@
     },
     "options": {
       "check_range": "F3:F5",
-      "expected_functions": ["IF", "SUMIF"],
+      "expected_functions": [
+        "IF",
+        "SUMIF"
+      ],
       "sumif_range": "A:A",
       "sumif_criteria_col": "E",
       "sumif_sum_range": "C:C",
       "threshold": 280,
       "pass_text": "录取",
       "fail_text_pattern": "相差.*分"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4db6235b-6d9a-4099-ad74-720de75c815d/score_check.xlsx",
+      "dest": "score_check.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

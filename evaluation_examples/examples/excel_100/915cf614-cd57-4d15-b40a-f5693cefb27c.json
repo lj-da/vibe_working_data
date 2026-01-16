@@ -77,15 +77,25 @@
     },
     "options": {
       "check_range": "C18:C22",
-      "expected_functions": ["SUMPRODUCT", "MMULT", "ISERR", "FIND", "ROW"],
+      "expected_functions": [
+        "SUMPRODUCT",
+        "MMULT",
+        "ISERR",
+        "FIND",
+        "ROW"
+      ],
       "find_criteria_col": "B",
       "find_search_range": "B$2:J$11",
       "row_range": "$1:$9",
       "sum_range": "M$1:M$10"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/915cf614-cd57-4d15-b40a-f5693cefb27c/sumpRODUCT_mmult_hours_sum.xlsx",
+      "dest": "sumpRODUCT_mmult_hours_sum.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

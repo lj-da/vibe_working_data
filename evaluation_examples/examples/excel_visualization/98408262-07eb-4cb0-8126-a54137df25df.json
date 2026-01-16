@@ -64,10 +64,14 @@
       "min_series_count": 3,
       "check_data_table": true,
       "check_axis_title": false
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/98408262-07eb-4cb0-8126-a54137df25df/bar_chart_with_table.xlsx",
+      "dest": "bar_chart_with_table.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

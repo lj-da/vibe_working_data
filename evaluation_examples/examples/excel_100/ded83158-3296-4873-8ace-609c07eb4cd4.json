@@ -81,11 +81,20 @@
       "filter_column": "B",
       "filter_value": "1",
       "expected_formula": "=N(ISERROR(N(INDIRECT(RIGHT($A2)&4^8))))",
-      "expected_functions": ["N", "ISERROR", "INDIRECT", "RIGHT"]
+      "expected_functions": [
+        "N",
+        "ISERROR",
+        "INDIRECT",
+        "RIGHT"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ded83158-3296-4873-8ace-609c07eb4cd4/filter_non_letter_end.xlsx",
+      "dest": "filter_non_letter_end.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -78,12 +78,26 @@
     "options": {
       "d_range": "D2:D427",
       "e_range": "E2:E427",
-      "expected_functions_d": ["TEXT", "OFFSET", "SMALL", "IF", "COLUMN", "ROW"],
-      "expected_functions_e": ["TEXT", "COUNTIF"]
+      "expected_functions_d": [
+        "TEXT",
+        "OFFSET",
+        "SMALL",
+        "IF",
+        "COLUMN",
+        "ROW"
+      ],
+      "expected_functions_e": [
+        "TEXT",
+        "COUNTIF"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a496c5e1-30b7-4a5e-92e2-b5b2b2a008f4/seat_number_data.xlsx",
+      "dest": "seat_number_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

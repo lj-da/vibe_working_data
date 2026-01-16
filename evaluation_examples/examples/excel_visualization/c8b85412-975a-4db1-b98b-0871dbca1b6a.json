@@ -1,0 +1,76 @@
+{
+  "id": "c8b85412-975a-4db1-b98b-0871dbca1b6a",
+  "snapshot": "wps",
+  "instruction": "如何对折线图进行设置，设置成箭头指向的那种？",
+  "method": "平均线置于次坐标，平均线的数据标签设为：差值 无线 无色，再设高低点连线",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/870.xlsx",
+            "path": "/home/user/Desktop/line_chart_high_low_lines.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/c8b85412-975a-4db1-b98b-0871dbca1b6a",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_high_low_lines.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_high_low_lines_with_difference_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/line_chart_high_low_lines.xlsx",
+      "dest": "line_chart_high_low_lines.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "difference_range": "E3:E12"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c8b85412-975a-4db1-b98b-0871dbca1b6a/line_chart_high_low_lines.xlsx",
+      "dest": "line_chart_high_low_lines.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

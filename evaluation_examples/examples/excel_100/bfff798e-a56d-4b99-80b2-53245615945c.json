@@ -72,10 +72,14 @@
     "options": {
       "check_cell": "G2",
       "expected_value": 25719
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bfff798e-a56d-4b99-80b2-53245615945c/fruit_sales_sum.xlsx",
+      "dest": "fruit_sales_sum.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

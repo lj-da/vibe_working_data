@@ -1,0 +1,89 @@
+{
+  "id": "691a04bf-5d33-4313-b256-f70fa36faea5",
+  "snapshot": "libreoffice_calc",
+  "instruction": "做一个出口SO2浓度和相对运行成本的曲线图",
+  "method": "首先创建第一个折线图系列：纵坐标（Y轴）使用相对运行成本列（D列），横坐标（X轴）使用投运循环泵列（A列）。然后创建第二个折线图系列：纵坐标（Y轴）使用出口SO2浓度列（C列），横坐标（X轴）使用脱硫效率列（B列）。创建两个系列后，选择第二个系列，将其设置为使用次坐标轴（次纵坐标轴和次横坐标轴）。这样第一个系列使用主坐标轴（主横坐标轴A列，主纵坐标轴D列），第二个系列使用次坐标轴（次横坐标轴B列，次纵坐标轴C列）。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/585.xlsx",
+            "path": "/home/user/Desktop/dual_axis_line_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/691a04bf-5d33-4313-b256-f70fa36faea5",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "dual_axis_line_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_dual_axis_line_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/dual_axis_line_chart.xlsx",
+      "dest": "dual_axis_line_chart.xlsx"
+    },
+    "options": {
+      "expected_series_count": 2,
+      "expected_chart_type": "lineChart",
+      "series1": {
+        "x_column": "A",
+        "y_column": "D",
+        "use_secondary_axis": false,
+        "axis_type": "primary"
+      },
+      "series2": {
+        "x_column": "B",
+        "y_column": "C",
+        "use_secondary_axis": true,
+        "axis_type": "secondary"
+      },
+      "start_row": 2
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/691a04bf-5d33-4313-b256-f70fa36faea5/dual_axis_line_chart.xlsx",
+      "dest": "dual_axis_line_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

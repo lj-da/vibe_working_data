@@ -65,10 +65,14 @@
       "require_secondary_axis": true,
       "expected_chart_type": "comboChart",
       "check_gradient_fill": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e5e40e27-6a43-482e-ac7b-e08d94d20a23/retail_sales_combo_chart.xlsx",
+      "dest": "retail_sales_combo_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

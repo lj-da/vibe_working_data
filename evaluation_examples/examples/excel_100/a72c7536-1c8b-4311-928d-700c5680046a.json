@@ -73,10 +73,14 @@
       "data_start_row": 3,
       "data_end_row": 14,
       "sort_order": "descending"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a72c7536-1c8b-4311-928d-700c5680046a/sort_amount.xlsx",
+      "dest": "sort_amount.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

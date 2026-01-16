@@ -79,11 +79,21 @@
       "formula_column": "R",
       "source_column": "B",
       "start_row": 4,
-      "expected_functions": ["IFERROR", "YEAR", "TEXT", "SUBSTITUTE", "LEFT"]
+      "expected_functions": [
+        "IFERROR",
+        "YEAR",
+        "TEXT",
+        "SUBSTITUTE",
+        "LEFT"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4de54a2e-06a9-4d1d-9176-6a006fd7d8fa/iferror_year_text_substitute.xlsx",
+      "dest": "iferror_year_text_substitute.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

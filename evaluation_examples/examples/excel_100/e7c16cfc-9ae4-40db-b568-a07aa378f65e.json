@@ -79,11 +79,20 @@
       "formula_cell": "B2",
       "formula_range": "B2:B78",
       "source_range": "A2:A78",
-      "expected_functions": ["SORTBY", "RIGHT", "LEFT", "LEN"]
+      "expected_functions": [
+        "SORTBY",
+        "RIGHT",
+        "LEFT",
+        "LEN"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e7c16cfc-9ae4-40db-b568-a07aa378f65e/sortby_letter_number_data.xlsx",
+      "dest": "sortby_letter_number_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

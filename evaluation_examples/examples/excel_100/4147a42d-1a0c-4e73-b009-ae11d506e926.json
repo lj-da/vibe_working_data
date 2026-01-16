@@ -69,12 +69,23 @@
       "check_column": "B",
       "start_row": 2,
       "source_column": "A",
-      "expected_functions": ["TRIM", "MID", "SUBSTITUTE", "CHAR", "REPT", "ROW"],
+      "expected_functions": [
+        "TRIM",
+        "MID",
+        "SUBSTITUTE",
+        "CHAR",
+        "REPT",
+        "ROW"
+      ],
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4147a42d-1a0c-4e73-b009-ae11d506e926/split_content.xlsx",
+      "dest": "split_content.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

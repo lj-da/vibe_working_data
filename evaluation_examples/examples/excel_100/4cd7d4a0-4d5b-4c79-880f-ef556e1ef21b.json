@@ -68,15 +68,26 @@
     "options": {
       "check_column": "C",
       "start_row": 2,
-      "search_columns": ["A", "B"],
+      "search_columns": [
+        "A",
+        "B"
+      ],
       "search_text": "AB",
       "return_value": "1",
-      "expected_functions": ["IF", "IFERROR", "FIND"],
+      "expected_functions": [
+        "IF",
+        "IFERROR",
+        "FIND"
+      ],
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4cd7d4a0-4d5b-4c79-880f-ef556e1ef21b/text_search.xlsx",
+      "dest": "text_search.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

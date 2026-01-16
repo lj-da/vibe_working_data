@@ -68,14 +68,22 @@
     "options": {
       "check_column": "C",
       "start_row": 2,
-      "expected_functions": ["RIGHT", "LEN", "FIND"],
+      "expected_functions": [
+        "RIGHT",
+        "LEN",
+        "FIND"
+      ],
       "expected_formula_pattern": "RIGHT(B",
       "find_text": "班",
       "data_column": "B"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fa2d1569-45f9-48c9-9b84-95daaae10a55/student_data.xlsx",
+      "dest": "student_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -82,7 +82,6 @@
         "净存款",
         "公积金",
         "总额"
-
       ],
       "optional_fields": [
         "2025年记账清单",
@@ -111,10 +110,14 @@
       "min_columns": 2,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.8
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/524d9c67-a6cd-45b4-ac8d-984d76fcbe9f/accounting_list_2025.xlsx",
+      "dest": "accounting_list_2025.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -63,11 +63,14 @@
       "expected_chart_type": "barChart",
       "min_series_count": 2,
       "check_stacked": false
-      
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5dd1b5c6-53b8-4b0a-9fb3-b4f9c2900b55/target_actual_difference_chart.xlsx",
+      "dest": "target_actual_difference_chart.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -1,0 +1,82 @@
+{
+  "id": "fb289342-0faa-42ff-b448-cc219d0a8332",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问这个散点图怎么把x轴改成汉字显示，做了个散点图，源数据和图表已上传附件，其中第B-P列是百分位源数据，第Q-AA列是后面动态输入的数据，可以直接落点到散点图上。散点图X轴默认是显示数据，但是我想让这个X轴显示第A列的内容。请问大家如何实现。我转为折线图不行，动态输入的数据，落点不准，无法用，请大家赐教，谢谢。",
+  "method": "在AB列创建一个辅助列，表头为T，数据全为0。然后选中包含辅助列在内的所有数据系列（AB列辅助列和C-P列的12条数据系列），创建散点图。创建散点图后，为辅助列系列（AB列）添加数据标签，数据标签的内容设置为A列的值，并将标签位置设置为底部。这样辅助列系列的数据点会显示在X轴上（Y值为0），其数据标签会显示A列的内容，从而模拟X轴显示汉字的效果。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/644.xlsx",
+            "path": "/home/user/Desktop/scatter_chart_axis_labels.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fb289342-0faa-42ff-b448-cc219d0a8332",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "scatter_chart_axis_labels.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_scatter_chart_axis_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/scatter_chart_axis_labels.xlsx",
+      "dest": "scatter_chart_axis_labels.xlsx"
+    },
+    "options": {
+      "auxiliary_column": "AB",
+      "auxiliary_header": "T",
+      "data_columns": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"],
+      "label_column": "A",
+      "start_row": 2,
+      "expected_chart_type": "scatterChart",
+      "expected_series_count": 13,
+      "expected_label_position": "b"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb289342-0faa-42ff-b448-cc219d0a8332/scatter_chart_axis_labels.xlsx",
+      "dest": "scatter_chart_axis_labels.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

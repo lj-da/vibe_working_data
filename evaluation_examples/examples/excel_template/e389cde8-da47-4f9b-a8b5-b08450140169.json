@@ -86,10 +86,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.9
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e389cde8-da47-4f9b-a8b5-b08450140169/work_injury_benefits_application_form.xlsx",
+      "dest": "work_injury_benefits_application_form.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

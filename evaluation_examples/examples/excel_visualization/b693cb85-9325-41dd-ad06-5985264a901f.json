@@ -67,10 +67,14 @@
       "y_axis_min": 0.5,
       "x_axis_cross_value": 1,
       "x_axis_label_position": "low"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b693cb85-9325-41dd-ad06-5985264a901f/bar_chart_axis_cross_value.xlsx",
+      "dest": "bar_chart_axis_cross_value.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

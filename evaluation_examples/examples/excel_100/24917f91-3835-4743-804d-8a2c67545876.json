@@ -79,11 +79,25 @@
       "formula_range": "D2:D43",
       "source_column_a": "A",
       "source_column_b": "B",
-      "expected_functions": ["IF", "MOD", "DATE", "YEAR", "INT", "RIGHT", "LEN", "FIND", "MONTH"]
+      "expected_functions": [
+        "IF",
+        "MOD",
+        "DATE",
+        "YEAR",
+        "INT",
+        "RIGHT",
+        "LEN",
+        "FIND",
+        "MONTH"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/24917f91-3835-4743-804d-8a2c67545876/date_calculation_data.xlsx",
+      "dest": "date_calculation_data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -80,11 +80,17 @@
       "date_range": "$D$1:$L$1",
       "start_date_col": "A",
       "end_date_col": "B",
-      "expected_functions": ["IF"]
+      "expected_functions": [
+        "IF"
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/521a4b78-28ea-4f60-9cde-dbd612e55218/date_range_display.xlsx",
+      "dest": "date_range_display.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

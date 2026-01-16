@@ -78,10 +78,14 @@
       "end_row": 7,
       "data_start_column": "A",
       "data_end_column": "F"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/388f81fe-0955-43df-b910-15f77d50277f/inventory_count.xlsx",
+      "dest": "inventory_count.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

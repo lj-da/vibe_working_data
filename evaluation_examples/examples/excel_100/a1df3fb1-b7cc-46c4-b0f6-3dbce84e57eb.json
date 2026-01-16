@@ -80,10 +80,14 @@
       "source_name_range": "F11:F25",
       "source_amount_range": "G11:G25",
       "source_location_range": "I11:I25"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a1df3fb1-b7cc-46c4-b0f6-3dbce84e57eb/sort_choose_person_contract.xlsx",
+      "dest": "sort_choose_person_contract.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

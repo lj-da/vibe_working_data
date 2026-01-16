@@ -66,7 +66,10 @@
       "dest": "data.xlsx"
     },
     "options": {
-      "check_columns": ["B", "C"],
+      "check_columns": [
+        "B",
+        "C"
+      ],
       "start_row": 2,
       "expected_pattern": "REGEX",
       "column_patterns": {
@@ -74,10 +77,14 @@
         "C": "牛筋丸"
       },
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e8d1679d-efab-4acd-b0f9-d7d472c851c6/data.xlsx",
+      "dest": "data.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

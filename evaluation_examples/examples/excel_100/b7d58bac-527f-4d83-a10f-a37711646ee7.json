@@ -83,10 +83,14 @@
       "attendance_formula_range": "C2:C73",
       "expected_cf_formula_pattern": "COUNTIFS($投保日期.$A:$A,$A2,$投保日期.$C:$C,$C2)>0",
       "expected_int_formula_pattern": "INT(B2)"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7d58bac-527f-4d83-a10f-a37711646ee7/employee_insurance_check.xlsx",
+      "dest": "employee_insurance_check.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

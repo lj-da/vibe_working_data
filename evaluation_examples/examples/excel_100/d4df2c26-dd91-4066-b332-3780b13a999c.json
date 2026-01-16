@@ -79,17 +79,23 @@
       "check_column": "B",
       "start_row": 1,
       "source_column": "A",
-      "expected_functions": ["MID"],
+      "expected_functions": [
+        "MID"
+      ],
       "data_column": "A",
       "year_start": 1,
       "year_length": 4,
       "month_start": 5,
       "month_length": 2,
       "separator": "-"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d4df2c26-dd91-4066-b332-3780b13a999c/mid_date_format.xlsx",
+      "dest": "mid_date_format.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

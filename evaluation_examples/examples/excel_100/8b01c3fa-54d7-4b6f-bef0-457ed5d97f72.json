@@ -79,13 +79,21 @@
       "check_column": "C",
       "start_row": 2,
       "source_column": "B",
-      "expected_functions": ["TEXT", "SORT", "FILTER"],
+      "expected_functions": [
+        "TEXT",
+        "SORT",
+        "FILTER"
+      ],
       "data_column": "B",
       "date_format": "yyyy-m-dd"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8b01c3fa-54d7-4b6f-bef0-457ed5d97f72/text_sort_filter_date.xlsx",
+      "dest": "text_sort_filter_date.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

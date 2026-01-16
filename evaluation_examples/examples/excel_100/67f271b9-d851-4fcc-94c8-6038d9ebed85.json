@@ -80,17 +80,33 @@
       "k_column": "K",
       "start_row": 3,
       "end_row": 23,
-      "j_expected_functions": ["INDEX", "LARGE", "OFFSET", "MATCH", "COUNTIF", "RIGHT", "ROW"],
-      "k_expected_functions": ["IF", "VLOOKUP", "MATCH"],
+      "j_expected_functions": [
+        "INDEX",
+        "LARGE",
+        "OFFSET",
+        "MATCH",
+        "COUNTIF",
+        "RIGHT",
+        "ROW"
+      ],
+      "k_expected_functions": [
+        "IF",
+        "VLOOKUP",
+        "MATCH"
+      ],
       "product_range": "A$4:A$23",
       "product_cell": "N$4",
       "country_header_range": "$C$3:$F$3",
       "code_column": "B",
       "data_range": "B:F"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/67f271b9-d851-4fcc-94c8-6038d9ebed85/index_large_offset_match_top5.xlsx",
+      "dest": "index_large_offset_match_top5.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

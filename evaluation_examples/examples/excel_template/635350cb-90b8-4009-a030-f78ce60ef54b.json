@@ -82,6 +82,11 @@
       "min_columns": 4,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/635350cb-90b8-4009-a030-f78ce60ef54b/exam_registration_organizer_template.xlsx",
+      "dest": "exam_registration_organizer_template.xlsx"
     }
   },
   "proxy": false,

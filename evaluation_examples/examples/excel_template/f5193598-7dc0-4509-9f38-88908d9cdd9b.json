@@ -80,10 +80,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 1.0
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/f5193598-7dc0-4509-9f38-88908d9cdd9b/apparel_fabric_preparation_table.xlsx",
+      "dest": "apparel_fabric_preparation_table.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

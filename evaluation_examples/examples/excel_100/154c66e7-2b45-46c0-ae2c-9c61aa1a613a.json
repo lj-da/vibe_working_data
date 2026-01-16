@@ -73,10 +73,14 @@
       "start_row": 2,
       "expected_pattern": "\\p{Han}{2,4}",
       "data_column": "B"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/154c66e7-2b45-46c0-ae2c-9c61aa1a613a/airport_extract.xlsx",
+      "dest": "airport_extract.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

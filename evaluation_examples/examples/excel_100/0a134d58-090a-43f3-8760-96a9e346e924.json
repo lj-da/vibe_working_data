@@ -75,6 +75,11 @@
       "source_end_column": "H",
       "start_row": 2,
       "data_column": "A"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0a134d58-090a-43f3-8760-96a9e346e924/daily_average_sales.xlsx",
+      "dest": "daily_average_sales.xlsx"
     }
   },
   "proxy": false,

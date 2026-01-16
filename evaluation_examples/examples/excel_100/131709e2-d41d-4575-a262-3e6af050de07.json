@@ -81,10 +81,14 @@
       "table_start_row": 1,
       "table_end_row": 6,
       "header_row": 1
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/131709e2-d41d-4575-a262-3e6af050de07/product_date_lookup.xlsx",
+      "dest": "product_date_lookup.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

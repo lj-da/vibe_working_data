@@ -84,9 +84,15 @@
         "H2": "=IFERROR(IF(F2>0,D2,\"\"),\"\")"
       },
       "formula_range": "E2:H7",
-      "expected_data_ranges": ["A1:C7", "E1:F7"],
+      "expected_data_ranges": [
+        "A1:C7",
+        "E1:F7"
+      ],
       "chart_type": "barChart",
-      "secondary_axis_series": ["2022年", "2023年"],
+      "secondary_axis_series": [
+        "2022年",
+        "2023年"
+      ],
       "secondary_axis_max": 1000,
       "series_formatting": {
         "2023年": {
@@ -120,10 +126,14 @@
           }
         }
       }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/60095bcf-2dea-4613-8899-396f1e8b5622/bar_chart_year_over_year_analysis.xlsx",
+      "dest": "bar_chart_year_over_year_analysis.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

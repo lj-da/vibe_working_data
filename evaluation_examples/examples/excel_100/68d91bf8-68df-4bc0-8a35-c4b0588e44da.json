@@ -79,10 +79,14 @@
       "source_end_row": 33,
       "result_start_row": 3,
       "result_end_row": 10
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/68d91bf8-68df-4bc0-8a35-c4b0588e44da/groupby_sum_weights.xlsx",
+      "dest": "groupby_sum_weights.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

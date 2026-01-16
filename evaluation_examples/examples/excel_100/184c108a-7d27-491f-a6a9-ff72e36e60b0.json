@@ -76,10 +76,31 @@
       "dest": "iferror_text_vlookup_index_small_countif.xlsx"
     },
     "options": {
-      "check_columns": ["B", "D", "F", "H", "J"],
+      "check_columns": [
+        "B",
+        "D",
+        "F",
+        "H",
+        "J"
+      ],
       "start_row": 2,
-      "source_columns": ["A", "C", "E", "G", "I"],
-      "expected_functions": ["IFERROR", "TEXT", "VLOOKUP", "INDEX", "SMALL", "IF", "COUNTIF", "ROW"],
+      "source_columns": [
+        "A",
+        "C",
+        "E",
+        "G",
+        "I"
+      ],
+      "expected_functions": [
+        "IFERROR",
+        "TEXT",
+        "VLOOKUP",
+        "INDEX",
+        "SMALL",
+        "IF",
+        "COUNTIF",
+        "ROW"
+      ],
       "data_column": "A",
       "sn_table": "整机SN关联表",
       "date_table": "整机出货年月",
@@ -87,10 +108,14 @@
       "search_range": "$C$3:$G$31",
       "lookup_range": "$B$2:$C$30",
       "date_format": "YYYY-MM-DD"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/184c108a-7d27-491f-a6a9-ff72e36e60b0/iferror_text_vlookup_index_small_countif.xlsx",
+      "dest": "iferror_text_vlookup_index_small_countif.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

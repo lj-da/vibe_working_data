@@ -84,10 +84,14 @@
       "min_columns": 1,
       "min_formatting_ratio": 0.5,
       "core_field_ratio": 0.9
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ac9fb548-4cd5-4067-a246-6eb6cc2d4392/personal_stock_investment_detail_table.xlsx",
+      "dest": "personal_stock_investment_detail_table.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

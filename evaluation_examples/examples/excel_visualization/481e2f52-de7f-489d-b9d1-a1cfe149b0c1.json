@@ -67,10 +67,14 @@
       "origin_x_cell": "H46",
       "origin_y_cell": "G46",
       "desktop_image_vm_path": "/home/user/Desktop/1.png"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/481e2f52-de7f-489d-b9d1-a1cfe149b0c1/pie_scatter_position.xlsx",
+      "dest": "pie_scatter_position.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -77,16 +77,28 @@
     },
     "options": {
       "check_range": "I12:I15",
-      "expected_functions": ["TEXT", "SUMPRODUCT", "MMULT", "MATCH", "OFFSET", "MOD", "N"],
+      "expected_functions": [
+        "TEXT",
+        "SUMPRODUCT",
+        "MMULT",
+        "MATCH",
+        "OFFSET",
+        "MOD",
+        "N"
+      ],
       "offset_match_ref": "MATCH(H12,B$1:E$1,)",
       "match_range": "B$2:E$21",
       "match_lookup": "H$2:L$2",
       "text_format": "贏0;輸0;平",
       "array_constant": "{1;1;1;1}"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2acd1500-6112-4bd2-b8eb-0c0f6a7c0101/five_element_game.xlsx",
+      "dest": "five_element_game.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

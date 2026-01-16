@@ -1,0 +1,78 @@
+{
+  "id": "63d050cf-6de9-491d-a034-c9a99c464760",
+  "snapshot": "wps",
+  "instruction": "图表中那个月份的下拉框怎么弄的？怎么选择相应的数据源， 谢谢大侠们了！！！",
+  "method": "选取B1:E2的数据，插入条形图，在插入组合框，设置对象格式为A6:A17,单元格链接为A2",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/618.xlsx",
+            "path": "/home/user/Desktop/dynamic_bar_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/63d050cf-6de9-491d-a034-c9a99c464760",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "dynamic_bar_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_dynamic_bar_chart_with_index_formulas",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/dynamic_bar_chart.xlsx",
+      "dest": "dynamic_bar_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "formula_cells": ["B2", "C2", "D2", "E2"],
+      "data_range": "A5:D17",
+      "check_combobox": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/63d050cf-6de9-491d-a034-c9a99c464760/dynamic_bar_chart.xlsx",
+      "dest": "dynamic_bar_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
