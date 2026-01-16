@@ -1,0 +1,96 @@
+{
+  "id": "0e53a138-c817-47ce-b660-368a93bdf710",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助怎么制作南丁格尔玫瑰图，用每个扇形的区域表示数据的大小",
+  "method": "首先在E1单元格输入公式：=INDEX($A$1:$B$10,MATCH(E2,$B$1:$B$10,0),1)，在E2单元格输入公式：=LARGE($B$2:$B$10,COLUMN(A12))，在E3单元格输入公式：=360/9，在E4单元格输入公式：=SUM($D$3:D3)，在E5单元格输入公式：=SUM($E$3:E3)。然后将E1:E5的公式右拉填充到M列。接下来，在A13单元格输入1，选中A13单元格，按住Ctrl键并拖动填充柄，或者在A13单元格输入1，在A14单元格输入2，选中A13:A14，拖动填充柄到A372，使A13:A372填充数字1-360。然后在B13单元格输入公式：=IF(AND($A13>E$4,$A13<E$5),E$2,0)，将B13单元格的公式填充到B13:J372单元格区域。完成公式填充后，选中数据区域B13:J372，点击菜单栏的\"插入\"选项，在图表类型中选择\"雷达图\"，然后选择\"填充雷达图\"。创建图表后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/159.xlsx",
+            "path": "/home/user/Desktop/nightingale_rose_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('E1: =INDEX($A$1:$B$10,MATCH(E2,$B$1:$B$10,0),1)\\nE2: =LARGE($B$2:$B$10,COLUMN(A12))\\nE3: =360/9\\nE4: =SUM($D$3:D3)\\nE5: =SUM($E$3:E3)\\n\\n说明：E1:E5右拉填充到M列\\n\\nA13:A372填充数字1-360\\n\\nB13: =IF(AND($A13>E$4,$A13<E$5),E$2,0)\\n\\n说明：B13:J372填充公式=IF(AND($A13>E$4,$A13<E$5),E$2,0)'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/0e53a138-c817-47ce-b660-368a93bdf710",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "nightingale_rose_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_nightingale_rose_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/nightingale_rose_chart.xlsx",
+      "dest": "nightingale_rose_chart.xlsx"
+    },
+    "options": {
+      "expected_data_range": "B13:J372",
+      "expected_chart_type": "radarChart",
+      "formula_ranges": {
+        "E1:M1": "=INDEX($A$1:$B$10,MATCH(E2,$B$1:$B$10,0),1)",
+        "E2:M2": "=LARGE($B$2:$B$10,COLUMN(A12))",
+        "E3:M3": "=360/9",
+        "E4:M4": "=SUM($D$3:D3)",
+        "E5:M5": "=SUM($E$3:E3)",
+        "B13:J372": "=IF(AND($A13>E$4,$A13<E$5),E$2,0)"
+      },
+      "number_range": {
+        "A13:A372": "1-360"
+      }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0e53a138-c817-47ce-b660-368a93bdf710/nightingale_rose_chart.xlsx",
+      "dest": "nightingale_rose_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

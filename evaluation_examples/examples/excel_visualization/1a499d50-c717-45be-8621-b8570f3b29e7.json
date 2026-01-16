@@ -1,0 +1,118 @@
+{
+  "id": "1a499d50-c717-45be-8621-b8570f3b29e7",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据提供的数据制作一个目标达成率柱形气泡图，用气泡突出展示达成率。",
+  "method": "首先打开Excel文件，查看数据表格。完成数据准备后，点击菜单栏的\"插入\"选项，在图表类型中选择\"散点图\"或\"气泡图\"，创建一个空白的散点气泡图。创建图表后，右键点击图表，选择\"选择数据\"，添加第一个系列：X轴系列值设置为=Sheet1!$A$2:$A$8，Y轴系列值设置为=Sheet1!$C$2:$C$8，系列气泡大小设置为=Sheet1!$B$2:$B$8，系列名称可以为空。然后添加第二个系列：X轴系列值设置为=Sheet1!$A$2:$A$8，Y轴系列值设置为=Sheet1!$C$2:$C$8，系列气泡大小设置为=Sheet1!$B$2:$B$8，系列名称可以为空。接着添加第三个系列：X轴系列值设置为=Sheet1!$A$2:$A$8，Y轴系列值设置为=Sheet1!$C$2:$C$8，系列气泡大小设置为=Sheet1!$B$2:$B$8，系列名称可以为空。完成系列添加后，右键点击图表，选择\"数据系列格式\"，在\"系列选项\"中设置气泡大小缩放为50。接下来，为Y值为=Sheet1!$C$2:$C$8的系列（第一个系列）添加Y误差线：选中该系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中设置Y误差线负偏差、无线端，误差量为百分比100%，线条宽度18磅，颜色为绿色。然后，将该系列的填充设置为无填充：右键点击该系列，选择\"数据系列格式\"，在\"填充\"选项中设置为\"无填充\"。接下来，为另外两个系列设置填充颜色：选中第二个系列（气泡大小为B2:B8），右键点击选择\"数据系列格式\"，在\"填充\"选项中设置纯色填充，颜色为绿色，并将透明度设置为50%。选中第三个系列，右键点击选择\"数据系列格式\"，在\"填充\"选项中设置纯色填充，颜色为绿色，透明度保持默认（0%）。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/150.xlsx",
+            "path": "/home/user/Desktop/target_achievement_bubble_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/1a499d50-c717-45be-8621-b8570f3b29e7",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "target_achievement_bubble_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_target_achievement_bubble_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/target_achievement_bubble_chart.xlsx",
+      "dest": "target_achievement_bubble_chart.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "scatterChart",
+      "expected_series_count": 3,
+      "expected_bubble_size_scale": 50,
+      "series_config": [
+        {
+          "x_range": "A2:A8",
+          "y_range": "C2:C8",
+          "bubble_size_range": "B2:B8",
+          "has_error_bars": true,
+          "error_bar_config": {
+            "direction": "minus",
+            "value_type": "percentage",
+            "value": 100,
+            "no_end_cap": true,
+            "line_width": 18,
+            "line_color": "green",
+            "axis": "y"
+          },
+          "fill_config": {
+            "fill_type": "noFill"
+          }
+        },
+        {
+          "x_range": "A2:A8",
+          "y_range": "C2:C8",
+          "bubble_size_range": "B2:B8",
+          "has_error_bars": false,
+          "fill_config": {
+            "fill_type": "solidFill",
+            "color": "green",
+            "transparency": 50
+          }
+        },
+        {
+          "x_range": "A2:A8",
+          "y_range": "C2:C8",
+          "bubble_size_range": "B2:B8",
+          "has_error_bars": false,
+          "fill_config": {
+            "fill_type": "solidFill",
+            "color": "green",
+            "transparency": 0
+          }
+        }
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1a499d50-c717-45be-8621-b8570f3b29e7/target_achievement_bubble_chart.xlsx",
+      "dest": "target_achievement_bubble_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

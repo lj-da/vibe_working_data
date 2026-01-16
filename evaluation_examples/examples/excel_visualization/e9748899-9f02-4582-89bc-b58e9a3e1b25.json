@@ -1,0 +1,92 @@
+{
+  "id": "e9748899-9f02-4582-89bc-b58e9a3e1b25",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据表中数据，帮忙生成一月度销售柱状图",
+  "method": "首先在C2单元格输入公式：=IF(RANK(B2,$B$2:$B$13,0)<=$D$2,B2,NA())，然后将该公式填充到C2:C13单元格区域。接下来，点击菜单栏的\"视图\"选项，选择\"工具栏\"，然后选择\"表单控件\"，在表单控件工具栏中选择\"滚动条\"控件，在工作表中绘制一个滚动条。右键点击滚动条，选择\"控件属性\"，将滚动条的数据源连接到D2单元格，设置最大值为13，最小值为0。然后选中数据区域（包括A1:C13），点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"柱形图\"。创建柱形图后，右键点击图表，选择\"选择数据\"，确保图表包含两个数据系列：第一个系列的数据范围为B2:B13，第二个系列的数据范围为C2:C13。最后，右键点击图表中的任意系列，选择\"数据系列格式\"，在\"系列选项\"中设置两个系列的数据重叠为100%。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/328.xlsx",
+            "path": "/home/user/Desktop/monthly_sales_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('=IF(RANK(B2,$B$2:$B$13,0)<=$D$2,B2,NA())'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/e9748899-9f02-4582-89bc-b58e9a3e1b25",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "monthly_sales_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_scrollbar",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/monthly_sales_chart.xlsx",
+      "dest": "monthly_sales_chart.xlsx"
+    },
+    "options": {
+      "formula_range": "C2:C13",
+      "expected_formula": "=IF(RANK(B2,$B$2:$B$13,0)<=$D$2,B2,NA())",
+      "scrollbar_cell": "D2",
+      "scrollbar_min": 0,
+      "scrollbar_max": 13,
+      "series1_range": "B2:B13",
+      "series2_range": "C2:C13",
+      "expected_overlap": 100,
+      "expected_chart_type": "columnChart"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e9748899-9f02-4582-89bc-b58e9a3e1b25/monthly_sales_chart.xlsx",
+      "dest": "monthly_sales_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

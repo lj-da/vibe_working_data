@@ -1,0 +1,127 @@
+{
+  "id": "0d8e57d2-e904-4382-8249-7f8eec9a9649",
+  "snapshot": "libreoffice_calc",
+  "instruction": "制作堆积图+散点图组合图，产品销量分析。",
+  "method": "首先选中A1:E7单元格区域，然后点击菜单栏的\"插入\"选项，在图表类型中选择\"柱状图\"，然后选择\"堆积柱状图\"。创建图表后，右键点击图表，选择\"选择数据\"，在\"选择数据源\"对话框中点击\"切换行/列\"按钮，使行和列互换，这样可以得到系列产品A~产品E，以及系列合计。接下来，右键点击图表中的\"合计\"系列，选择\"更改系列图表类型\"，将合计系列的图表类型改为\"散点图\"。然后，右键点击\"合计\"系列，选择\"添加数据标签\"，再右键点击数据标签，选择\"设置数据标签格式\"，在\"标签位置\"中选择\"靠上\"，在\"填充\"中选择\"纯色填充\"，颜色设置为绿色。接下来，为其他五个系列（产品A~产品E）也添加数据标签：依次右键点击每个系列，选择\"添加数据标签\"，然后右键点击数据标签，选择\"设置数据标签格式\"，在\"标签选项\"中勾选\"单元格中的值\"，并设置对应的标签范围（产品A对应H2:K2，产品B对应H3:K3，产品C对应H4:K4，产品D对应H5:K5，产品E对应H6:K6）。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/148.xlsx",
+            "path": "/home/user/Desktop/stacked_scatter_combo_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('本任务不需要公式，直接使用原始数据创建图表。\\n\\n数据范围：A1:E7\\n- A1:E1: 表头（产品名称、Q1、Q2、Q3、Q4）\\n- A2:A7: 产品名称（产品A~产品E、合计）\\n- B2:E7: 各产品各季度销量数据\\n\\n图表操作步骤：\\n1. 选中A1:E7，创建堆积柱状图\\n2. 切换行/列，得到系列产品A~产品E和合计\\n3. 将合计系列改为散点图\\n4. 设置合计系列数据标签：位置靠上，绿色填充\\n5. 为产品A~产品E设置数据标签：使用单元格中的值（H2:K2到H6:K6）'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/0d8e57d2-e904-4382-8249-7f8eec9a9649",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "stacked_scatter_combo_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_stacked_scatter_combo_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/stacked_scatter_combo_chart.xlsx",
+      "dest": "stacked_scatter_combo_chart.xlsx"
+    },
+    "options": {
+      "expected_chart_types": ["barChart", "scatterChart"],
+      "expected_series_count": 6,
+      "expected_bar_chart_grouping": "stacked",
+      "data_range": "A1:E7",
+      "category_axis_range": "B1:E1",
+      "series_config": [
+        {
+          "name": "产品A",
+          "data_range": "B2:E2",
+          "chart_type": "barChart",
+          "label_range": "H2:K2"
+        },
+        {
+          "name": "产品B",
+          "data_range": "B3:E3",
+          "chart_type": "barChart",
+          "label_range": "H3:K3"
+        },
+        {
+          "name": "产品C",
+          "data_range": "B4:E4",
+          "chart_type": "barChart",
+          "label_range": "H4:K4"
+        },
+        {
+          "name": "产品D",
+          "data_range": "B5:E5",
+          "chart_type": "barChart",
+          "label_range": "H5:K5"
+        },
+        {
+          "name": "产品E",
+          "data_range": "B6:E6",
+          "chart_type": "barChart",
+          "label_range": "H6:K6"
+        },
+        {
+          "name": "合计",
+          "data_range": "B7:E7",
+          "chart_type": "scatterChart",
+          "label_position": "t",
+          "label_fill_color": "00B050"
+        }
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0d8e57d2-e904-4382-8249-7f8eec9a9649/stacked_scatter_combo_chart.xlsx",
+      "dest": "stacked_scatter_combo_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

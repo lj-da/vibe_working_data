@@ -1,0 +1,96 @@
+{
+  "id": "6db42ecc-da01-49a8-96a4-de13029a9f45",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何根据大类项目和子项目的销量制作饼环嵌套图",
+  "method": "首先选中数据区域，然后点击菜单栏的\"插入\"选项，在图表类型中选择\"饼图\"，然后选择\"饼环嵌套图\"。创建图表后，需要设置两个系列：第一个系列（子项目）选择数据范围C2:C13，图表类型设置为\"环形图\"，内径大小设置为70%。第二个系列（销量）选择数据范围F2:F5，图表类型设置为\"饼图\"，分类程度设置为100%，然后依次选中每个数据点，将点爆炸型设置为0%。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/145.xlsx",
+            "path": "/home/user/Desktop/nested_pie_doughnut_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('本任务不需要公式，直接使用原始数据创建饼环嵌套图。\\n\\n数据范围：\\n- 子项目数据：C2:C13（12个数据点）\\n- 销量数据：F2:F5（4个数据点）\\n\\n图表操作步骤：\\n1. 插入饼环嵌套图\\n2. 设置第一个系列（子项目）：\\n   - 数据范围：C2:C13\\n   - 图表类型：环形图\\n   - 内径大小：70%\\n3. 设置第二个系列（销量）：\\n   - 数据范围：F2:F5\\n   - 图表类型：饼图\\n   - 分类程度：100%\\n   - 点爆炸型：0%（所有数据点）'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6db42ecc-da01-49a8-96a4-de13029a9f45",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "nested_pie_doughnut_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_nested_pie_doughnut_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/nested_pie_doughnut_chart.xlsx",
+      "dest": "nested_pie_doughnut_chart.xlsx"
+    },
+    "options": {
+      "doughnut_series_config": {
+        "data_range": "C2:C13",
+        "hole_size": 70,
+        "series_idx": 0,
+        "series_order": 0
+      },
+      "pie_series_config": {
+        "data_range": "F2:F5",
+        "explosion": 100,
+        "point_explosions": [0, 0, 0, 0],
+        "series_idx": 1,
+        "series_order": 1
+      }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6db42ecc-da01-49a8-96a4-de13029a9f45/nested_pie_doughnut_chart.xlsx",
+      "dest": "nested_pie_doughnut_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

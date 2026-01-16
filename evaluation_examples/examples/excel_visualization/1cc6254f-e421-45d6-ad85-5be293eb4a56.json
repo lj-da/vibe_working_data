@@ -1,0 +1,101 @@
+{
+  "id": "1cc6254f-e421-45d6-ad85-5be293eb4a56",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何根据达成率数据制作温度计图",
+  "method": "首先在C列创建辅助列，在C1单元格输入任意表头（如\"目标\"或\"100%\"等）。然后在C2单元格输入100%，将C2单元格的值填充到C2:C9单元格区域。接下来，选中数据区域A1:C9，点击菜单栏的\"插入\"选项，在图表类型中选择\"折线图\"，选择任意一种折线图样式。创建折线图后，在折线图中添加元素：垂直线，设置线条样式为实线、双线类型，线条宽度为5磅，前端箭头设置为圆形。然后，为数据范围为B2:B9的系列添加误差线，设置误差线颜色为红色、线条宽度为5磅，方向为负误差，无线端，误差量为百分比100%。最后，将所有折线图系列设置为无填充。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/162.xlsx",
+            "path": "/home/user/Desktop/thermometer_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('C2: 100%\\n\\n说明：C2:C9填充100%'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/1cc6254f-e421-45d6-ad85-5be293eb4a56",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "thermometer_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_thermometer_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/thermometer_chart.xlsx",
+      "dest": "thermometer_chart.xlsx"
+    },
+    "options": {
+      "expected_data_range": "A1:C9",
+      "expected_chart_type": "lineChart",
+      "helper_column_range": "C2:C9",
+      "helper_column_value": "100%",
+      "error_bar_series_range": "B2:B9",
+      "error_bar_config": {
+        "direction": "minus",
+        "value_type": "percentage",
+        "value": 100,
+        "no_end_cap": true,
+        "line_color": "red",
+        "line_width": 5
+      },
+      "vertical_line_config": {
+        "line_width": 5,
+        "arrow_type": "round"
+      },
+      "all_series_no_fill": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1cc6254f-e421-45d6-ad85-5be293eb4a56/thermometer_chart.xlsx",
+      "dest": "thermometer_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

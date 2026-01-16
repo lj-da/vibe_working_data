@@ -315,7 +315,23 @@ from .table_visualization import (
     verify_multiple_charts_with_axis_range,
     verify_combo_chart_with_data_labels_price_change,
     verify_line_chart_high_low_lines_with_difference_labels,
-    verify_percentage_stacked_bar_chart_with_legend_order
+    verify_percentage_stacked_bar_chart_with_legend_order,
+    verify_multi_conditional_formatting,
+    verify_bar_chart_with_scrollbar,
+    verify_monthly_achievement_combo_chart,
+    verify_comparison_chart,
+    verify_bar_chart_with_arrows,
+    verify_line_chart_simple,
+    verify_stacked_column_chart_no_fill,
+    verify_thermometer_chart,
+    verify_nightingale_rose_chart,
+    verify_progress_wifi_chart,
+    verify_bar_bubble_chart,
+    verify_target_achievement_bubble_chart,
+    verify_stacked_scatter_combo_chart,
+    verify_nested_pie_doughnut_chart,
+    verify_gantt_chart_progress,
+    verify_percentage_progress_chart
 )
 from .table_template import (
     verify_template_fields

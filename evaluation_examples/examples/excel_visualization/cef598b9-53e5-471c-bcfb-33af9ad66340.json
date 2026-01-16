@@ -1,0 +1,123 @@
+{
+  "id": "cef598b9-53e5-471c-bcfb-33af9ad66340",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助根据提供的数据生成带箭头的柱状图，设置高于行业值用红色箭头显示，低于行业值用蓝色箭头显示，达成值和行业达成值用双柱图表显示。",
+  "method": "首先在E2单元格输入公式：=IF(D2>0,B2+10%,NA())，在F2单元格输入公式：=IF(D2<0,B2+15%,NA())，在G2单元格输入公式：=IFERROR(IF(D2>0,D2,\"\"),\"\")，在H2单元格输入公式：=IFERROR(IF(D2<0,D2,\"\"),\"\")，然后将E2:H2的公式填充到E2:H15单元格区域。接下来，选中数据区域（包括A1:H15），点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"柱状图\"或\"组合图\"。创建图表后，右键点击图表，选择\"选择数据\"，添加四个数据系列：第一个系列名称为\"达成值\"，数据范围为B2:B15，绘制在次坐标轴；第二个系列名称为\"行业达成\"，数据范围为C2:C15，绘制在次坐标轴；第三个系列数据范围为E2:E15，绘制在主坐标轴；第四个系列数据范围为F2:F15，绘制在主坐标轴。然后，右键点击\"行业达成\"系列，选择\"数据系列格式\"，在\"误差线\"选项中添加正偏差误差线，设置误差线类型为\"固定值\"，值为0.03，无线端，并在\"线条\"选项中设置线条前端带箭头。接下来，右键点击第三个系列（E2:E15），选择\"数据系列格式\"，在\"数据标签\"选项中勾选\"显示数据标签\"，设置标签包含单元格中的值，范围为G2:G15，在\"系列选项\"中设置系列重叠为100%，在\"填充\"选项中设置纯色填充，颜色为绿色；右键点击第四个系列（F2:F15），选择\"数据系列格式\"，在\"数据标签\"选项中勾选\"显示数据标签\"，设置标签包含单元格中的值，范围为H2:H15，在\"系列选项\"中设置系列重叠为100%，在\"填充\"选项中设置纯色填充，颜色为红色。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/203.xlsx",
+            "path": "/home/user/Desktop/bar_chart_with_arrows.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('E2: =IF(D2>0,B2+10%,NA())\\nF2: =IF(D2<0,B2+15%,NA())\\nG2: =IFERROR(IF(D2>0,D2,\\\"\\\"),\\\"\\\")\\nH2: =IFERROR(IF(D2<0,D2,\\\"\\\"),\\\"\\\")\\n\\n说明：将E2:H2的公式填充到E2:H15区域'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/cef598b9-53e5-471c-bcfb-33af9ad66340",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_chart_with_arrows.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_arrows",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_chart_with_arrows.xlsx",
+      "dest": "bar_chart_with_arrows.xlsx"
+    },
+    "options": {
+      "formula_range": "E2:H15",
+      "expected_formulas": {
+        "E2": "=IF(D2>0,B2+10%,NA())",
+        "F2": "=IF(D2<0,B2+15%,NA())",
+        "G2": "=IFERROR(IF(D2>0,D2,\"\"),\"\")",
+        "H2": "=IFERROR(IF(D2<0,D2,\"\"),\"\")"
+      },
+      "series_config": [
+        {
+          "name": "达成值",
+          "data_range": "B2:B15",
+          "axis": "secondary"
+        },
+        {
+          "name": "行业达成",
+          "data_range": "C2:C15",
+          "axis": "secondary",
+          "error_bars": {
+            "direction": "plus",
+            "value_type": "fixed",
+            "value": 0.03,
+            "no_end_cap": true,
+            "with_arrows": true
+          }
+        },
+        {
+          "name": null,
+          "data_range": "E2:E15",
+          "axis": "primary",
+          "overlap": 100,
+          "fill_color": "green"
+        },
+        {
+          "name": null,
+          "data_range": "F2:F15",
+          "axis": "primary",
+          "overlap": 100,
+          "fill_color": "red"
+        }
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/cef598b9-53e5-471c-bcfb-33af9ad66340/bar_chart_with_arrows.xlsx",
+      "dest": "bar_chart_with_arrows.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

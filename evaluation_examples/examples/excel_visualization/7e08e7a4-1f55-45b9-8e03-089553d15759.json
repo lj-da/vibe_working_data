@@ -1,0 +1,94 @@
+{
+  "id": "7e08e7a4-1f55-45b9-8e03-089553d15759",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助怎么制作项目进度wifi图，可用于进度、完成率等分析展示场景",
+  "method": "首先在A1单元格输入数组公式：=SORT(G3:H12,2,1)，该公式为数组公式，会自动填充A1:B10的数据。然后在C1单元格输入公式：=1-B1，将C1单元格的公式下拉填充到C10单元格。接下来，在D1单元格输入2，将D1单元格的值填充到D1:D10单元格区域（D1:D10全部为数据2）。完成数据准备后，选中数据区域A1:D10，点击菜单栏的\"插入\"选项，在图表类型中选择\"环形图\"，选择任意一种环形图样式。创建环形图后，右键点击图表，选择\"选择数据\"，点击\"切换行/列\"按钮进行行列互换（即需要一行为一个系列，一个系列有三个类别）。然后，找到每个系列中对应D列数据的类别，右键点击该类别，选择\"数据系列格式\"或\"数据点格式\"，在\"填充\"选项中设置为\"无填充\"。接下来，右键点击图表，选择\"数据系列格式\"，在\"系列选项\"中设置第一扇区起始角度为300°。最后，在\"系列选项\"中设置圆环图内径大小为0%。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/155.xlsx",
+            "path": "/home/user/Desktop/progress_wifi_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('A1: =SORT(G3:H12,2,1) (数组公式，自动填充A1:B10)\\nC1: =1-B1\\n\\n说明：C1:C10下拉填充公式=1-B1\\n\\nD1:D10全部为数据2\\n\\n注意：A1为数组公式，会自动填充A1:B10'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/7e08e7a4-1f55-45b9-8e03-089553d15759",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "progress_wifi_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_progress_wifi_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/progress_wifi_chart.xlsx",
+      "dest": "progress_wifi_chart.xlsx"
+    },
+    "options": {
+      "expected_data_range": "A1:D10",
+      "expected_chart_type": "doughnutChart",
+      "expected_series_count": 10,
+      "expected_categories_per_series": 3,
+      "expected_first_slice_angle": 300,
+      "expected_hole_size": 0,
+      "formula_ranges": {
+        "A1:B10": "=SORT(G3:H12,2,1)",
+        "C1:C10": "=1-B1",
+        "D1:D10": "2"
+      }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7e08e7a4-1f55-45b9-8e03-089553d15759/progress_wifi_chart.xlsx",
+      "dest": "progress_wifi_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

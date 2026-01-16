@@ -1,0 +1,133 @@
+{
+  "id": "be671972-61fc-4f0d-b5b5-7d744c749e03",
+  "snapshot": "libreoffice_calc",
+  "instruction": "帮我制作一个条形气泡图，重点强调销量情况，数据从大到小排列，加入气泡大小维度，销售额做浅色背景修饰。",
+  "method": "首先在F3单元格输入数组公式：=SORT(B3:D8,3,-1)，该公式为数组公式，会自动填充F3:H8的数据。然后在I3:I8单元格区域输入数字-0.5到-5.5（每个单元格递减0.5）。接下来，在J3单元格输入公式：=MAX(G$3:G$8)*1.5，将J3单元格的公式下拉填充到J8单元格。在K3单元格输入公式：=AVERAGE(D$3:D$8)，将K3单元格的公式下拉填充到K8单元格。在L3单元格输入公式：=MAX(G$3:G$8)，将L3单元格的公式下拉填充到L8单元格。完成数据准备后，点击菜单栏的\"插入\"选项，在图表类型中选择\"散点图\"或\"气泡图\"，创建一个空白的散点气泡图。创建图表后，右键点击图表，选择\"选择数据\"，添加第一个系列：X轴系列值设置为=Sheet1!$J$3:$J$8，Y轴系列值设置为=Sheet1!$I$3:$I$8，系列气泡大小设置为=Sheet1!$H$3:$H$8，系列名称可以为空。然后添加第二个系列：X轴系列值设置为=Sheet1!$L$3:$L$8，Y轴系列值设置为=Sheet1!$I$3:$I$8，系列气泡大小设置为=Sheet1!$K$3:$K$8，系列名称可以为空。接着添加第三个系列：X轴系列值设置为=Sheet1!$G$3:$G$8，Y轴系列值设置为=Sheet1!$I$3:$I$8，系列气泡大小设置为=Sheet1!$K$3:$K$8，系列名称可以为空。完成系列添加后，右键点击图表，选择\"数据系列格式\"，在\"系列选项\"中设置气泡大小缩放为50。接下来，为第一个系列（X值为=Sheet1!$J$3:$J$8）添加X误差线：选中该系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中设置X误差线负偏差、无线端，误差量为百分比100%，线条宽度18磅，颜色为绿色。然后为第二个系列（X值为=Sheet1!$L$3:$L$8）添加X误差线：选中该系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中设置X误差线负偏差、无线端，误差量为百分比100%，线条宽度18磅，颜色为绿色，并将误差线透明度设置为50%。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/154.xlsx",
+            "path": "/home/user/Desktop/bar_bubble_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('F3: =SORT(B3:D8,3,-1) (数组公式，自动填充F3:H8)\\n\\nI3:I8: 数字-0.5到-5.5（每个单元格递减0.5）\\n\\nJ3: =MAX(G$3:G$8)*1.5\\n说明：J3:J8下拉填充公式=MAX(G$3:G$8)*1.5\\n\\nK3: =AVERAGE(D$3:D$8)\\n说明：K3:K8下拉填充公式=AVERAGE(D$3:D$8)\\n\\nL3: =MAX(G$3:G$8)\\n说明：L3:L8下拉填充公式=MAX(G$3:G$8)\\n\\n注意：F3为数组公式，会自动填充F3:H8'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/be671972-61fc-4f0d-b5b5-7d744c749e03",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bar_bubble_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_bubble_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bar_bubble_chart.xlsx",
+      "dest": "bar_bubble_chart.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "scatterChart",
+      "expected_series_count": 3,
+      "expected_bubble_size_scale": 50,
+      "formula_ranges": {
+        "F3:H8": "=SORT(B3:D8,3,-1)",
+        "J3:J8": "=MAX(G$3:G$8)*1.5",
+        "K3:K8": "=AVERAGE(D$3:D$8)",
+        "L3:L8": "=MAX(G$3:G$8)"
+      },
+      "number_range": {
+        "I3:I8": "从-0.5到-5.5，每个递减0.5"
+      },
+      "series_config": [
+        {
+          "x_range": "J3:J8",
+          "y_range": "I3:I8",
+          "bubble_size_range": "H3:H8",
+          "has_error_bars": true,
+          "error_bar_config": {
+            "direction": "minus",
+            "value_type": "percentage",
+            "value": 100,
+            "no_end_cap": true,
+            "line_width": 18,
+            "line_color": "green",
+            "transparency": 0
+          }
+        },
+        {
+          "x_range": "L3:L8",
+          "y_range": "I3:I8",
+          "bubble_size_range": "K3:K8",
+          "has_error_bars": true,
+          "error_bar_config": {
+            "direction": "minus",
+            "value_type": "percentage",
+            "value": 100,
+            "no_end_cap": true,
+            "line_width": 18,
+            "line_color": "green",
+            "transparency": 50
+          }
+        },
+        {
+          "x_range": "G3:G8",
+          "y_range": "I3:I8",
+          "bubble_size_range": "K3:K8",
+          "has_error_bars": false
+        }
+      ]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/be671972-61fc-4f0d-b5b5-7d744c749e03/bar_bubble_chart.xlsx",
+      "dest": "bar_bubble_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

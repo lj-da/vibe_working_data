@@ -1,0 +1,90 @@
+{
+  "id": "6c275b14-004a-456a-b8e8-b73e174295b1",
+  "snapshot": "libreoffice_calc",
+  "instruction": "对比图，主要用于一个二分类的维度在一个多分类的维度下面的对比，比如下面的两个产品在不同城市的销售额对比，两个产品就是二分类，不同城市就是多分类维度，当然我们也可以使用简单的条形图对比，但是没有对比直观和好看。还有一些其他场景，比如两个组看不同产品的销量，也可以使用对比图，在这个场景下面，经常使用这种对比图。那么，如何使用Excel画对比图呢？",
+  "method": "首先选中数据区域（包括A1:C8），点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"条形图\"或\"柱状图\"。创建图表后，右键点击图表，选择\"选择数据\"，添加两个数据系列：第一个系列名称为\"产品A\"，数据范围为B2:B8；第二个系列名称为\"产品B\"，数据范围为C2:C8。然后，右键点击其中一个系列（如\"产品A\"），选择\"数据系列格式\"，在\"系列选项\"中将其设置为绘制在次坐标轴；另一个系列（如\"产品B\"）保持绘制在主坐标轴。接下来，右键点击主水平坐标轴，选择\"坐标轴格式\"，设置最小值为-7000，最大值为7000，数字格式类型设置为\"¥#,###;¥#,###\"；然后右键点击次水平坐标轴，选择\"坐标轴格式\"，设置最小值为-7000，最大值为7000，数字格式类型设置为\"¥#,###;¥#,###\"，并勾选\"逆序刻度值\"选项（或者将主水平坐标轴设置为逆序刻度值，次水平坐标轴不设置）。最后，右键点击主垂直坐标轴，选择\"坐标轴格式\"，在\"标签\"选项中设置标签位置为\"低\"。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/246.xlsx",
+            "path": "/home/user/Desktop/comparison_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6c275b14-004a-456a-b8e8-b73e174295b1",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "comparison_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_comparison_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/comparison_chart.xlsx",
+      "dest": "comparison_chart.xlsx"
+    },
+    "options": {
+      "series_config": [
+        {
+          "name": "产品A",
+          "data_range": "B2:B8",
+          "axis": "primary"
+        },
+        {
+          "name": "产品B",
+          "data_range": "C2:C8",
+          "axis": "secondary"
+        }
+      ],
+      "horizontal_axis_min": -7000,
+      "horizontal_axis_max": 7000,
+      "number_format": "¥#,###;¥#,###",
+      "one_axis_reversed": true,
+      "primary_vertical_axis_label_position": "low"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6c275b14-004a-456a-b8e8-b73e174295b1/comparison_chart.xlsx",
+      "dest": "comparison_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

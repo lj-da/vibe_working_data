@@ -1,0 +1,111 @@
+{
+  "id": "18bb4a41-2212-4e81-90ca-82ce3f401be9",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何制作项目进度甘特图，需要展示出项目完成进度百分比",
+  "method": "首先在F2单元格输入公式：=INT(C2*E2)，然后将F2单元格的公式填充到F2:F7单元格区域。接下来在G2单元格输入公式：=C2-F2，然后将G2单元格的公式填充到G2:G7单元格区域。完成公式填充后，选中数据区域，点击菜单栏的\"插入\"选项，在图表类型中选择\"条形图\"，然后选择\"堆积条形图\"。创建图表后，右键点击图表，选择\"选择数据\"，添加三个系列：第一个系列（系列1）选择数据范围B2:B7，右键点击该系列，选择\"数据系列格式\"，在\"填充\"选项中设置为\"无填充\"；第二个系列（系列2）选择数据范围F2:F7；第三个系列（系列3）选择数据范围G2:G7。完成系列设置后，依次选中每个系列，右键点击选择\"添加数据标签\"，确保每个系列的数据标签都显示出来。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/144.xlsx",
+            "path": "/home/user/Desktop/gantt_chart_progress.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('F2: =INT(C2*E2)\\nG2: =C2-F2\\n\\n说明：\\n- F2:F7填充公式=INT(C2*E2)\\n- G2:G7填充公式=C2-F2'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/18bb4a41-2212-4e81-90ca-82ce3f401be9",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "gantt_chart_progress.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_gantt_chart_progress",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/gantt_chart_progress.xlsx",
+      "dest": "gantt_chart_progress.xlsx"
+    },
+    "options": {
+      "formula_f_range": "F2:F7",
+      "expected_f_formula": "=INT(C2*E2)",
+      "formula_g_range": "G2:G7",
+      "expected_g_formula": "=C2-F2",
+      "expected_chart_type": "barChart",
+      "expected_bar_dir": "bar",
+      "expected_grouping": "stacked",
+      "series_config": [
+        {
+          "series_index": 0,
+          "series_order": 0,
+          "data_range": "B2:B7",
+          "no_fill": true
+        },
+        {
+          "series_index": 1,
+          "series_order": 1,
+          "data_range": "F2:F7",
+          "no_fill": false
+        },
+        {
+          "series_index": 2,
+          "series_order": 2,
+          "data_range": "G2:G7",
+          "no_fill": false
+        }
+      ],
+      "data_labels_enabled": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/18bb4a41-2212-4e81-90ca-82ce3f401be9/gantt_chart_progress.xlsx",
+      "dest": "gantt_chart_progress.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
