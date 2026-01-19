@@ -331,18 +331,7 @@ from .table_visualization import (
     verify_stacked_scatter_combo_chart,
     verify_nested_pie_doughnut_chart,
     verify_gantt_chart_progress,
-    verify_percentage_progress_chart,
-    verify_percentage_progress_chart_with_scatter,
-    verify_revenue_progress_combo_chart,
-    verify_simple_bar_chart,
-    verify_line_chart_with_prediction_and_extremes,
-    verify_pivot_table_with_chart_department_name,
-    verify_scatter_chart_data_range,
-    verify_cumulative_growth_chart_with_arrows,
-    verify_cumulative_growth_bar_chart_with_arrows,
-    verify_combo_chart_bar_line_secondary_axis,
-    verify_bubble_chart_with_axis_settings,
-    verify_bar_combo_chart_helper_columns
+    verify_percentage_progress_chart
 )
 from .table_template import (
     verify_template_fields
