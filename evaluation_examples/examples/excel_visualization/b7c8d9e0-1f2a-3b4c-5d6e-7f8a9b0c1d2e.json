@@ -1,0 +1,85 @@
+{
+  "id": "b7c8d9e0-1f2a-3b4c-5d6e-7f8a9b0c1d2e",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据表格中提供的数据生成一个柱状图",
+  "method": "首先选中数据区域A1:B10，然后点击菜单栏的\"插入\"选项，在图表类型中选择\"柱状图\"或\"条形图\"，然后选择\"二维柱状图\"或\"二维条形图\"，创建柱状图。创建图表后，确保图表正确显示A1:B10区域的数据。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/113.xlsx",
+            "path": "/home/user/Desktop/percentage_progress_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('图表设置：\\n\\n数据范围：A1:B10\\n- A列：类别数据（类别轴）\\n- B列：数值数据（数值轴）\\n\\n图表类型：柱状图（barChart或columnChart）\\n\\n操作步骤：\\n1. 选中数据区域A1:B10\\n2. 插入柱状图或条形图\\n3. 确保图表正确显示数据'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b7c8d9e0-1f2a-3b4c-5d6e-7f8a9b0c1d2e",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "percentage_progress_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_simple_bar_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/percentage_progress_chart.xlsx",
+      "dest": "percentage_progress_chart.xlsx"
+    },
+    "options": {
+      "expected_data_range": "A1:B10",
+      "expected_chart_type": "barChart"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7c8d9e0-1f2a-3b4c-5d6e-7f8a9b0c1d2e/percentage_progress_chart.xlsx",
+      "dest": "percentage_progress_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

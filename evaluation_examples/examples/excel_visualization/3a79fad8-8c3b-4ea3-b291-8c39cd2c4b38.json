@@ -1,0 +1,92 @@
+{
+  "id": "3a79fad8-8c3b-4ea3-b291-8c39cd2c4b38",
+  "snapshot": "libreoffice_calc",
+  "instruction": "象限图主要用于三个维度数据的展示，三个维度都是连续型变量,接下来给大家讲讲如何使用excel对sheet1中数据画象限图",
+  "method": "首先打开Excel文件，查看数据表格。选择数据范围B2:D12，点击菜单栏的\"插入\"选项，在图表类型中选择\"气泡图\"。创建气泡图后，右键点击图表，选择\"选择数据\"，设置系列名称为\"销售额\"，X值范围为B2:B12，Y值范围为C2:C12，气泡大小为D2:D12。然后右键点击图表，选择\"设置图表区域格式\"，在\"系列选项\"中找到\"气泡大小缩放\"，设置为65。接下来设置坐标轴：右键点击Y轴，选择\"设置坐标轴格式\"，在\"标签\"选项中设置\"标签位置\"为\"低\"，在\"坐标轴选项\"中设置\"交叉\"为\"坐标轴值\"，值为43。同样地，右键点击X轴，选择\"设置坐标轴格式\"，在\"标签\"选项中设置\"标签位置\"为\"低\"，在\"坐标轴选项\"中设置\"交叉\"为\"坐标轴值\"，值为5906。完成图表创建和格式化后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/250.xlsx",
+            "path": "/home/user/Desktop/bubble_chart_data.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('气泡图设置：\\n\\n数据范围：\\n- 选择B2:D12创建图表\\n\\n图表类型：\\n- 气泡图（bubbleChart）\\n\\n系列设置：\\n- 系列名称：销售额\\n- X值范围：Sheet1!$B$2:$B$12\\n- Y值范围：Sheet1!$C$2:$C$12\\n- 气泡大小范围：Sheet1!$D$2:$D$12\\n\\n气泡大小缩放：\\n- 气泡大小缩放值：65（bubbleScale val=\"65\"）\\n\\nY轴设置：\\n- 标签位置：低（tickLblPos val=\"low\"）\\n- 交叉设置：坐标轴值，值为43（crossesAt val=\"43\"）\\n- 轴位置：底部（axPos val=\"b\"）\\n\\nX轴设置：\\n- 标签位置：低（tickLblPos val=\"low\"）\\n- 交叉设置：坐标轴值，值为5906（crossesAt val=\"5906\"）\\n- 轴位置：左侧（axPos val=\"l\"）\\n\\n操作步骤：\\n1. 选择数据范围B2:D12\\n2. 创建气泡图\\n3. 设置系列名称为\"销售额\"\\n4. 设置X值为B2:B12，Y值为C2:C12，气泡大小为D2:D12\\n5. 设置气泡大小缩放为65\\n6. 设置Y轴标签位置为低，交叉值为43\\n7. 设置X轴标签位置为低，交叉值为5906\\n8. 保存文件\\n\\n验证要点：\\n- 检查图表类型是否为气泡图（bubbleChart）\\n- 检查系列名称是否为\"销售额\"\\n- 检查X值范围是否为Sheet1!$B$2:$B$12\\n- 检查Y值范围是否为Sheet1!$C$2:$C$12\\n- 检查气泡大小范围是否为Sheet1!$D$2:$D$12\\n- 检查气泡大小缩放是否为65\\n- 检查Y轴标签位置是否为低\\n- 检查Y轴交叉值是否为43\\n- 检查X轴标签位置是否为低\\n- 检查X轴交叉值是否为5906'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/3a79fad8-8c3b-4ea3-b291-8c39cd2c4b38",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "bubble_chart_data.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bubble_chart_with_axis_settings",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/bubble_chart_data.xlsx",
+      "dest": "bubble_chart_data.xlsx"
+    },
+    "options": {
+      "series_name": "销售额",
+      "x_range": "Sheet1!$B$2:$B$12",
+      "y_range": "Sheet1!$C$2:$C$12",
+      "bubble_size_range": "Sheet1!$D$2:$D$12",
+      "bubble_size_scale": 65,
+      "y_axis_label_pos": "low",
+      "y_axis_crosses_at": 43,
+      "x_axis_label_pos": "low",
+      "x_axis_crosses_at": 5906
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3a79fad8-8c3b-4ea3-b291-8c39cd2c4b38/bubble_chart_data.xlsx",
+      "dest": "bubble_chart_data.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

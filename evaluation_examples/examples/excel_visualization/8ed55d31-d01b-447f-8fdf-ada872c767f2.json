@@ -1,0 +1,92 @@
+{
+  "id": "8ed55d31-d01b-447f-8fdf-ada872c767f2",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何制作带箭头标签累计增长柱形图，既能看累计量，又能展示累计增长率和每月增加值，附带箭头指示增长率。",
+  "method": "首先打开Excel文件，查看数据表格。创建组合图表，插入三个系列：系列1（累计销量）：选择数据范围C2:C10，创建柱状图；系列2：选择X轴数据范围A2:A10，Y轴数据范围C2:C10，创建散点图，添加数据标签，数据标签来源设置为B3:B11；系列3：选择X轴数据范围A2:A10，Y轴数据范围C3:C10，创建散点图，添加Y误差线，设置为正偏差，偏差值固定为1，线条为1磅圆点虚线，添加X误差线，设置为负偏差，偏差值为指定值B3:B10，线条为1磅圆点虚线。完成图表创建后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/160.xlsx",
+            "path": "/home/user/Desktop/cumulative_growth_chart.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('带箭头标签累计增长柱形图设置：\\n\\n数据范围：\\n- A列：月份（A2:A10）\\n- B列：每月增加值（B3:B11，用于系列2数据标签和系列3 X误差线）\\n- C列：累计销量（C2:C10用于系列1和系列2，C3:C10用于系列3）\\n\\n图表系列配置：\\n\\n系列1（累计销量）：\\n- 数据范围：C2:C10\\n- 图表类型：柱状图（barChart）\\n\\n系列2：\\n- X轴数据范围：A2:A10\\n- Y轴数据范围：C2:C10\\n- 图表类型：散点图（scatterChart）\\n- 数据标签：来源B3:B11\\n\\n系列3：\\n- X轴数据范围：A2:A10\\n- Y轴数据范围：C3:C10\\n- 图表类型：散点图（scatterChart）\\n- Y误差线：正偏差（plus），固定值1，1磅圆点虚线\\n- X误差线：负偏差（minus），值来自B3:B10，1磅圆点虚线\\n\\n操作步骤：\\n1. 选中C2:C10，创建柱状图\\n2. 添加系列2：散点图，X轴A2:A10，Y轴C2:C10，数据标签B3:B11\\n3. 添加系列3：散点图，X轴A2:A10，Y轴C3:C10\\n4. 为系列3设置Y误差线：正偏差，固定值1，1磅圆点虚线\\n5. 为系列3设置X误差线：负偏差，值B3:B10，1磅圆点虚线\\n\\n验证要点：\\n- 检查系列1是否为柱状图，数据范围C2:C10\\n- 检查系列2是否为散点图，X轴A2:A10，Y轴C2:C10，数据标签B3:B11\\n- 检查系列3是否为散点图，X轴A2:A10，Y轴C3:C10\\n- 检查系列3 Y误差线：正偏差，固定值1\\n- 检查系列3 X误差线：负偏差，值B3:B10\\n- 检查误差线样式：1磅（12700 EMU），圆点虚线（prstDash=sysDot）'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/8ed55d31-d01b-447f-8fdf-ada872c767f2",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "cumulative_growth_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_cumulative_growth_chart_with_arrows",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/cumulative_growth_chart.xlsx",
+      "dest": "cumulative_growth_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "series1_value_range": "C2:C10",
+      "series2_x_range": "A2:A10",
+      "series2_y_range": "C2:C10",
+      "series2_label_range": "B3:B11",
+      "series3_x_range": "A2:A10",
+      "series3_y_range": "C3:C10",
+      "series3_y_error_value": 1,
+      "series3_x_error_range": "B3:B10"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8ed55d31-d01b-447f-8fdf-ada872c767f2/cumulative_growth_chart.xlsx",
+      "dest": "cumulative_growth_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
