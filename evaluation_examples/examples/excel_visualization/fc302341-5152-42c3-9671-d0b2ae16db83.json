@@ -1,0 +1,111 @@
+{
+  "id": "fc302341-5152-42c3-9671-d0b2ae16db83",
+  "snapshot": "libreoffice_calc",
+  "instruction": "做个折线图，附带2个实际要求：1.图表自动展示实际数据，根据以往数据，预测未来数据，2.折线图自动标记最小值与最大值。",
+  "method": "首先打开Excel文件，查看数据表格。选中数据区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"折线图\"，创建折线图。创建图表后，右键点击图表，选择\"选择数据\"，添加四个数据系列：第一个系列名称为\"数量\"，数据范围为E2:E13，设置该系列为平滑线；第二个系列名称为\"预测值\"，数据范围为F2:F13，设置线条样式为圆点虚线（系统点线），启用平滑线，并设置线条末端带箭头；第三个系列名称为\"最大值\"，数据范围为G2:G13，设置数据标签显示，数据标签位置设置为靠上，数据标签纯色填充为绿色（RGB: 0, 176, 80）；第四个系列名称为\"最小值\"，数据范围为H2:H13，设置数据标签显示，数据标签位置设置为靠下，数据标签纯色填充为红色（RGB: 255, 0, 0）。完成所有系列设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/20.xlsx",
+            "path": "/home/user/Desktop/line_chart_with_prediction.xlsx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import os; desktop = os.path.join(os.path.expanduser('~'), 'Desktop'); os.makedirs(desktop, exist_ok=True); f = open(os.path.join(desktop, 'formula.txt'), 'w', encoding='utf-8'); f.write('折线图系列设置：\\n\\n系列1（数量）：\\n- 数据范围：E2:E13\\n- 图表类型：折线图（lineChart）\\n- 平滑线：启用（smooth val=\"1\"）\\n- 数据标签：不显示\\n\\n系列2（预测值）：\\n- 数据范围：F2:F13\\n- 图表类型：折线图（lineChart）\\n- 线条样式：圆点虚线（prstDash val=\"sysDot\"）\\n- 平滑线：启用（smooth val=\"1\"）\\n- 末端箭头：启用（tailEnd type=\"triangle\"）\\n- 数据标签：不显示\\n\\n系列3（最大值）：\\n- 数据范围：G2:G13\\n- 图表类型：折线图（lineChart）\\n- 数据标签：显示（showVal val=\"1\"）\\n- 数据标签位置：靠上（dLblPos val=\"t\"）\\n- 数据标签填充颜色：绿色（srgbClr val=\"00B050\"）\\n\\n系列4（最小值）：\\n- 数据范围：H2:H13\\n- 图表类型：折线图（lineChart）\\n- 数据标签：显示（showVal val=\"1\"）\\n- 数据标签位置：靠下（dLblPos val=\"b\"）\\n- 数据标签填充颜色：红色（srgbClr val=\"FF0000\"）\\n\\n操作步骤：\\n1. 插入折线图\\n2. 添加四个系列：数量(E2:E13)、预测值(F2:F13)、最大值(G2:G13)、最小值(H2:H13)\\n3. 设置数量系列为平滑线\\n4. 设置预测值系列为圆点虚线、平滑线、带末端箭头\\n5. 设置最大值系列数据标签靠上、绿色填充\\n6. 设置最小值系列数据标签靠下、红色填充'); f.close()"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/fc302341-5152-42c3-9671-d0b2ae16db83",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "line_chart_with_prediction.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_with_prediction_and_extremes",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/line_chart_with_prediction.xlsx",
+      "dest": "line_chart_with_prediction.xlsx"
+    },
+    "options": {
+      "series_config": {
+        "数量": {
+          "value_range": "E2:E13",
+          "smooth": true,
+          "has_data_labels": false
+        },
+        "预测值": {
+          "value_range": "F2:F13",
+          "smooth": true,
+          "dash_style": "sysDot",
+          "has_arrow": true,
+          "has_data_labels": false
+        },
+        "最大值": {
+          "value_range": "G2:G13",
+          "smooth": false,
+          "has_data_labels": true,
+          "label_position": "t",
+          "label_color": "00B050"
+        },
+        "最小值": {
+          "value_range": "H2:H13",
+          "smooth": false,
+          "has_data_labels": true,
+          "label_position": "b",
+          "label_color": "FF0000"
+        }
+      }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fc302341-5152-42c3-9671-d0b2ae16db83/line_chart_with_prediction.xlsx",
+      "dest": "line_chart_with_prediction.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
