@@ -359,7 +359,8 @@ from .table_visualization import (
     verify_cumulative_growth_bar_chart_with_arrows,
     verify_combo_chart_bar_line_secondary_axis,
     verify_bubble_chart_with_axis_settings,
-    verify_bar_combo_chart_helper_columns
+    verify_bar_combo_chart_helper_columns,
+    verify_sales_bubble_chart
 )
 from .table_template import (
     verify_template_fields

@@ -1,0 +1,78 @@
+{
+  "id": "b5232bb4-6ae8-4041-b4af-3770c6987b58",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据提供的数据制作一个销量气泡图，用气泡的大小展示销量",
+  "method": "首先在C2:C6单元格区域填入数据1~5（辅助列）。然后选中数据区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"气泡图\"。创建气泡图后，右键点击图表，选择\"选择数据\"，添加一个系列，系列名称可以为空，X值范围设置为C2:C6，Y值范围设置为B2:B6，气泡大小范围设置为B2:B6。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/151.xlsx",
+            "path": "/home/user/Desktop/sales_bubble_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/b5232bb4-6ae8-4041-b4af-3770c6987b58",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "sales_bubble_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_sales_bubble_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/sales_bubble_chart.xlsx",
+      "dest": "sales_bubble_chart.xlsx"
+    },
+    "options": {
+      "x_range": "C2:C6",
+      "y_range": "B2:B6",
+      "bubble_size_range": "B2:B6",
+      "auxiliary_column_range": "C2:C6"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b5232bb4-6ae8-4041-b4af-3770c6987b58/sales_bubble_chart.xlsx",
+      "dest": "sales_bubble_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

@@ -34247,3 +34247,225 @@ def verify_axis_number_format_code(result: str, expected: str = None, **options)
         import traceback
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_sales_bubble_chart(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a sales bubble chart exists with correct data ranges.
+    
+    This function checks:
+    1. Whether a bubble chart exists
+    2. Whether the chart has one series
+    3. Whether X values are from C2:C6
+    4. Whether Y values are from B2:B6
+    5. Whether bubble sizes are from B2:B6
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - x_range: Expected X value range (default: "C2:C6")
+            - y_range: Expected Y value range (default: "B2:B6")
+            - bubble_size_range: Expected bubble size range (default: "B2:B6")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        x_range = options.get('x_range', 'C2:C6')
+        y_range = options.get('y_range', 'B2:B6')
+        bubble_size_range = options.get('bubble_size_range', 'B2:B6')
+        
+        logger.info(f"Verifying sales bubble chart in: {result}")
+        logger.info(f"Expected X range: {x_range}")
+        logger.info(f"Expected Y range: {y_range}")
+        logger.info(f"Expected bubble size range: {bubble_size_range}")
+        
+        # Load workbook
+        wb = openpyxl.load_workbook(result, data_only=False)
+        ws = wb.active
+        
+        if not ws._charts:
+            logger.error("No charts found")
+            return 0.0
+        
+        logger.info(f"Found {len(ws._charts)} chart(s)")
+        
+        # Parse chart XML
+        chart_ns = {'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart'}
+        
+        with zipfile.ZipFile(result, 'r') as z_f:
+            chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+            logger.info(f"Found {len(chart_files)} chart XML file(s)")
+            
+            for chart_file in chart_files:
+                root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                
+                # Bubble chart can be either scatterChart with bubbleSize or direct bubbleChart
+                # Check for both types
+                scatter_charts = root.xpath('.//c:scatterChart', namespaces=chart_ns)
+                if not scatter_charts:
+                    scatter_charts = root.xpath('.//*[local-name()="scatterChart"]')
+                
+                bubble_charts = root.xpath('.//c:bubbleChart', namespaces=chart_ns)
+                if not bubble_charts:
+                    bubble_charts = root.xpath('.//*[local-name()="bubbleChart"]')
+                
+                logger.info(f"Found {len(scatter_charts)} scatterChart element(s)")
+                logger.info(f"Found {len(bubble_charts)} bubbleChart element(s)")
+                
+                # Combine both types - bubbleChart is also a valid bubble chart
+                all_bubble_charts = list(scatter_charts) + list(bubble_charts)
+                
+                if not all_bubble_charts:
+                    logger.warning("No scatterChart or bubbleChart found")
+                    all_charts = root.xpath('.//*[local-name()="scatterChart" or local-name()="bubbleChart" or local-name()="lineChart" or local-name()="barChart"]')
+                    logger.info(f"Found chart types: {[c.tag for c in all_charts]}")
+                    continue
+                
+                # Check each chart - scatterChart needs bubbleSize, bubbleChart is already a bubble chart
+                for chart_elem in all_bubble_charts:
+                    is_bubble_chart = False
+                    
+                    # If it's a bubbleChart element, it's already a bubble chart
+                    if chart_elem.tag.endswith('bubbleChart'):
+                        is_bubble_chart = True
+                        logger.info("✓ Found bubbleChart element - this is a bubble chart")
+                    # If it's a scatterChart, check for bubbleSize
+                    elif chart_elem.tag.endswith('scatterChart'):
+                        # Check if any series has bubbleSize
+                        series_list = chart_elem.xpath('.//c:ser', namespaces=chart_ns)
+                        if not series_list:
+                            series_list = chart_elem.xpath('.//*[local-name()="ser"]')
+                        
+                        for ser in series_list:
+                            bubble_size = ser.xpath('.//c:bubbleSize', namespaces=chart_ns)
+                            if not bubble_size:
+                                bubble_size = ser.xpath('.//*[local-name()="bubbleSize"]')
+                            
+                            if bubble_size:
+                                is_bubble_chart = True
+                                logger.info("✓ Found bubbleSize in scatterChart - this is a bubble chart")
+                                break
+                        
+                        if not is_bubble_chart:
+                            logger.warning("ScatterChart found but no bubbleSize - skipping")
+                            continue
+                    
+                    # Now verify the bubble chart data
+                    series_list = chart_elem.xpath('.//c:ser', namespaces=chart_ns)
+                    if not series_list:
+                        series_list = chart_elem.xpath('.//*[local-name()="ser"]')
+                    
+                    logger.info(f"Found {len(series_list)} series in bubble chart")
+                    
+                    if len(series_list) != 1:
+                        logger.warning(f"Expected 1 series, found {len(series_list)}")
+                        continue
+                    
+                    ser = series_list[0]
+                    x_ok = False
+                    y_ok = False
+                    bubble_ok = False
+                    
+                    # Check X values
+                    x_val = ser.xpath('.//c:xVal', namespaces=chart_ns)
+                    if not x_val:
+                        x_val = ser.xpath('.//*[local-name()="xVal"]')
+                    
+                    if x_val:
+                        num_ref = x_val[0].xpath('.//c:numRef', namespaces=chart_ns)
+                        if not num_ref:
+                            num_ref = x_val[0].xpath('.//*[local-name()="numRef"]')
+                        
+                        if num_ref:
+                            f_elem = num_ref[0].xpath('.//c:f', namespaces=chart_ns)
+                            if not f_elem:
+                                f_elem = num_ref[0].xpath('.//*[local-name()="f"]')
+                            
+                            if f_elem and f_elem[0].text:
+                                x_range_found = f_elem[0].text
+                                logger.info(f"X range found: {x_range_found}")
+                                # Normalize range: remove sheet name and $ signs for comparison
+                                x_range_normalized = x_range_found.split('!')[-1].replace('$', '')
+                                x_range_expected_normalized = x_range.replace('$', '')
+                                if x_range_expected_normalized == x_range_normalized or x_range_expected_normalized in x_range_normalized:
+                                    x_ok = True
+                                    logger.info("✓ X range matches")
+                                else:
+                                    logger.warning(f"✗ X range mismatch: expected {x_range}, found {x_range_found} (normalized: {x_range_normalized})")
+                    
+                    # Check Y values
+                    y_val = ser.xpath('.//c:yVal', namespaces=chart_ns)
+                    if not y_val:
+                        y_val = ser.xpath('.//*[local-name()="yVal"]')
+                    
+                    if y_val:
+                        num_ref = y_val[0].xpath('.//c:numRef', namespaces=chart_ns)
+                        if not num_ref:
+                            num_ref = y_val[0].xpath('.//*[local-name()="numRef"]')
+                        
+                        if num_ref:
+                            f_elem = num_ref[0].xpath('.//c:f', namespaces=chart_ns)
+                            if not f_elem:
+                                f_elem = num_ref[0].xpath('.//*[local-name()="f"]')
+                            
+                            if f_elem and f_elem[0].text:
+                                y_range_found = f_elem[0].text
+                                logger.info(f"Y range found: {y_range_found}")
+                                # Normalize range: remove sheet name and $ signs for comparison
+                                y_range_normalized = y_range_found.split('!')[-1].replace('$', '')
+                                y_range_expected_normalized = y_range.replace('$', '')
+                                if y_range_expected_normalized == y_range_normalized or y_range_expected_normalized in y_range_normalized:
+                                    y_ok = True
+                                    logger.info("✓ Y range matches")
+                                else:
+                                    logger.warning(f"✗ Y range mismatch: expected {y_range}, found {y_range_found} (normalized: {y_range_normalized})")
+                    
+                    # Check bubble size
+                    bubble_size = ser.xpath('.//c:bubbleSize', namespaces=chart_ns)
+                    if not bubble_size:
+                        bubble_size = ser.xpath('.//*[local-name()="bubbleSize"]')
+                    
+                    if bubble_size:
+                        num_ref = bubble_size[0].xpath('.//c:numRef', namespaces=chart_ns)
+                        if not num_ref:
+                            num_ref = bubble_size[0].xpath('.//*[local-name()="numRef"]')
+                        
+                        if num_ref:
+                            f_elem = num_ref[0].xpath('.//c:f', namespaces=chart_ns)
+                            if not f_elem:
+                                f_elem = num_ref[0].xpath('.//*[local-name()="f"]')
+                            
+                            if f_elem and f_elem[0].text:
+                                bubble_range_found = f_elem[0].text
+                                logger.info(f"Bubble size range found: {bubble_range_found}")
+                                # Normalize range: remove sheet name and $ signs for comparison
+                                bubble_range_normalized = bubble_range_found.split('!')[-1].replace('$', '')
+                                bubble_range_expected_normalized = bubble_size_range.replace('$', '')
+                                if bubble_range_expected_normalized == bubble_range_normalized or bubble_range_expected_normalized in bubble_range_normalized:
+                                    bubble_ok = True
+                                    logger.info("✓ Bubble size range matches")
+                                else:
+                                    logger.warning(f"✗ Bubble size range mismatch: expected {bubble_size_range}, found {bubble_range_found} (normalized: {bubble_range_normalized})")
+                    else:
+                        logger.warning("No bubbleSize element found")
+                    
+                    if x_ok and y_ok and bubble_ok:
+                        logger.info("✓ Bubble chart verification passed")
+                        return 1.0
+                    else:
+                        logger.warning(f"Verification failed: X={x_ok}, Y={y_ok}, Bubble={bubble_ok}")
+        
+        logger.error("✗ Bubble chart verification failed")
+        return 0.0
+        
+    except Exception as e:
+        logger.error(f"Verification error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return 0.0
