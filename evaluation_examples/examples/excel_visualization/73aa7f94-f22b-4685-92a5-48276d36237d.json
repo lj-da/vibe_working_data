@@ -1,0 +1,75 @@
+{
+  "id": "73aa7f94-f22b-4685-92a5-48276d36237d",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据血糖值数据随时间的变化生成折线图",
+  "method": "首先需要将数据输入。然后选择数据，点击插入，选择折线图。接下来添加数据标签。最后将端点形状进行更改。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/124.xlsx",
+            "path": "/home/user/Desktop/blood_glucose_line_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/73aa7f94-f22b-4685-92a5-48276d36237d",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "blood_glucose_line_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_with_data_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/blood_glucose_line_chart.xlsx",
+      "dest": "blood_glucose_line_chart.xlsx"
+    },
+    "options": {
+      "check_data_labels": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/73aa7f94-f22b-4685-92a5-48276d36237d/blood_glucose_line_chart.xlsx",
+      "dest": "blood_glucose_line_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

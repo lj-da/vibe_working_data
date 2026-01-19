@@ -1,0 +1,77 @@
+{
+  "id": "3f388f37-e4d2-4b86-99da-8ead39386efd",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助大神，帮忙做一份月度目月度达成率分析柱状组合图；要求数据清晰，明确，用折线图展示月度达成率情况，柱状图表述各月份的情况",
+  "method": "首先，打开你的Excel表格，选择你需要分析的数据。然后，点击插入，选择图表，找到柱状图或者折线图，根据你的喜好来。接下来，调整图表的格式和颜色，让图表看起来更专业。最后，添加图表标题和数据标签，让图表信息一目了然。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/330.xlsx",
+            "path": "/home/user/Desktop/completion_rate_combo_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/3f388f37-e4d2-4b86-99da-8ead39386efd",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "completion_rate_combo_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_bar_line_with_line_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/completion_rate_combo_chart.xlsx",
+      "dest": "completion_rate_combo_chart.xlsx"
+    },
+    "options": {
+      "check_line_chart": true,
+      "check_bar_chart": true,
+      "check_line_data_labels": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3f388f37-e4d2-4b86-99da-8ead39386efd/completion_rate_combo_chart.xlsx",
+      "dest": "completion_rate_combo_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

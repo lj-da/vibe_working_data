@@ -1,0 +1,78 @@
+{
+  "id": "43a28470-5325-4148-a3cc-dd493a789e46",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问怎么将图标设置为3层,第一层为各产品达成数据,第二层为增长值,第三层为增长率,整个图表既展示增长情况,同时又展示增长率情况，麻烦大神展示",
+  "method": "第一步：整理源数据，添加辅助数据系列。第二步：第一层，选择产品-2025年数据系列，插入簇状柱形图，设置数据系列格式。第三步：第二层，选择数据，添加增长额数据系列，簇状柱形图，次坐标轴，设置坐标轴及数据系列格式。第四步：第三层，选择数据，同比轴线折线图，同比正、同比负散点图，添加散点误差线，设置误差线及标记点格式。第五步：添加各数据系列标签，设置标题，图例，适当美化，完成。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/335.xlsx",
+            "path": "/home/user/Desktop/three_layer_combo_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/43a28470-5325-4148-a3cc-dd493a789e46",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "three_layer_combo_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_three_layer_combo_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/three_layer_combo_chart.xlsx",
+      "dest": "three_layer_combo_chart.xlsx"
+    },
+    "options": {
+      "check_column_chart": true,
+      "check_line_chart": true,
+      "check_scatter_chart": true,
+      "check_error_bars": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/43a28470-5325-4148-a3cc-dd493a789e46/three_layer_combo_chart.xlsx",
+      "dest": "three_layer_combo_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

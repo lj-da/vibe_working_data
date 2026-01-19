@@ -1,0 +1,78 @@
+{
+  "id": "537b23d9-a25c-465d-a4a7-8bc611fb86cc",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问Excel如何插入简易柱状图",
+  "method": "首先选中需要制作图表的数据区域。选中之后，再选择上方的插入页面，可以看到在插入页面中有\"图表\"选项，点击\"图表\"选项后，会出现有很多图表样式的小页面，在这里可以选择喜欢的样式，点一下选择的图表样式，在表格中就会出现图表。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/187.xlsx",
+            "path": "/home/user/Desktop/simple_column_chart_with_table.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/537b23d9-a25c-465d-a4a7-8bc611fb86cc",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "simple_column_chart_with_table.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_bar_chart_with_data_table",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/simple_column_chart_with_table.xlsx",
+      "dest": "simple_column_chart_with_table.xlsx"
+    },
+    "options": {
+      "expected_chart_type": "barChart",
+      "min_series_count": 2,
+      "check_data_table": true,
+      "check_axis_title": false
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/537b23d9-a25c-465d-a4a7-8bc611fb86cc/simple_column_chart_with_table.xlsx",
+      "dest": "simple_column_chart_with_table.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

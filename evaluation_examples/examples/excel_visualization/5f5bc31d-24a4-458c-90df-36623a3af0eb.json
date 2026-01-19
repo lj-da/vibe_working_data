@@ -1,0 +1,78 @@
+{
+  "id": "5f5bc31d-24a4-458c-90df-36623a3af0eb",
+  "snapshot": "wps",
+  "instruction": "大家好，附件是我从网上找到的图表，表格里有3个系列图表，可以通过右侧黄色底纹单元格的下拉来分别单个选择Cycle 1、Cycle 21、Cycle 3及三系列的合并图表。这样的通过下拉实现单个系列及整体的操作是如何实现的，谢谢！",
+  "method": "公式=OFFSET(Sheet1!$A$2,,IF(OR(Sheet1!$L$2={\"All\",\"Cycle1\"}),0,3),COUNT(Sheet1!$A:$A))如果等于All，if这段函数=0，三个自定义名称都会选中作图数据，图表上就会同时出现3个线条，添加Cycle1/2/3的名称管理器，对应公式如上",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/581.xlsx",
+            "path": "/home/user/Desktop/dynamic_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/5f5bc31d-24a4-458c-90df-36623a3af0eb",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "dynamic_chart.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_line_chart_with_named_ranges_and_dropdown",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/dynamic_chart.xlsx",
+      "dest": "dynamic_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "named_range_names": ["Cycle1", "Cycle2", "Cycle3"],
+      "dropdown_cell": "L2",
+      "expected_dropdown_values": ["All", "Cycle1", "Cycle2", "Cycle3"]
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5f5bc31d-24a4-458c-90df-36623a3af0eb/dynamic_chart.xlsx",
+      "dest": "dynamic_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

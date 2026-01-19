@@ -1,0 +1,78 @@
+{
+  "id": "d98f971d-9a2b-48b8-9d59-16723ac1b009",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问普通和柱形和折线的组合图怎么做的",
+  "method": "把原来的统计图删掉，插入组合统计图：选中所有数据，选择图表，柱形组合图，确认。然后给PPM折线系列，加一个趋势线。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/221.xlsx",
+            "path": "/home/user/Desktop/combo_column_line_trendline.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/d98f971d-9a2b-48b8-9d59-16723ac1b009",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combo_column_line_trendline.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_column_line_with_trendline",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combo_column_line_trendline.xlsx",
+      "dest": "combo_column_line_trendline.xlsx"
+    },
+    "options": {
+      "expected_line_series_count": 2,
+      "expected_column_series_count": 1,
+      "category_axis_range": "B2:B16",
+      "trendline_series": "指标PPM"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d98f971d-9a2b-48b8-9d59-16723ac1b009/combo_column_line_trendline.xlsx",
+      "dest": "combo_column_line_trendline.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

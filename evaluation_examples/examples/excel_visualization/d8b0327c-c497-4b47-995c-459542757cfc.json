@@ -1,0 +1,78 @@
+{
+  "id": "d8b0327c-c497-4b47-995c-459542757cfc",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请问怎么设置柱状图和折线图的组合图？要求：1.订单数采用折现图的形式展，同时将最高月度字体设置为红色；2.月营业额采用柱状图形式展现，并将销售额度最高月度，颜色加深并突出；最低月度颜色也于其他月度颜色调整，要求直观看出最高于最低月度。3.将年度整体数据加在表格上方。",
+  "method": "第一步处理数据：重点数据模块划分，数据加粗放大标颜色描述文字缩小形成对比，添加相关图标可视化，标题文字加大加粗与正文形成对比。第二步表格转图表：插入图表复制表格里的数据，粘贴选柱状图，这里两个维度数据相差较大对比不合适需要对图表做变形，选中图表元素，更改图表类型将订单数勾选次坐标轴，带数据标记折线图得到右图效果。第三步分离图表：原始图表柱形图和折线图重叠不易阅读，需要分离两图表，增加主坐标轴最大值使柱状图压缩，减少次坐标轴最小值，使折线图增高。第四步添加图表元素丰富细节：柱状图改间隙宽度使柱状图变粗或细，折线图设计标记格式，添加数据标签，有两个坐标轴可以隐藏（注意：是隐藏不是删除），方法是坐标轴标签选项选择无，图表元素上色，重点用主色标注，其它弱化，完成其它细节排版，丰富页面视觉完成。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/167.xlsx",
+            "path": "/home/user/Desktop/order_combo_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/d8b0327c-c497-4b47-995c-459542757cfc",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "order_combo_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_column_line_with_both_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/order_combo_chart.xlsx",
+      "dest": "order_combo_chart.xlsx"
+    },
+    "options": {
+      "check_line_chart": true,
+      "check_column_chart": true,
+      "check_line_data_labels": true,
+      "check_column_data_labels": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d8b0327c-c497-4b47-995c-459542757cfc/order_combo_chart.xlsx",
+      "dest": "order_combo_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

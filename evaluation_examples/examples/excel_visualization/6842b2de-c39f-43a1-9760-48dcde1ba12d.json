@@ -1,0 +1,78 @@
+{
+  "id": "6842b2de-c39f-43a1-9760-48dcde1ba12d",
+  "snapshot": "wps",
+  "instruction": "求助~~如何画散点图，散点图中如何标波峰的数据",
+  "method": "方法1，手工添加\n方法2，用函数筛选出波峰值，作为一个新系列添加到图表中，C列添加函数=IF(B1=MAX(B:B),B1,NA())",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/623.xlsx",
+            "path": "/home/user/Desktop/scatter_peak.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6842b2de-c39f-43a1-9760-48dcde1ba12d",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "scatter_peak.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_scatter_chart_with_x_value_labels",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/scatter_peak.xlsx",
+      "dest": "scatter_peak.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "check_smooth_line": true,
+      "check_x_value_labels": true,
+      "label_column": "C"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6842b2de-c39f-43a1-9760-48dcde1ba12d/scatter_peak.xlsx",
+      "dest": "scatter_peak.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

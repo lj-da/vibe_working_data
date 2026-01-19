@@ -1,0 +1,76 @@
+{
+  "id": "668e502d-81b4-47c7-a5c7-dd5759c3baf6",
+  "snapshot": "wps",
+  "instruction": "我做了一个图表，下面的组合框可以选择查看城市，图标中有好多是0%的数据，看着既不美观又占地方，怎么能去掉呢？请大家帮忙看看",
+  "method": "数据标签的数字格式代码改为：0%;;;",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/587.xlsx",
+            "path": "/home/user/Desktop/chart_format.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/668e502d-81b4-47c7-a5c7-dd5759c3baf6",
+  "related_apps": [
+    "wps"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "chart_format.xlsx - WPS",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_data_label_format_code",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/chart_format.xlsx",
+      "dest": "chart_format.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "expected_format_code": "0%;;;"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/668e502d-81b4-47c7-a5c7-dd5759c3baf6/chart_format.xlsx",
+      "dest": "chart_format.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

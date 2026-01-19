@@ -331,7 +331,19 @@ from .table_visualization import (
     verify_stacked_scatter_combo_chart,
     verify_nested_pie_doughnut_chart,
     verify_gantt_chart_progress,
-    verify_percentage_progress_chart
+    verify_percentage_progress_chart,
+    verify_table_with_data_bars_sparklines_slicers_chart,
+    verify_line_chart_with_named_ranges_and_dropdown,
+    verify_chart_data_label_format_code,
+    verify_scatter_chart_with_x_value_labels,
+    verify_stacked_bar_chart_with_column_axis_labels,
+    verify_simple_column_chart,
+    verify_combo_column_line_smooth,
+    verify_combo_column_line_with_trendline,
+    verify_combo_bar_line_with_line_labels,
+    verify_line_chart_with_data_labels,
+    verify_combo_column_line_with_both_labels,
+    verify_three_layer_combo_chart
 )
 from .table_template import (
     verify_template_fields

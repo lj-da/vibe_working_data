@@ -1,0 +1,79 @@
+{
+  "id": "4ddce68d-9900-492a-8ba6-ae8e71f6ffa4",
+  "snapshot": "libreoffice_calc",
+  "instruction": "求助根据提供的数据生成柱形+折线图，需要将销售总额设置为折线图并美化成平滑曲线，销售均值用虚线展示",
+  "method": "全选表格数据，点击【插入】选项卡，选择【推荐的图表】，选择【折线图】，点击【确定】。双击函数线条（灰色的）打开【设置数据系列格式】对话框，系列绘制选择【次坐标轴】，点击【图表类型】，选择【更改图表类型】，将函数改为百分比堆积柱形图，点击【确定】。点击右边坐标轴，打开【设置坐标轴格式】对话框，设置刻度线及标签位置。点击函数条形图（灰色的）打开【设置数据系列格式】对话框，将间隙宽度改为0%。双击销售均值，将线段类型改为【方点】。双击销售总额，设置【平滑线】。修改线段及条形图颜色。修改图表标题。给销售均值添加【数据标签】。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/193.xlsx",
+            "path": "/home/user/Desktop/combo_column_line_smooth.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/4ddce68d-9900-492a-8ba6-ae8e71f6ffa4",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "combo_column_line_smooth.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_combo_column_line_smooth",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/combo_column_line_smooth.xlsx",
+      "dest": "combo_column_line_smooth.xlsx"
+    },
+    "options": {
+      "expected_line_series_count": 2,
+      "expected_column_series_count": 1,
+      "expected_gap_width": 0,
+      "check_smooth_line": true,
+      "smooth_line_series": "销售总额"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4ddce68d-9900-492a-8ba6-ae8e71f6ffa4/combo_column_line_smooth.xlsx",
+      "dest": "combo_column_line_smooth.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
