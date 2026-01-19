@@ -1,0 +1,117 @@
+{
+  "id": "825ba89e-b95a-45fc-8794-f6c342bf4d10",
+  "snapshot": "libreoffice_calc",
+  "instruction": "请帮我制作一个三层柱形套娃图，最外层柱形展示季度合计，第二层展示月度合计，最内层展示各产品每月数值。",
+  "method": "首先创建辅助列G列：选中G2:G4单元格区域，点击菜单栏的\"格式\"选项，选择\"合并单元格\"，然后在合并后的单元格中输入2。同样地，选中G5:G7单元格区域，合并后填入5；选中G8:G10单元格区域，合并后填入8；选中G11:G13单元格区域，合并后填入11。接下来，选中包含数据的区域（A1:F13），点击菜单栏的\"插入\"选项，选择\"图表\"，创建组合图。创建图表后，在图表上右键点击选择\"选择数据\"，添加四个系列：第一个系列名称为\"月度合计\"，数据范围为E2:E13，图表类型为柱状图，绘制在主坐标轴，设置分类间距为70%；第二个系列名称为\"产品A\"，数据范围为C2:C13，图表类型为柱状图，绘制在次坐标轴；第三个系列名称为\"产品B\"，数据范围为D2:D13，图表类型为柱状图，绘制在次坐标轴；第四个系列名称为\"季度合计\"，X轴数据范围为G2:G13，Y轴数据范围为F2:F13，图表类型为散点图，绘制在次坐标轴（两个坐标轴都不限制）。然后为\"季度合计\"系列设置Y误差线：右键点击\"季度合计\"系列，选择\"设置数据系列格式\"，在\"误差线\"选项中添加Y误差线，设置为负偏差，误差量设置为百分比100%。接下来设置渐变线：右键点击\"季度合计\"系列，选择\"设置数据系列格式\"，在\"线条\"选项中选择\"渐变线\"，设置线条宽度为80磅，角度为270度，渐变停止点1的透明度设置为100%，渐变停止点2的位置设置为至少45。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/152.xlsx",
+            "path": "/home/user/Desktop/three_layer_bar_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/825ba89e-b95a-45fc-8794-f6c342bf4d10",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "three_layer_bar_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_three_layer_nested_bar_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/three_layer_bar_chart.xlsx",
+      "dest": "three_layer_bar_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "helper_column_merged_ranges": {
+        "G2:G4": 2,
+        "G5:G7": 5,
+        "G8:G10": 8,
+        "G11:G13": 11
+      },
+      "series_config": {
+        "月度合计": {
+          "value_range": "E2:E13",
+          "chart_type": "bar",
+          "use_secondary_axis": false,
+          "gap_width": 70
+        },
+        "产品A": {
+          "value_range": "C2:C13",
+          "chart_type": "bar",
+          "use_secondary_axis": true
+        },
+        "产品B": {
+          "value_range": "D2:D13",
+          "chart_type": "bar",
+          "use_secondary_axis": true
+        },
+        "季度合计": {
+          "x_range": "G2:G13",
+          "y_range": "F2:F13",
+          "chart_type": "scatter",
+          "use_secondary_axis": true,
+          "error_bars": {
+            "y_error_bars": {
+              "direction": "minus",
+              "error_amount": "percentage",
+              "error_value": 100
+            }
+          },
+          "gradient_line": {
+            "width": 80,
+            "angle": 270,
+            "stop1_transparency": 100,
+            "stop2_position_min": 45
+          }
+        }
+      }
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/825ba89e-b95a-45fc-8794-f6c342bf4d10/three_layer_bar_chart.xlsx",
+      "dest": "three_layer_bar_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

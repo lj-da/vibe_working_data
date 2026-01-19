@@ -1,0 +1,97 @@
+{
+  "id": "4c372e8a-34ae-4793-b278-0daa28343346",
+  "snapshot": "libreoffice_calc",
+  "instruction": "根据数据表生成一个带有同比增长率折线图",
+  "method": "首先在E2单元格输入公式：=B2+B2*D2*0.5，然后将该公式下拉填充到E2:E13区域。完成后，选中A1:C13数据区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"组合图\"或\"组合图表\"。在图表系列设置中，添加三个系列：第一个系列命名为\"2023年\"，选择折线图类型，数据范围设置为B2:B13；第二个系列命名为\"2024年\"，选择折线图类型，数据范围设置为C2:C13；第三个系列为辅助系列（名称可以为空或任意），选择散点图类型，X值设置为A2:A13，Y值设置为E2:E13。创建图表后，右键点击散点图系列，选择\"设置数据系列格式\"或\"数据标签选项\"，在数据标签设置中选择\"单元格中的值\"，并指定数据标签来源为D2:D13。然后，右键点击图表或通过图表工具栏选择\"添加高低线\"或\"高低点连线\"功能，在高低线设置中选择\"前端箭头\"选项，为高低线添加箭头样式。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/127.xlsx",
+            "path": "/home/user/Desktop/hr_analysis_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/4c372e8a-34ae-4793-b278-0daa28343346",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "hr_analysis_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_hr_analysis_combo_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/hr_analysis_chart.xlsx",
+      "dest": "hr_analysis_chart.xlsx"
+    },
+    "options": {
+      "sheet_idx": 0,
+      "helper_column_range": "E2:E13",
+      "helper_formula": "=B2+B2*D2*0.5",
+      "series_config": {
+        "2023年": {
+          "chart_type": "line",
+          "value_range": "B2:B13",
+          "use_secondary_axis": false
+        },
+        "2024年": {
+          "chart_type": "line",
+          "value_range": "C2:C13",
+          "use_secondary_axis": false
+        },
+        "辅助系列": {
+          "chart_type": "scatter",
+          "x_range": "A2:A13",
+          "y_range": "E2:E13",
+          "label_range": "D2:D13",
+          "use_secondary_axis": false
+        }
+      },
+      "check_high_low_lines": true,
+      "check_high_low_arrows": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4c372e8a-34ae-4793-b278-0daa28343346/hr_analysis_chart.xlsx",
+      "dest": "hr_analysis_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

@@ -1,0 +1,77 @@
+{
+  "id": "6e272861-97d4-4e24-b114-695854c3c0c1",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何根据部门人员统计表生成一个人力分析复合条饼图",
+  "method": "首先选中B1:C8单元格区域，点击菜单栏的\"插入\"选项，选择\"图表\"，在图表类型中选择\"饼图\"，然后选择\"复合条饼图\"（或\"条饼图\"）。创建图表后，右键点击图表，选择\"设置数据系列格式\"或\"图表选项\"，找到\"第二绘图区\"或\"分离的绘图区\"设置，将\"第二绘图区中的值\"设置为4。然后，右键点击图表，选择\"添加数据标签\"或\"数据标签选项\"，在数据标签设置中勾选\"值\"和\"类别名称\"，确保数据标签同时显示数值和类别名称。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/140.xlsx",
+            "path": "/home/user/Desktop/compound_bar_pie_chart.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/6e272861-97d4-4e24-b114-695854c3c0c1",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "compound_bar_pie_chart.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_compound_bar_pie_chart",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/compound_bar_pie_chart.xlsx",
+      "dest": "compound_bar_pie_chart.xlsx"
+    },
+    "options": {
+      "data_range": "B1:C8",
+      "second_plot_size": 4,
+      "data_labels_show_val": true,
+      "data_labels_show_cat_name": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6e272861-97d4-4e24-b114-695854c3c0c1/compound_bar_pie_chart.xlsx",
+      "dest": "compound_bar_pie_chart.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

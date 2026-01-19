@@ -360,7 +360,11 @@ from .table_visualization import (
     verify_combo_chart_bar_line_secondary_axis,
     verify_bubble_chart_with_axis_settings,
     verify_bar_combo_chart_helper_columns,
-    verify_sales_bubble_chart
+    verify_sales_bubble_chart,
+    verify_bar_combo_chart_scatter_axis,
+    verify_three_layer_nested_bar_chart,
+    verify_compound_bar_pie_chart,
+    verify_hr_analysis_combo_chart
 )
 from .table_template import (
     verify_template_fields
