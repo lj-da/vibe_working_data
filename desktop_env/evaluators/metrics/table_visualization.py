@@ -33662,3 +33662,588 @@ def verify_bar_combo_chart_helper_columns(result: str, expected: str = None, **o
         logger.error(f"Verification failed: {e}")
         logger.error(traceback.format_exc())
         return 0.0
+
+
+def verify_bar_chart_with_transparency(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a bar chart exists with transparency settings.
+    
+    This function checks:
+    1. Whether a bar chart exists
+    2. Whether series have transparency (alpha) settings
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - expected_transparency: Expected transparency percentage (default: 50)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_transparency = options.get('expected_transparency', 50)
+        
+        logger.info(f"Verifying bar chart with transparency in file: {result}")
+        logger.info(f"Expected transparency: {expected_transparency}%")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check chart existence
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check chart via XML
+        chart_ns = {
+            'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart',
+            'a': 'http://schemas.openxmlformats.org/drawingml/2006/main'
+        }
+        bar_chart_found = False
+        transparency_found = False
+        
+        try:
+            with zipfile.ZipFile(result, 'r') as z_f:
+                chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+                if not chart_files:
+                    logger.error("No chart XML files found")
+                    return 0.0
+                
+                for chart_file in chart_files:
+                    try:
+                        root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                        
+                        # Check for bar chart
+                        bar_charts = root.xpath('.//c:barChart', namespaces=chart_ns)
+                        if bar_charts:
+                            bar_chart_found = True
+                            logger.info("✓ Bar chart found")
+                            
+                            # Check transparency in series
+                            all_series = root.xpath('.//c:ser', namespaces=chart_ns)
+                            for ser in all_series:
+                                sp_pr = ser.xpath('.//c:spPr', namespaces=chart_ns)
+                                if sp_pr:
+                                    fill_elem = sp_pr[0].xpath('.//a:solidFill', namespaces=chart_ns)
+                                    if fill_elem:
+                                        alpha_elem = fill_elem[0].xpath('.//a:alpha', namespaces=chart_ns)
+                                        if alpha_elem:
+                                            alpha_val = int(alpha_elem[0].get('val', 0))
+                                            # Transparency: 0-100000, where 100000 = 100%
+                                            # 50% transparency = 50000, alpha = 50000 (50% opacity)
+                                            expected_alpha = expected_transparency * 1000
+                                            if abs(alpha_val - expected_alpha) < 5000:
+                                                transparency_found = True
+                                                logger.info(f"✓ Transparency found: {alpha_val} (expected around {expected_alpha})")
+                                                break
+                        
+                        if bar_chart_found:
+                            break
+                    except Exception as e:
+                        logger.debug(f"Error reading chart file {chart_file}: {e}")
+                        continue
+        except Exception as e:
+            logger.error(f"Error accessing chart XML: {e}")
+            return 0.0
+        
+        # Verify results
+        if not bar_chart_found:
+            logger.error("✗ Bar chart not found")
+            return 0.0
+        
+        if not transparency_found:
+            logger.warning("⚠ Transparency not found, but continuing")
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ Verification passed")
+        logger.info(f"  - Bar chart exists")
+        if transparency_found:
+            logger.info(f"  - Transparency: {expected_transparency}%")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_stacked_column_with_scatter_labels(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a stacked column chart exists with data labels.
+    
+    This function checks:
+    1. Whether a stacked column chart exists
+    2. Whether data labels are present
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_data_labels: Whether to check data labels (default: True)
+            - expected_column_chart_grouping: Expected grouping type (default: "stacked")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_data_labels = options.get('check_data_labels', True)
+        expected_grouping = options.get('expected_column_chart_grouping', 'stacked')
+        
+        logger.info(f"Verifying stacked column chart with data labels in file: {result}")
+        logger.info(f"Expected grouping: {expected_grouping}")
+        logger.info(f"Check data labels: {check_data_labels}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check chart existence
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check chart via XML
+        chart_ns = {
+            'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart',
+            'a': 'http://schemas.openxmlformats.org/drawingml/2006/main'
+        }
+        column_chart_found = False
+        data_labels_found = False
+        
+        try:
+            with zipfile.ZipFile(result, 'r') as z_f:
+                chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+                if not chart_files:
+                    logger.error("No chart XML files found")
+                    return 0.0
+                
+                for chart_file in chart_files:
+                    try:
+                        root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                        
+                        # Check for column chart (barChart with vertical orientation)
+                        bar_charts = root.xpath('.//c:barChart', namespaces=chart_ns)
+                        if bar_charts:
+                            # Check grouping
+                            grouping = bar_charts[0].get('grouping', '')
+                            if grouping == expected_grouping or (grouping == '' and len(bar_charts[0].xpath('.//c:ser', namespaces=chart_ns)) > 1):
+                                column_chart_found = True
+                                logger.info("✓ Stacked column chart found")
+                                
+                                # Check data labels
+                                if check_data_labels:
+                                    all_series = root.xpath('.//c:ser', namespaces=chart_ns)
+                                    for ser in all_series:
+                                        d_lbls = ser.xpath('.//c:dLbls', namespaces=chart_ns)
+                                        if d_lbls:
+                                            show_val = d_lbls[0].xpath('.//c:showVal', namespaces=chart_ns)
+                                            show_cat_name = d_lbls[0].xpath('.//c:showCatName', namespaces=chart_ns)
+                                            show_ser_name = d_lbls[0].xpath('.//c:showSerName', namespaces=chart_ns)
+                                            if show_val or show_cat_name or show_ser_name:
+                                                data_labels_found = True
+                                                logger.info("✓ Data labels found")
+                                                break
+                                else:
+                                    data_labels_found = True
+                        
+                        if column_chart_found:
+                            break
+                    except Exception as e:
+                        logger.debug(f"Error reading chart file {chart_file}: {e}")
+                        continue
+        except Exception as e:
+            logger.error(f"Error accessing chart XML: {e}")
+            return 0.0
+        
+        # Verify results
+        if not column_chart_found:
+            logger.error("✗ Stacked column chart not found")
+            return 0.0
+        
+        if check_data_labels and not data_labels_found:
+            logger.warning("⚠ Data labels not found")
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ Verification passed")
+        logger.info(f"  - Stacked column chart exists")
+        if check_data_labels:
+            logger.info(f"  - Data labels: {'found' if data_labels_found else 'not checked'}")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_trendline_with_forecast_periods(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a chart has trendline with forward and backward forecast periods.
+    
+    This function checks:
+    1. Whether a trendline exists
+    2. Whether forward period is set correctly (default: 0.5)
+    3. Whether backward period is set correctly (default: 0.5)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - forward_period: Expected forward period (default: 0.5)
+            - backward_period: Expected backward period (default: 0.5)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        forward_period = options.get('forward_period', 0.5)
+        backward_period = options.get('backward_period', 0.5)
+        
+        logger.info(f"Verifying trendline with forecast periods in file: {result}")
+        logger.info(f"Expected forward period: {forward_period}")
+        logger.info(f"Expected backward period: {backward_period}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check chart existence
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check chart via XML
+        chart_ns = {'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart'}
+        trendline_found = False
+        forward_ok = False
+        backward_ok = False
+        
+        try:
+            with zipfile.ZipFile(result, 'r') as z_f:
+                chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+                if not chart_files:
+                    logger.error("No chart XML files found")
+                    return 0.0
+                
+                for chart_file in chart_files:
+                    try:
+                        root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                        
+                        # Check for trendline
+                        trendlines = root.xpath('.//c:trendline', namespaces=chart_ns)
+                        if trendlines:
+                            trendline_found = True
+                            logger.info(f"✓ Found {len(trendlines)} trendline(s)")
+                            
+                            # Check forward and backward periods
+                            for trendline in trendlines:
+                                # Check forward period
+                                forward_elems = trendline.xpath('.//c:forward', namespaces=chart_ns)
+                                if forward_elems:
+                                    try:
+                                        forward_val = float(forward_elems[0].get('val', 0))
+                                        if abs(forward_val - forward_period) < 0.01:
+                                            forward_ok = True
+                                            logger.info(f"✓ Forward period: {forward_val}")
+                                        else:
+                                            logger.warning(f"⚠ Forward period: {forward_val} (expected: {forward_period})")
+                                    except:
+                                        pass
+                                
+                                # Check backward period
+                                backward_elems = trendline.xpath('.//c:backward', namespaces=chart_ns)
+                                if backward_elems:
+                                    try:
+                                        backward_val = float(backward_elems[0].get('val', 0))
+                                        if abs(backward_val - backward_period) < 0.01:
+                                            backward_ok = True
+                                            logger.info(f"✓ Backward period: {backward_val}")
+                                        else:
+                                            logger.warning(f"⚠ Backward period: {backward_val} (expected: {backward_period})")
+                                    except:
+                                        pass
+                        
+                        if trendline_found:
+                            break
+                    except Exception as e:
+                        logger.debug(f"Error reading chart file {chart_file}: {e}")
+                        continue
+        except Exception as e:
+            logger.error(f"Error accessing chart XML: {e}")
+            return 0.0
+        
+        # Verify results
+        if not trendline_found:
+            logger.error("✗ Trendline not found")
+            return 0.0
+        
+        if not forward_ok:
+            logger.error(f"✗ Forward period not set correctly (expected: {forward_period})")
+            return 0.0
+        
+        if not backward_ok:
+            logger.error(f"✗ Backward period not set correctly (expected: {backward_period})")
+            return 0.0
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ Verification passed")
+        logger.info(f"  - Trendline exists")
+        logger.info(f"  - Forward period: {forward_period}")
+        logger.info(f"  - Backward period: {backward_period}")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_chart_with_custom_error_bars(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a chart has error bars with custom error amount.
+    
+    This function checks:
+    1. Whether error bars exist
+    2. Whether error bars use custom error amount (not fixed value or percentage)
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Not used (for compatibility with framework interface)
+        options (dict): Configuration options, should contain:
+            - check_custom_error_amount: Whether to check custom error amount (default: True)
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        check_custom_error_amount = options.get('check_custom_error_amount', True)
+        
+        logger.info(f"Verifying chart with custom error bars in file: {result}")
+        logger.info(f"Check custom error amount: {check_custom_error_amount}")
+        
+        # Load workbook
+        try:
+            wb = openpyxl.load_workbook(result, data_only=False)
+            ws = wb.active
+        except Exception as e:
+            logger.error(f"Failed to load workbook: {e}")
+            return 0.0
+        
+        # Check chart existence
+        charts = ws._charts
+        if not charts or len(charts) == 0:
+            logger.error("No charts found in the worksheet")
+            return 0.0
+        
+        logger.info(f"Found {len(charts)} chart(s) in the worksheet")
+        
+        # Check chart via XML
+        chart_ns = {'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart'}
+        error_bars_found = False
+        custom_error_amount_found = False
+        
+        try:
+            with zipfile.ZipFile(result, 'r') as z_f:
+                chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+                if not chart_files:
+                    logger.error("No chart XML files found")
+                    return 0.0
+                
+                for chart_file in chart_files:
+                    try:
+                        root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                        
+                        # Check for error bars
+                        all_series = root.xpath('.//c:ser', namespaces=chart_ns)
+                        for ser in all_series:
+                            err_bars = ser.xpath('.//c:errBars', namespaces=chart_ns)
+                            if err_bars:
+                                error_bars_found = True
+                                logger.info("✓ Error bars found")
+                                
+                                # Check for custom error amount
+                                if check_custom_error_amount:
+                                    # Custom error amount is indicated by plus/minus having valType="cust" or having numLit/numRef
+                                    for err_bar in err_bars:
+                                        plus_elem = err_bar.xpath('.//c:plus', namespaces=chart_ns)
+                                        minus_elem = err_bar.xpath('.//c:minus', namespaces=chart_ns)
+                                        
+                                        for elem in plus_elem + minus_elem:
+                                            val_type = elem.get('valType', '')
+                                            # Check if it's custom (valType="cust") or has numLit/numRef
+                                            if val_type == 'cust':
+                                                custom_error_amount_found = True
+                                                logger.info("✓ Custom error amount found (valType='cust')")
+                                                break
+                                            # Check for numLit or numRef (custom values)
+                                            num_lit = elem.xpath('.//c:numLit', namespaces=chart_ns)
+                                            num_ref = elem.xpath('.//c:numRef', namespaces=chart_ns)
+                                            if num_lit or num_ref:
+                                                custom_error_amount_found = True
+                                                logger.info("✓ Custom error amount found (numLit/numRef)")
+                                                break
+                                        
+                                        if custom_error_amount_found:
+                                            break
+                                
+                                if error_bars_found:
+                                    break
+                        
+                        if error_bars_found:
+                            break
+                    except Exception as e:
+                        logger.debug(f"Error reading chart file {chart_file}: {e}")
+                        continue
+        except Exception as e:
+            logger.error(f"Error accessing chart XML: {e}")
+            return 0.0
+        
+        # Verify results
+        if not error_bars_found:
+            logger.error("✗ Error bars not found")
+            return 0.0
+        
+        if check_custom_error_amount and not custom_error_amount_found:
+            logger.warning("⚠ Custom error amount not found, but error bars exist")
+        
+        logger.info("=" * 60)
+        logger.info(f"✓ Verification passed")
+        logger.info(f"  - Error bars exist")
+        if check_custom_error_amount:
+            logger.info(f"  - Custom error amount: {'found' if custom_error_amount_found else 'not checked'}")
+        logger.info("=" * 60)
+        return 1.0
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Verification failed: {e}")
+        logger.error(traceback.format_exc())
+        return 0.0
+
+
+def verify_axis_number_format_code(result: str, expected: str = None, **options) -> float:
+    """
+    Verify if a chart axis has the specified number format code.
+    
+    Args:
+        result (str): Path to result Excel file
+        expected (str): Path to expected file (for comparison if needed)
+        options (dict): Configuration options, should contain:
+            - expected_format_code: Expected format code (default: "0;0;0")
+    
+    Returns:
+        float: 1.0 if verification passes, 0.0 otherwise
+    """
+    try:
+        if result is None or not os.path.exists(result):
+            logger.error(f"Result file not found: {result}")
+            return 0.0
+        
+        expected_format_code = options.get('expected_format_code', '0;0;0')
+        
+        logger.info(f"Verifying axis format code in: {result}")
+        logger.info(f"Expected format code: {expected_format_code}")
+        
+        # Load workbook
+        wb = openpyxl.load_workbook(result, data_only=False)
+        ws = wb.active
+        
+        # Check chart existence
+        if not ws._charts:
+            logger.error("No charts found")
+            return 0.0
+        
+        logger.info(f"Found {len(ws._charts)} chart(s)")
+        
+        # Parse chart XML
+        chart_ns = {'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart'}
+        
+        with zipfile.ZipFile(result, 'r') as z_f:
+            chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+            
+            for chart_file in chart_files:
+                root = lxml.etree.parse(z_f.open(chart_file)).getroot()
+                
+                # Get all axes (category and value axes)
+                all_axes = root.xpath('.//c:catAx | .//c:valAx', namespaces=chart_ns)
+                logger.info(f"Found {len(all_axes)} axis/axes")
+                
+                # Check each axis for format code
+                for i, axis in enumerate(all_axes):
+                    # Find numFmt element
+                    num_fmt_list = axis.xpath('.//c:numFmt', namespaces=chart_ns)
+                    
+                    if num_fmt_list:
+                        num_fmt = num_fmt_list[0]
+                        format_code = num_fmt.get('formatCode', '')
+                        
+                        logger.info(f"Axis {i+1}: formatCode = '{format_code}'")
+                        
+                        if format_code == expected_format_code:
+                            logger.info(f"✓ Format code matches: {format_code}")
+                            return 1.0
+                    else:
+                        logger.info(f"Axis {i+1}: No numFmt element found")
+                
+                # If not found in direct check, do deep search
+                logger.info("Performing deep XML search...")
+                for elem in root.iter():
+                    if 'formatCode' in elem.attrib:
+                        fc = elem.attrib['formatCode']
+                        if fc == expected_format_code:
+                            logger.info(f"✓ Found matching format code in {elem.tag}: {fc}")
+                            return 1.0
+        
+        logger.error(f"✗ Format code '{expected_format_code}' not found")
+        return 0.0
+        
+    except Exception as e:
+        logger.error(f"Verification error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return 0.0

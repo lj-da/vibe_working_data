@@ -1,0 +1,75 @@
+{
+  "id": "171c185e-56ec-47e3-ba41-89abf6dc83ea",
+  "snapshot": "libreoffice_calc",
+  "instruction": "各位大神，如果将蝴蝶图横坐标轴的负值改为正的呢？谢谢",
+  "method": "首先选中图表的横坐标轴，右键点击选择\"设置坐标轴格式\"。在坐标轴格式设置中，找到\"数字\"选项，将\"格式代码\"设置为\"0;0;0\"。完成设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/700.xlsx",
+            "path": "/home/user/Desktop/butterfly_chart_axis_format.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/171c185e-56ec-47e3-ba41-89abf6dc83ea",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "butterfly_chart_axis_format.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_axis_number_format_code",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/butterfly_chart_axis_format.xlsx",
+      "dest": "butterfly_chart_axis_format.xlsx"
+    },
+    "options": {
+      "expected_format_code": "0;0;0"
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/171c185e-56ec-47e3-ba41-89abf6dc83ea/butterfly_chart_axis_format.xlsx",
+      "dest": "butterfly_chart_axis_format.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

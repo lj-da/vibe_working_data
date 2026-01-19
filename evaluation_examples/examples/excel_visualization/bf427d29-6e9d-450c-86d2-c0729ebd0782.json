@@ -1,0 +1,76 @@
+{
+  "id": "bf427d29-6e9d-450c-86d2-c0729ebd0782",
+  "snapshot": "libreoffice_calc",
+  "instruction": "各位高手，麻烦帮忙看看你附件中的图表，如何将红色的那个直线左右延申，就是要穿过最左边和最右边的柱子，麻烦告知以下操作步骤，谢谢了",
+  "method": "首先选中图表中的红色水平线，右键点击选择\"添加趋势线\"。然后在趋势线设置中，选择\"趋势预测\"选项，设置向前 0.5 个周期，向后 0.5 个周期。接下来，设置趋势线的颜色为红色、线条为实线。最后，把原来的红色水平线设为无色填充。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/590.xlsx",
+            "path": "/home/user/Desktop/trendline_forecast_extended.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/bf427d29-6e9d-450c-86d2-c0729ebd0782",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "trendline_forecast_extended.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_trendline_with_forecast_periods",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/trendline_forecast_extended.xlsx",
+      "dest": "trendline_forecast_extended.xlsx"
+    },
+    "options": {
+      "forward_period": 0.5,
+      "backward_period": 0.5
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bf427d29-6e9d-450c-86d2-c0729ebd0782/trendline_forecast_extended.xlsx",
+      "dest": "trendline_forecast_extended.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+

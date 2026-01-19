@@ -1,0 +1,75 @@
+{
+  "id": "3f94f983-f76c-48c7-be65-394cd261c445",
+  "snapshot": "libreoffice_calc",
+  "instruction": "如何解决附件图表自动生成两条竖直线的问题",
+  "method": "首先选中图表中的系列，右键点击选择\"添加误差线\"或\"设置数据系列格式\"，在误差线选项中添加误差线。然后在误差线设置中，选择\"自定义误差量\"选项，设置自定义的正偏差和负偏差值。完成所有设置后，保存文件。",
+  "source": "original",
+  "config": [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_visualization/599.xlsx",
+            "path": "/home/user/Desktop/chart_with_custom_error_bars.xlsx"
+          }
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/3f94f983-f76c-48c7-be65-394cd261c445",
+  "related_apps": [
+    "libreoffice_calc"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "chart_with_custom_error_bars.xlsx - LibreOffice Calc",
+          "strict": false
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 0.5
+        }
+      }
+    ],
+    "func": "verify_chart_with_custom_error_bars",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/Desktop/chart_with_custom_error_bars.xlsx",
+      "dest": "chart_with_custom_error_bars.xlsx"
+    },
+    "options": {
+      "check_custom_error_amount": true
+    },
+    "expected": {
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3f94f983-f76c-48c7-be65-394cd261c445/chart_with_custom_error_bars.xlsx",
+      "dest": "chart_with_custom_error_bars.xlsx"
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
+
