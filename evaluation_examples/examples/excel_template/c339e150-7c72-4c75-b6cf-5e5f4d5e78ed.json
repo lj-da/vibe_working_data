@@ -101,8 +101,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c339e150-7c72-4c75-b6cf-5e5f4d5e78ed/profit_analysis_report.xlsx",
-      "dest": "profit_analysis_report.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c339e150-7c72-4c75-b6cf-5e5f4d5e78ed/profit_analysis_report_gt.xlsx",
+      "dest": "profit_analysis_report_gt.xlsx"
     }
   },
   "proxy": false,

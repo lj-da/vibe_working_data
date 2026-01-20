@@ -67,12 +67,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6842b2de-c39f-43a1-9760-48dcde1ba12d/scatter_peak.xlsx",
-      "dest": "scatter_peak.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6842b2de-c39f-43a1-9760-48dcde1ba12d/scatter_peak_gt.xlsx",
+      "dest": "scatter_peak_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

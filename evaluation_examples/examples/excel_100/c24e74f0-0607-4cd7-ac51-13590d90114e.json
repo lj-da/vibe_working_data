@@ -79,11 +79,10 @@
     "expected": {
       "type": "cloud_file",
       "url": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/vibe_data_100_cache/c24e74f0-0607-4cd7-ac51-13590d90114e/convert_to_wan.xlsx",
-      "path": "convert_to_wan.xlsx"
+      "path": "convert_to_wan_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

@@ -66,8 +66,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1294ee63-82d4-4e1f-89db-1de0cc7f58f7/percentage_data_bars.xlsx",
-      "dest": "percentage_data_bars.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1294ee63-82d4-4e1f-89db-1de0cc7f58f7/percentage_data_bars_gt.xlsx",
+      "dest": "percentage_data_bars_gt.xlsx"
     }
   },
   "proxy": false,

@@ -108,8 +108,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3c01f783-1562-4c6c-8bd3-4c172b7b7221/employee_training_plan.xlsx",
-      "dest": "employee_training_plan.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3c01f783-1562-4c6c-8bd3-4c172b7b7221/employee_training_plan_gt.xlsx",
+      "dest": "employee_training_plan_gt.xlsx"
     }
   },
   "proxy": false,

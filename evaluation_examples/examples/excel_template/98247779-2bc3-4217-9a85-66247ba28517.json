@@ -98,8 +98,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/98247779-2bc3-4217-9a85-66247ba28517/personnel_appointment_form.xlsx",
-      "dest": "personnel_appointment_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/98247779-2bc3-4217-9a85-66247ba28517/personnel_appointment_form_gt.xlsx",
+      "dest": "personnel_appointment_form_gt.xlsx"
     }
   },
   "proxy": false,

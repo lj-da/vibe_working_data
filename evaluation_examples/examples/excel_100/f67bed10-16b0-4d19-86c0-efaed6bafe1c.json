@@ -75,8 +75,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/f67bed10-16b0-4d19-86c0-efaed6bafe1c/student_grade_sum_average.xlsx",
-      "dest": "student_grade_sum_average.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/f67bed10-16b0-4d19-86c0-efaed6bafe1c/student_grade_sum_average_gt.xlsx",
+      "dest": "student_grade_sum_average_gt.xlsx"
     }
   },
   "proxy": false,

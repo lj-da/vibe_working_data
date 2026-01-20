@@ -71,8 +71,17 @@
     },
     "options": {
       "sheet_idx": 0,
-      "helper_columns": ["I", "K", "M"],
-      "main_columns": ["H", "J", "L", "N"],
+      "helper_columns": [
+        "I",
+        "K",
+        "M"
+      ],
+      "main_columns": [
+        "H",
+        "J",
+        "L",
+        "N"
+      ],
       "category_column": "G",
       "start_row": 2,
       "expected_overlap": 100,
@@ -80,8 +89,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/baed8c5d-b21b-4099-9196-ca4bbe87824b/cumulative_growth_bar_chart.xlsx",
-      "dest": "cumulative_growth_bar_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/baed8c5d-b21b-4099-9196-ca4bbe87824b/cumulative_growth_bar_chart_gt.xlsx",
+      "dest": "cumulative_growth_bar_chart_gt.xlsx"
     }
   },
   "proxy": false,

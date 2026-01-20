@@ -88,8 +88,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3c7a42e6-516a-4cce-bfd2-6aeffc946404/office_supplies_requisition_form.xlsx",
-      "dest": "office_supplies_requisition_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3c7a42e6-516a-4cce-bfd2-6aeffc946404/office_supplies_requisition_form_gt.xlsx",
+      "dest": "office_supplies_requisition_form_gt.xlsx"
     }
   },
   "proxy": false,

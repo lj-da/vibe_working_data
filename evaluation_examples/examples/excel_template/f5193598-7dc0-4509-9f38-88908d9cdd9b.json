@@ -83,8 +83,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/f5193598-7dc0-4509-9f38-88908d9cdd9b/apparel_fabric_preparation_table.xlsx",
-      "dest": "apparel_fabric_preparation_table.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/f5193598-7dc0-4509-9f38-88908d9cdd9b/apparel_fabric_preparation_table_gt.xlsx",
+      "dest": "apparel_fabric_preparation_table_gt.xlsx"
     }
   },
   "proxy": false,

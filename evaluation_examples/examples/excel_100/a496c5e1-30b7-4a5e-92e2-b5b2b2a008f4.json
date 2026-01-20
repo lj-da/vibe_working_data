@@ -93,8 +93,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a496c5e1-30b7-4a5e-92e2-b5b2b2a008f4/seat_number_data.xlsx",
-      "dest": "seat_number_data.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/a496c5e1-30b7-4a5e-92e2-b5b2b2a008f4/seat_number_data_gt.xlsx",
+      "dest": "seat_number_data_gt.xlsx"
     }
   },
   "proxy": false,

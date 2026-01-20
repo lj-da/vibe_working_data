@@ -66,12 +66,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/249c1940-857c-43b5-92ef-93d509fde9a1/trendline_chart.xlsx",
-      "dest": "trendline_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/249c1940-857c-43b5-92ef-93d509fde9a1/trendline_chart_gt.xlsx",
+      "dest": "trendline_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

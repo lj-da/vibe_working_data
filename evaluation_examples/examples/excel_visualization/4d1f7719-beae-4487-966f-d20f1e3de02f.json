@@ -72,8 +72,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4d1f7719-beae-4487-966f-d20f1e3de02f/line_chart_exam_scores.xlsx",
-      "dest": "line_chart_exam_scores.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4d1f7719-beae-4487-966f-d20f1e3de02f/line_chart_exam_scores_gt.xlsx",
+      "dest": "line_chart_exam_scores_gt.xlsx"
     }
   },
   "proxy": false,

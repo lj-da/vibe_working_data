@@ -76,8 +76,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/11bd7d0a-7c32-4907-8a52-5786a3e8a2ae/sales_plan_comparison_chart.xlsx",
-      "dest": "sales_plan_comparison_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/11bd7d0a-7c32-4907-8a52-5786a3e8a2ae/sales_plan_comparison_chart_gt.xlsx",
+      "dest": "sales_plan_comparison_chart_gt.xlsx"
     }
   },
   "proxy": false,

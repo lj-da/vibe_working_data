@@ -78,8 +78,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0d371097-8ca8-4f3c-b656-a91608066159/sales_growth_rate.xlsx",
-      "dest": "sales_growth_rate.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0d371097-8ca8-4f3c-b656-a91608066159/sales_growth_rate_gt.xlsx",
+      "dest": "sales_growth_rate_gt.xlsx"
     }
   },
   "proxy": false,

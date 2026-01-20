@@ -86,8 +86,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0e53a138-c817-47ce-b660-368a93bdf710/nightingale_rose_chart.xlsx",
-      "dest": "nightingale_rose_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0e53a138-c817-47ce-b660-368a93bdf710/nightingale_rose_chart_gt.xlsx",
+      "dest": "nightingale_rose_chart_gt.xlsx"
     }
   },
   "proxy": false,

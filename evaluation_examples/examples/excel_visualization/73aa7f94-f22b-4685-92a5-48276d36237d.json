@@ -64,12 +64,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/73aa7f94-f22b-4685-92a5-48276d36237d/blood_glucose_line_chart.xlsx",
-      "dest": "blood_glucose_line_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/73aa7f94-f22b-4685-92a5-48276d36237d/blood_glucose_line_chart_gt.xlsx",
+      "dest": "blood_glucose_line_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

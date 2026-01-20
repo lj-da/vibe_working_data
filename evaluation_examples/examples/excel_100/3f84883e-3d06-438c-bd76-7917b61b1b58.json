@@ -102,8 +102,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3f84883e-3d06-438c-bd76-7917b61b1b58/maxifs_minifs.xlsx",
-      "dest": "maxifs_minifs.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3f84883e-3d06-438c-bd76-7917b61b1b58/maxifs_minifs_gt.xlsx",
+      "dest": "maxifs_minifs_gt.xlsx"
     }
   },
   "proxy": false,

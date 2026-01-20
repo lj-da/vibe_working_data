@@ -105,8 +105,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb234e0d-d3a6-4d8f-a877-445afc42b763/training_feedback_questionnaire.xlsx",
-      "dest": "training_feedback_questionnaire.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb234e0d-d3a6-4d8f-a877-445afc42b763/training_feedback_questionnaire_gt.xlsx",
+      "dest": "training_feedback_questionnaire_gt.xlsx"
     }
   },
   "proxy": false,

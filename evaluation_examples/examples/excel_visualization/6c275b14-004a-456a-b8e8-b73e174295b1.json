@@ -80,8 +80,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6c275b14-004a-456a-b8e8-b73e174295b1/comparison_chart.xlsx",
-      "dest": "comparison_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6c275b14-004a-456a-b8e8-b73e174295b1/comparison_chart_gt.xlsx",
+      "dest": "comparison_chart_gt.xlsx"
     }
   },
   "proxy": false,

@@ -89,8 +89,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/07c1f2a5-9aad-4bcc-bedc-014c3ab08b41/meeting_minutes_template.xlsx",
-      "dest": "meeting_minutes_template.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/07c1f2a5-9aad-4bcc-bedc-014c3ab08b41/meeting_minutes_template_gt.xlsx",
+      "dest": "meeting_minutes_template_gt.xlsx"
     }
   },
   "proxy": false,

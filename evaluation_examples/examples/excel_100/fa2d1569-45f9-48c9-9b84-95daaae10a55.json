@@ -79,8 +79,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fa2d1569-45f9-48c9-9b84-95daaae10a55/student_data.xlsx",
-      "dest": "student_data.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fa2d1569-45f9-48c9-9b84-95daaae10a55/student_data_gt.xlsx",
+      "dest": "student_data_gt.xlsx"
     }
   },
   "proxy": false,

@@ -92,8 +92,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7711c2b2-6bb3-4578-a0ba-3c6c97564e43/tv_episode_data.xlsx",
-      "dest": "tv_episode_data.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7711c2b2-6bb3-4578-a0ba-3c6c97564e43/tv_episode_data_gt.xlsx",
+      "dest": "tv_episode_data_gt.xlsx"
     }
   },
   "proxy": false,

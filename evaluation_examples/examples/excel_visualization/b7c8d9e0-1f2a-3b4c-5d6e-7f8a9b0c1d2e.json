@@ -75,8 +75,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7c8d9e0-1f2a-3b4c-5d6e-7f8a9b0c1d2e/percentage_progress_chart.xlsx",
-      "dest": "percentage_progress_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7c8d9e0-1f2a-3b4c-5d6e-7f8a9b0c1d2e/percentage_progress_chart_gt.xlsx",
+      "dest": "percentage_progress_chart_gt.xlsx"
     }
   },
   "proxy": false,

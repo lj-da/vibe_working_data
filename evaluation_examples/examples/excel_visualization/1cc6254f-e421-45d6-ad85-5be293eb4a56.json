@@ -91,8 +91,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1cc6254f-e421-45d6-ad85-5be293eb4a56/thermometer_chart.xlsx",
-      "dest": "thermometer_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1cc6254f-e421-45d6-ad85-5be293eb4a56/thermometer_chart_gt.xlsx",
+      "dest": "thermometer_chart_gt.xlsx"
     }
   },
   "proxy": false,

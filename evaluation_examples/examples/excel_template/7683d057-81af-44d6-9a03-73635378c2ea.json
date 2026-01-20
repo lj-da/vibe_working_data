@@ -120,8 +120,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7683d057-81af-44d6-9a03-73635378c2ea/interview_registration_form.xlsx",
-      "dest": "interview_registration_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7683d057-81af-44d6-9a03-73635378c2ea/interview_registration_form_gt.xlsx",
+      "dest": "interview_registration_form_gt.xlsx"
     }
   },
   "proxy": false,

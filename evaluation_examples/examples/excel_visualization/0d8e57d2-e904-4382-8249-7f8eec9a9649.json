@@ -70,7 +70,10 @@
       "dest": "stacked_scatter_combo_chart.xlsx"
     },
     "options": {
-      "expected_chart_types": ["barChart", "scatterChart"],
+      "expected_chart_types": [
+        "barChart",
+        "scatterChart"
+      ],
       "expected_series_count": 6,
       "expected_bar_chart_grouping": "stacked",
       "data_range": "A1:E7",
@@ -117,8 +120,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0d8e57d2-e904-4382-8249-7f8eec9a9649/stacked_scatter_combo_chart.xlsx",
-      "dest": "stacked_scatter_combo_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0d8e57d2-e904-4382-8249-7f8eec9a9649/stacked_scatter_combo_chart_gt.xlsx",
+      "dest": "stacked_scatter_combo_chart_gt.xlsx"
     }
   },
   "proxy": false,

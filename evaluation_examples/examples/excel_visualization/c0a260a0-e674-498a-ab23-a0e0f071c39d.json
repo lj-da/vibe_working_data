@@ -126,8 +126,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c0a260a0-e674-498a-ab23-a0e0f071c39d/monthly_achievement_chart.xlsx",
-      "dest": "monthly_achievement_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c0a260a0-e674-498a-ab23-a0e0f071c39d/monthly_achievement_chart_gt.xlsx",
+      "dest": "monthly_achievement_chart_gt.xlsx"
     }
   },
   "proxy": false,

@@ -95,8 +95,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b8f16a67-f47e-4d01-bffc-efe1aa9e9efe/accounting_review_template.xlsx",
-      "dest": "accounting_review_template.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b8f16a67-f47e-4d01-bffc-efe1aa9e9efe/accounting_review_template_gt.xlsx",
+      "dest": "accounting_review_template_gt.xlsx"
     }
   },
   "proxy": false,

@@ -75,12 +75,21 @@
       "sales_data_range": "B2:B9",
       "label_data_range": "C2:C9",
       "min_d_value": 3500,
-      "expected_e_values": [-0.5, -1.5, -2.5, -3.5, -4.5, -5.5, -6.5, -7.5]
+      "expected_e_values": [
+        -0.5,
+        -1.5,
+        -2.5,
+        -3.5,
+        -4.5,
+        -5.5,
+        -6.5,
+        -7.5
+      ]
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5962e973-ca32-4a69-8d6a-dd9c395f0673/percentage_progress_chart.xlsx",
-      "dest": "percentage_progress_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5962e973-ca32-4a69-8d6a-dd9c395f0673/percentage_progress_chart_gt.xlsx",
+      "dest": "percentage_progress_chart_gt.xlsx"
     }
   },
   "proxy": false,

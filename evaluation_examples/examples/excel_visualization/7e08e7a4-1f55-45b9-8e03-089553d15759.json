@@ -84,8 +84,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7e08e7a4-1f55-45b9-8e03-089553d15759/progress_wifi_chart.xlsx",
-      "dest": "progress_wifi_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7e08e7a4-1f55-45b9-8e03-089553d15759/progress_wifi_chart_gt.xlsx",
+      "dest": "progress_wifi_chart_gt.xlsx"
     }
   },
   "proxy": false,

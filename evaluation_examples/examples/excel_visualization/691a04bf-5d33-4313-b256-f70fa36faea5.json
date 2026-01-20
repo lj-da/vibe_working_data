@@ -78,12 +78,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/691a04bf-5d33-4313-b256-f70fa36faea5/dual_axis_line_chart.xlsx",
-      "dest": "dual_axis_line_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/691a04bf-5d33-4313-b256-f70fa36faea5/dual_axis_line_chart_gt.xlsx",
+      "dest": "dual_axis_line_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

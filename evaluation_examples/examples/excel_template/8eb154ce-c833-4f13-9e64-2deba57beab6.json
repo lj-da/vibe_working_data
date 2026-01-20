@@ -95,8 +95,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8eb154ce-c833-4f13-9e64-2deba57beab6/company_approval_form.xlsx",
-      "dest": "company_approval_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/8eb154ce-c833-4f13-9e64-2deba57beab6/company_approval_form_gt.xlsx",
+      "dest": "company_approval_form_gt.xlsx"
     }
   },
   "proxy": false,

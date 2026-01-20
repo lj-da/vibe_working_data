@@ -80,8 +80,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/368ef2ad-74aa-476b-ac05-ff03a70cb016/employee_lookup.xlsx",
-      "dest": "employee_lookup.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/368ef2ad-74aa-476b-ac05-ff03a70cb016/employee_lookup_gt.xlsx",
+      "dest": "employee_lookup_gt.xlsx"
     }
   },
   "proxy": false,

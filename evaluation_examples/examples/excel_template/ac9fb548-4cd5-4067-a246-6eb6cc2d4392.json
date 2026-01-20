@@ -87,8 +87,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ac9fb548-4cd5-4067-a246-6eb6cc2d4392/personal_stock_investment_detail_table.xlsx",
-      "dest": "personal_stock_investment_detail_table.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ac9fb548-4cd5-4067-a246-6eb6cc2d4392/personal_stock_investment_detail_table_gt.xlsx",
+      "dest": "personal_stock_investment_detail_table_gt.xlsx"
     }
   },
   "proxy": false,

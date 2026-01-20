@@ -88,8 +88,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c34056a9-c58e-4e2a-b573-b894b0721420/salary_band_chart.xlsx",
-      "dest": "salary_band_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/c34056a9-c58e-4e2a-b573-b894b0721420/salary_band_chart_gt.xlsx",
+      "dest": "salary_band_chart_gt.xlsx"
     }
   },
   "proxy": false,

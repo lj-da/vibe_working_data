@@ -83,8 +83,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/befb9732-dd01-4ea3-bb81-f874a6b44f48/daily_construction_progress_statistics_template.xlsx",
-      "dest": "daily_construction_progress_statistics_template.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/befb9732-dd01-4ea3-bb81-f874a6b44f48/daily_construction_progress_statistics_template_gt.xlsx",
+      "dest": "daily_construction_progress_statistics_template_gt.xlsx"
     }
   },
   "proxy": false,

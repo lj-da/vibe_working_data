@@ -113,8 +113,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/524d9c67-a6cd-45b4-ac8d-984d76fcbe9f/accounting_list_2025.xlsx",
-      "dest": "accounting_list_2025.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/524d9c67-a6cd-45b4-ac8d-984d76fcbe9f/accounting_list_2025_gt.xlsx",
+      "dest": "accounting_list_2025_gt.xlsx"
     }
   },
   "proxy": false,

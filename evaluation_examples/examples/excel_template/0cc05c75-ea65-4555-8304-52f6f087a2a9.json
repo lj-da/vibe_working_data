@@ -126,8 +126,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0cc05c75-ea65-4555-8304-52f6f087a2a9/sales_order_form.xlsx",
-      "dest": "sales_order_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0cc05c75-ea65-4555-8304-52f6f087a2a9/sales_order_form_gt.xlsx",
+      "dest": "sales_order_form_gt.xlsx"
     }
   },
   "proxy": false,

@@ -67,8 +67,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6e272861-97d4-4e24-b114-695854c3c0c1/compound_bar_pie_chart.xlsx",
-      "dest": "compound_bar_pie_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6e272861-97d4-4e24-b114-695854c3c0c1/compound_bar_pie_chart_gt.xlsx",
+      "dest": "compound_bar_pie_chart_gt.xlsx"
     }
   },
   "proxy": false,

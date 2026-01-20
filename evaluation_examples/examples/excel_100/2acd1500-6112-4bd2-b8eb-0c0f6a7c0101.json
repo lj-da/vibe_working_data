@@ -94,8 +94,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2acd1500-6112-4bd2-b8eb-0c0f6a7c0101/five_element_game.xlsx",
-      "dest": "five_element_game.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2acd1500-6112-4bd2-b8eb-0c0f6a7c0101/five_element_game_gt.xlsx",
+      "dest": "five_element_game_gt.xlsx"
     }
   },
   "proxy": false,

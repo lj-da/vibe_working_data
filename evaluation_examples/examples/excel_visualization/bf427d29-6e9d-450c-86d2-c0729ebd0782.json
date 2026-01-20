@@ -65,12 +65,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bf427d29-6e9d-450c-86d2-c0729ebd0782/trendline_forecast_extended.xlsx",
-      "dest": "trendline_forecast_extended.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bf427d29-6e9d-450c-86d2-c0729ebd0782/trendline_forecast_extended_gt.xlsx",
+      "dest": "trendline_forecast_extended_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

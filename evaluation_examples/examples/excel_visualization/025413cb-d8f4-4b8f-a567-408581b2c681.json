@@ -76,12 +76,15 @@
       "no_fill_series_range": "B2:B15",
       "formula_range": "B3:B14",
       "expected_formula": "=SUM($C$2:C2)",
-      "zero_cells": ["B2", "B15"]
+      "zero_cells": [
+        "B2",
+        "B15"
+      ]
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/025413cb-d8f4-4b8f-a567-408581b2c681/stacked_column_chart.xlsx",
-      "dest": "stacked_column_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/025413cb-d8f4-4b8f-a567-408581b2c681/stacked_column_chart_gt.xlsx",
+      "dest": "stacked_column_chart_gt.xlsx"
     }
   },
   "proxy": false,

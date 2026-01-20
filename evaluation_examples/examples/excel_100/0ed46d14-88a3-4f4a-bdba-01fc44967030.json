@@ -83,8 +83,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0ed46d14-88a3-4f4a-bdba-01fc44967030/admission_status.xlsx",
-      "dest": "admission_status.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0ed46d14-88a3-4f4a-bdba-01fc44967030/admission_status_gt.xlsx",
+      "dest": "admission_status_gt.xlsx"
     }
   },
   "proxy": false,

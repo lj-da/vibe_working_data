@@ -87,8 +87,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/985d355c-2b65-4446-b707-71e46ffed099/financial_month_convert_data.xlsx",
-      "dest": "financial_month_convert_data.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/985d355c-2b65-4446-b707-71e46ffed099/financial_month_convert_data_gt.xlsx",
+      "dest": "financial_month_convert_data_gt.xlsx"
     }
   },
   "proxy": false,

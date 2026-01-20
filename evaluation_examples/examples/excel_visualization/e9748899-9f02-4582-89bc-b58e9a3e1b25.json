@@ -82,8 +82,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e9748899-9f02-4582-89bc-b58e9a3e1b25/monthly_sales_chart.xlsx",
-      "dest": "monthly_sales_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/e9748899-9f02-4582-89bc-b58e9a3e1b25/monthly_sales_chart_gt.xlsx",
+      "dest": "monthly_sales_chart_gt.xlsx"
     }
   },
   "proxy": false,

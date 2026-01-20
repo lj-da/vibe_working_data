@@ -79,15 +79,20 @@
       "pie_series_config": {
         "data_range": "F2:F5",
         "explosion": 100,
-        "point_explosions": [0, 0, 0, 0],
+        "point_explosions": [
+          0,
+          0,
+          0,
+          0
+        ],
         "series_idx": 1,
         "series_order": 1
       }
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6db42ecc-da01-49a8-96a4-de13029a9f45/nested_pie_doughnut_chart.xlsx",
-      "dest": "nested_pie_doughnut_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6db42ecc-da01-49a8-96a4-de13029a9f45/nested_pie_doughnut_chart_gt.xlsx",
+      "dest": "nested_pie_doughnut_chart_gt.xlsx"
     }
   },
   "proxy": false,

@@ -61,18 +61,22 @@
     },
     "options": {
       "sheet_idx": 0,
-      "formula_cells": ["B2", "C2", "D2", "E2"],
+      "formula_cells": [
+        "B2",
+        "C2",
+        "D2",
+        "E2"
+      ],
       "data_range": "A5:D17",
       "check_combobox": true
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/63d050cf-6de9-491d-a034-c9a99c464760/dynamic_bar_chart.xlsx",
-      "dest": "dynamic_bar_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/63d050cf-6de9-491d-a034-c9a99c464760/dynamic_bar_chart_gt.xlsx",
+      "dest": "dynamic_bar_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

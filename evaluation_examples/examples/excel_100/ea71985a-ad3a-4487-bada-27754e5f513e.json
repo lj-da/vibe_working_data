@@ -84,8 +84,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ea71985a-ad3a-4487-bada-27754e5f513e/student_grade_sum.xlsx",
-      "dest": "student_grade_sum.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ea71985a-ad3a-4487-bada-27754e5f513e/student_grade_sum_gt.xlsx",
+      "dest": "student_grade_sum_gt.xlsx"
     }
   },
   "proxy": false,

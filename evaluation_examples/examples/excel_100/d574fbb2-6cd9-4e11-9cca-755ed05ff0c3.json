@@ -83,8 +83,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d574fbb2-6cd9-4e11-9cca-755ed05ff0c3/irr_profit_data.xlsx",
-      "dest": "irr_profit_data.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/d574fbb2-6cd9-4e11-9cca-755ed05ff0c3/irr_profit_data_gt.xlsx",
+      "dest": "irr_profit_data_gt.xlsx"
     }
   },
   "proxy": false,

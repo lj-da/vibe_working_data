@@ -62,7 +62,22 @@
     "options": {
       "auxiliary_column": "AB",
       "auxiliary_header": "T",
-      "data_columns": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"],
+      "data_columns": [
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P"
+      ],
       "label_column": "A",
       "start_row": 2,
       "expected_chart_type": "scatterChart",
@@ -71,12 +86,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb289342-0faa-42ff-b448-cc219d0a8332/scatter_chart_axis_labels.xlsx",
-      "dest": "scatter_chart_axis_labels.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fb289342-0faa-42ff-b448-cc219d0a8332/scatter_chart_axis_labels_gt.xlsx",
+      "dest": "scatter_chart_axis_labels_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

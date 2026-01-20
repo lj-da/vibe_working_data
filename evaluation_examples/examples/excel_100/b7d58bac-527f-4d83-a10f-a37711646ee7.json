@@ -86,8 +86,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7d58bac-527f-4d83-a10f-a37711646ee7/employee_insurance_check.xlsx",
-      "dest": "employee_insurance_check.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/b7d58bac-527f-4d83-a10f-a37711646ee7/employee_insurance_check_gt.xlsx",
+      "dest": "employee_insurance_check_gt.xlsx"
     }
   },
   "proxy": false,

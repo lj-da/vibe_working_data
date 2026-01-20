@@ -75,8 +75,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/81e019b7-435b-41cb-8e60-722165ce55af/workdays_calculation.xlsx",
-      "dest": "workdays_calculation.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/81e019b7-435b-41cb-8e60-722165ce55af/workdays_calculation_gt.xlsx",
+      "dest": "workdays_calculation_gt.xlsx"
     }
   },
   "proxy": false,

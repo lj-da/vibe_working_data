@@ -91,8 +91,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/915cf614-cd57-4d15-b40a-f5693cefb27c/sumpRODUCT_mmult_hours_sum.xlsx",
-      "dest": "sumpRODUCT_mmult_hours_sum.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/915cf614-cd57-4d15-b40a-f5693cefb27c/sumpRODUCT_mmult_hours_sum_gt.xlsx",
+      "dest": "sumpRODUCT_mmult_hours_sum_gt.xlsx"
     }
   },
   "proxy": false,

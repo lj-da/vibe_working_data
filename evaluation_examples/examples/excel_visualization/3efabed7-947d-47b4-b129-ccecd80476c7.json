@@ -77,8 +77,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3efabed7-947d-47b4-b129-ccecd80476c7/line_chart_high_low_lines.xlsx",
-      "dest": "line_chart_high_low_lines.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3efabed7-947d-47b4-b129-ccecd80476c7/line_chart_high_low_lines_gt.xlsx",
+      "dest": "line_chart_high_low_lines_gt.xlsx"
     }
   },
   "proxy": false,

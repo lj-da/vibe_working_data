@@ -74,7 +74,11 @@
       "expected_data_range": "A1:H6",
       "expected_chart_type": "barChart",
       "expected_grouping": "stacked",
-      "helper_columns": ["C", "E", "G"],
+      "helper_columns": [
+        "C",
+        "E",
+        "G"
+      ],
       "helper_column_ranges": {
         "C": "C2:C6",
         "E": "E2:E6",
@@ -96,8 +100,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/46866119-3969-4a65-91ec-87262dd71087/bar_combo_chart_with_helper.xlsx",
-      "dest": "bar_combo_chart_with_helper.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/46866119-3969-4a65-91ec-87262dd71087/bar_combo_chart_with_helper_gt.xlsx",
+      "dest": "bar_combo_chart_with_helper_gt.xlsx"
     }
   },
   "proxy": false,

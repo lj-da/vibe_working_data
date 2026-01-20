@@ -81,8 +81,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1cfa0b6e-8113-4c7a-9731-fec45ebbd400/welfare_distribution_registration_form.xlsx",
-      "dest": "welfare_distribution_registration_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1cfa0b6e-8113-4c7a-9731-fec45ebbd400/welfare_distribution_registration_form_gt.xlsx",
+      "dest": "welfare_distribution_registration_form_gt.xlsx"
     }
   },
   "proxy": false,

@@ -73,8 +73,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7c07ae66-bcda-45c8-a438-b89b856873dc/combination_chart_trendline.xlsx",
-      "dest": "combination_chart_trendline.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/7c07ae66-bcda-45c8-a438-b89b856873dc/combination_chart_trendline_gt.xlsx",
+      "dest": "combination_chart_trendline_gt.xlsx"
     }
   },
   "proxy": false,

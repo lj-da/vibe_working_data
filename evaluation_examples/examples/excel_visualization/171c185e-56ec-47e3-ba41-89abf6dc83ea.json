@@ -64,12 +64,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/171c185e-56ec-47e3-ba41-89abf6dc83ea/butterfly_chart_axis_format.xlsx",
-      "dest": "butterfly_chart_axis_format.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/171c185e-56ec-47e3-ba41-89abf6dc83ea/butterfly_chart_axis_format_gt.xlsx",
+      "dest": "butterfly_chart_axis_format_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

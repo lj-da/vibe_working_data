@@ -63,16 +63,18 @@
       "sheet_idx": 0,
       "data_bar_column": "I",
       "sparkline_column": "J",
-      "slicer_names": ["地区", "产品"]
+      "slicer_names": [
+        "地区",
+        "产品"
+      ]
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/286d3e2d-e4c3-4039-b851-471d5cc21a7e/visualization_table.xlsx",
-      "dest": "visualization_table.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/286d3e2d-e4c3-4039-b851-471d5cc21a7e/visualization_table_gt.xlsx",
+      "dest": "visualization_table_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

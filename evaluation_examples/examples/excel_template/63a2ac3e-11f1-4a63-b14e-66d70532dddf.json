@@ -111,8 +111,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/63a2ac3e-11f1-4a63-b14e-66d70532dddf/employee_performance_plan.xlsx",
-      "dest": "employee_performance_plan.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/63a2ac3e-11f1-4a63-b14e-66d70532dddf/employee_performance_plan_gt.xlsx",
+      "dest": "employee_performance_plan_gt.xlsx"
     }
   },
   "proxy": false,

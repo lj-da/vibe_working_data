@@ -70,8 +70,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/481e2f52-de7f-489d-b9d1-a1cfe149b0c1/pie_scatter_position.xlsx",
-      "dest": "pie_scatter_position.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/481e2f52-de7f-489d-b9d1-a1cfe149b0c1/pie_scatter_position_gt.xlsx",
+      "dest": "pie_scatter_position_gt.xlsx"
     }
   },
   "proxy": false,

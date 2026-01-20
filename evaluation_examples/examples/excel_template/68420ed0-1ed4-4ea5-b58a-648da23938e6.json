@@ -95,8 +95,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/68420ed0-1ed4-4ea5-b58a-648da23938e6/loan_interest_calculation.xlsx",
-      "dest": "loan_interest_calculation.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/68420ed0-1ed4-4ea5-b58a-648da23938e6/loan_interest_calculation_gt.xlsx",
+      "dest": "loan_interest_calculation_gt.xlsx"
     }
   },
   "proxy": false,

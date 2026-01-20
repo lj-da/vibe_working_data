@@ -72,8 +72,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/94278b55-b6ab-41f2-b8c2-da20ca9b6d9c/scatter_chart_secondary_axis_ticks.xlsx",
-      "dest": "scatter_chart_secondary_axis_ticks.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/94278b55-b6ab-41f2-b8c2-da20ca9b6d9c/scatter_chart_secondary_axis_ticks_gt.xlsx",
+      "dest": "scatter_chart_secondary_axis_ticks_gt.xlsx"
     }
   },
   "proxy": false,

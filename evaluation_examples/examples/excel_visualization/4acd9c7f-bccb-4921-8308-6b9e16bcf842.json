@@ -68,12 +68,11 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4acd9c7f-bccb-4921-8308-6b9e16bcf842/stacked_bar_chart.xlsx",
-      "dest": "stacked_bar_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/4acd9c7f-bccb-4921-8308-6b9e16bcf842/stacked_bar_chart_gt.xlsx",
+      "dest": "stacked_bar_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

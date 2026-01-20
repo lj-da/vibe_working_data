@@ -86,8 +86,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/853ad362-adc2-4642-b6e6-7e148180f314/ecommerce_investment_return_detail_table.xlsx",
-      "dest": "ecommerce_investment_return_detail_table.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/853ad362-adc2-4642-b6e6-7e148180f314/ecommerce_investment_return_detail_table_gt.xlsx",
+      "dest": "ecommerce_investment_return_detail_table_gt.xlsx"
     }
   },
   "proxy": false,

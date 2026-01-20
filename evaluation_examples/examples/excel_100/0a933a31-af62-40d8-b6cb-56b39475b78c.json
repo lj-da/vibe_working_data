@@ -79,18 +79,24 @@
       "check_range": "L1:M4",
       "source_range": "$A$1:$D$4",
       "target_range": "$G$1:$J$4",
-      "expected_functions": ["IFERROR", "INDEX", "SMALL", "IF", "ROW", "COLUMN"],
+      "expected_functions": [
+        "IFERROR",
+        "INDEX",
+        "SMALL",
+        "IF",
+        "ROW",
+        "COLUMN"
+      ],
       "condition_value": 0,
       "position_encoding_multiplier": 10
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0a933a31-af62-40d8-b6cb-56b39475b78c/iferror_index_small_position_mapping.xlsx",
-      "dest": "iferror_index_small_position_mapping.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/0a933a31-af62-40d8-b6cb-56b39475b78c/iferror_index_small_position_mapping_gt.xlsx",
+      "dest": "iferror_index_small_position_mapping_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

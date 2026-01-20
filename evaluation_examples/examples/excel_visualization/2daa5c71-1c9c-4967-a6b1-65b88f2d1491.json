@@ -61,16 +61,21 @@
     },
     "options": {
       "sheet_idx": 0,
-      "expected_legend_order": ["辅助1", "男性", "标签", "女性", "辅助2"]
+      "expected_legend_order": [
+        "辅助1",
+        "男性",
+        "标签",
+        "女性",
+        "辅助2"
+      ]
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2daa5c71-1c9c-4967-a6b1-65b88f2d1491/butterfly_chart.xlsx",
-      "dest": "butterfly_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/2daa5c71-1c9c-4967-a6b1-65b88f2d1491/butterfly_chart_gt.xlsx",
+      "dest": "butterfly_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

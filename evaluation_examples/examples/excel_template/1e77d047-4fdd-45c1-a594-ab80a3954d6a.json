@@ -131,8 +131,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1e77d047-4fdd-45c1-a594-ab80a3954d6a/interview_record_form.xlsx",
-      "dest": "interview_record_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/1e77d047-4fdd-45c1-a594-ab80a3954d6a/interview_record_form_gt.xlsx",
+      "dest": "interview_record_form_gt.xlsx"
     }
   },
   "proxy": false,

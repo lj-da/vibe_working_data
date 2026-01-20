@@ -118,8 +118,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3161f220-de31-4629-9661-8290a14cc30d/employee_onboarding_form.xlsx",
-      "dest": "employee_onboarding_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/3161f220-de31-4629-9661-8290a14cc30d/employee_onboarding_form_gt.xlsx",
+      "dest": "employee_onboarding_form_gt.xlsx"
     }
   },
   "proxy": false,

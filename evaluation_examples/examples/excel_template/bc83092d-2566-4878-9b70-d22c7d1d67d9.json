@@ -86,8 +86,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bc83092d-2566-4878-9b70-d22c7d1d67d9/class_schedule.xlsx",
-      "dest": "class_schedule.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/bc83092d-2566-4878-9b70-d22c7d1d67d9/class_schedule_gt.xlsx",
+      "dest": "class_schedule_gt.xlsx"
     }
   },
   "proxy": false,

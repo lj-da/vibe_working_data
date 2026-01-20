@@ -61,18 +61,26 @@
     },
     "options": {
       "sheet_idx": 0,
-      "named_range_names": ["Cycle1", "Cycle2", "Cycle3"],
+      "named_range_names": [
+        "Cycle1",
+        "Cycle2",
+        "Cycle3"
+      ],
       "dropdown_cell": "L2",
-      "expected_dropdown_values": ["All", "Cycle1", "Cycle2", "Cycle3"]
+      "expected_dropdown_values": [
+        "All",
+        "Cycle1",
+        "Cycle2",
+        "Cycle3"
+      ]
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5f5bc31d-24a4-458c-90df-36623a3af0eb/dynamic_chart.xlsx",
-      "dest": "dynamic_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/5f5bc31d-24a4-458c-90df-36623a3af0eb/dynamic_chart_gt.xlsx",
+      "dest": "dynamic_chart_gt.xlsx"
     }
   },
   "proxy": false,
   "fixed_ip": false,
   "possibility_of_env_change": "low"
 }
-

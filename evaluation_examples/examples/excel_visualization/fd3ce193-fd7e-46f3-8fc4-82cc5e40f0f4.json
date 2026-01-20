@@ -71,14 +71,19 @@
     },
     "options": {
       "source_range": "A1:D15",
-      "row_fields": ["部门", "姓名"],
-      "data_fields": ["销售额"],
+      "row_fields": [
+        "部门",
+        "姓名"
+      ],
+      "data_fields": [
+        "销售额"
+      ],
       "data_field_aggregation": "sum"
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fd3ce193-fd7e-46f3-8fc4-82cc5e40f0f4/pivot_table_chart.xlsx",
-      "dest": "pivot_table_chart.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/fd3ce193-fd7e-46f3-8fc4-82cc5e40f0f4/pivot_table_chart_gt.xlsx",
+      "dest": "pivot_table_chart_gt.xlsx"
     }
   },
   "proxy": false,

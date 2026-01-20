@@ -80,8 +80,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/aab0b54d-c616-45bb-8b7a-6062d87916f0/payment_receipt_numbering.xlsx",
-      "dest": "payment_receipt_numbering.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/aab0b54d-c616-45bb-8b7a-6062d87916f0/payment_receipt_numbering_gt.xlsx",
+      "dest": "payment_receipt_numbering_gt.xlsx"
     }
   },
   "proxy": false,

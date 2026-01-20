@@ -89,8 +89,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/67fcc126-d178-44a9-8f47-8487e13aa2e4/value_sort_column.xlsx",
-      "dest": "value_sort_column.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/67fcc126-d178-44a9-8f47-8487e13aa2e4/value_sort_column_gt.xlsx",
+      "dest": "value_sort_column_gt.xlsx"
     }
   },
   "proxy": false,

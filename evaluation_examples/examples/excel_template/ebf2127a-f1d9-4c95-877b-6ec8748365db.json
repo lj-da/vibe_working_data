@@ -112,8 +112,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ebf2127a-f1d9-4c95-877b-6ec8748365db/inventory_analysis_table.xlsx",
-      "dest": "inventory_analysis_table.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/ebf2127a-f1d9-4c95-877b-6ec8748365db/inventory_analysis_table_gt.xlsx",
+      "dest": "inventory_analysis_table_gt.xlsx"
     }
   },
   "proxy": false,

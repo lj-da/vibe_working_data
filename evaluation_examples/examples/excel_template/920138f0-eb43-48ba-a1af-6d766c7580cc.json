@@ -98,8 +98,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/920138f0-eb43-48ba-a1af-6d766c7580cc/payment_reconciliation_template.xlsx",
-      "dest": "payment_reconciliation_template.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/920138f0-eb43-48ba-a1af-6d766c7580cc/payment_reconciliation_template_gt.xlsx",
+      "dest": "payment_reconciliation_template_gt.xlsx"
     }
   },
   "proxy": false,

@@ -81,8 +81,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/388f81fe-0955-43df-b910-15f77d50277f/inventory_count.xlsx",
-      "dest": "inventory_count.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/388f81fe-0955-43df-b910-15f77d50277f/inventory_count_gt.xlsx",
+      "dest": "inventory_count_gt.xlsx"
     }
   },
   "proxy": false,

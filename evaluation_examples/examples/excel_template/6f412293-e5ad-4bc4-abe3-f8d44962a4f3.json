@@ -106,8 +106,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6f412293-e5ad-4bc4-abe3-f8d44962a4f3/employee_resignation_form.xlsx",
-      "dest": "employee_resignation_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/6f412293-e5ad-4bc4-abe3-f8d44962a4f3/employee_resignation_form_gt.xlsx",
+      "dest": "employee_resignation_form_gt.xlsx"
     }
   },
   "proxy": false,

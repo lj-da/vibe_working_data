@@ -127,8 +127,8 @@
     },
     "expected": {
       "type": "cloud_file",
-      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/36704c94-f47c-4367-bc7f-fe4521e5efcf/consumer_survey_form.xlsx",
-      "dest": "consumer_survey_form.xlsx"
+      "path": "https://huggingface.co/datasets/LJ-HX/vibe_working_data/resolve/main/cache/36704c94-f47c-4367-bc7f-fe4521e5efcf/consumer_survey_form_gt.xlsx",
+      "dest": "consumer_survey_form_gt.xlsx"
     }
   },
   "proxy": false,
