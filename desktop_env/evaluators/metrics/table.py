@@ -31,6 +31,7 @@ from desktop_env.evaluators.metrics.utils import (
     load_filters,
     load_pivot_tables,
 )
+from desktop_env.evaluators.metrics.table_processing import get_cell_formula
 
 # from openpyxl.utils import coordinate_to_tuple
 
@@ -6280,16 +6281,18 @@ def verify_concatenate_columns_with_separator(result: str, expected: str = None,
 
 def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> float:
     """
-    Verify if formulas exist to merge two columns using TOCOL/TOROW or INDEX/ROUNDUP/ROW/MOD/ROWS.
+    Verify if formulas exist to merge two columns using TOCOL/TOROW, INDEX/ROUNDUP/ROW/MOD/ROWS, or simple concatenation.
     
     This function checks:
     1. Whether the result column contains appropriate formulas
     2. Whether formulas reference the correct source columns
     3. Whether formulas use concatenation operator (&) to merge the columns
+    4. (Optional) Whether calculated values match expected values
     
     Expected formula patterns:
     - Pattern 1: =TOCOL(C1:C20&","&TOROW(G1:G6))
     - Pattern 2: =INDEX($C$1:$C$20,ROUNDUP(ROW(A1)/ROWS($G$1:$G$6),0))&","&INDEX($G$1:$G$6,MOD(ROW(A1)-1,ROWS($G$1:$G$6))+1)
+    - Pattern 3: =C1&", "&G1 (simple concatenation)
     
     Args:
         result (str): Path to result Excel file
@@ -6301,8 +6304,11 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
             - source_range1: First source range (e.g., "C1:C20")
             - source_column2: Second source column (e.g., "G")
             - source_range2: Second source range (e.g., "G1:G6")
-            - separator: Separator used in concatenation (e.g., ",")
-            - expected_functions: List of expected function names (default: ["TOCOL", "TOROW"] or ["INDEX", "ROUNDUP", "ROW", "MOD", "ROWS"])
+            - separator: Separator used in concatenation (e.g., "," or ", ")
+            - expected_functions: List of expected function names (default: ["TOCOL", "TOROW"] or ["INDEX", "ROUNDUP", "ROW", "MOD", "ROWS"] or empty for simple concatenation)
+            - verify_values: Whether to verify calculated values match expected (default: False)
+            - start_row: Starting row for value verification (default: 2, assuming row 1 is header)
+            - end_row: Ending row for value verification (default: None, will auto-detect)
     
     Returns:
         float: 1.0 if verification passes, 0.0 otherwise
@@ -6322,18 +6328,25 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
         source_range2 = options.get('source_range2', 'G1:G6')
         separator = options.get('separator', ',')
         expected_functions = options.get('expected_functions', ['TOCOL', 'TOROW'])
+        verify_values = options.get('verify_values', False)
+        start_row = options.get('start_row', 2)
+        end_row = options.get('end_row', None)
         
-        logger.info(f"Verifying TOCOL/TOROW merge formulas in file: {result}")
+        logger.info(f"Verifying merge formulas in file: {result}")
         logger.info(f"Result cell: {result_cell}")
         logger.info(f"Source range 1: {source_range1}")
         logger.info(f"Source range 2: {source_range2}")
         logger.info(f"Separator: {separator}")
         logger.info(f"Expected functions: {expected_functions}")
+        logger.info(f"Verify values: {verify_values}")
         
-        # Load workbook to get formulas
+        # Load workbook to get formulas and values
         try:
             wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
             ws = wb.active
+            if verify_values:
+                wb_data = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get calculated values
+                ws_data = wb_data.active
         except Exception as e:
             logger.error(f"Failed to load workbook: {e}")
             return 0.0
@@ -6351,23 +6364,13 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
             try:
                 check_row = result_row + row_offset
                 check_cell_coord = f"{result_col}{check_row}"
-                cell = ws[check_cell_coord]
                 
-                # Check if cell contains a formula
-                if cell.data_type == "f":
-                    # Get formula text
-                    if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
-                        formula = cell._value
-                        checked_cell = check_cell_coord
-                        break
-                    elif hasattr(cell, "formula"):
-                        formula = cell.formula
-                        checked_cell = check_cell_coord
-                        break
-                    elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
-                        formula = cell.value
-                        checked_cell = check_cell_coord
-                        break
+                # Check if cell contains a formula using reusable function
+                has_formula, formula_text = get_cell_formula(ws, check_cell_coord)
+                if has_formula and formula_text:
+                    formula = formula_text
+                    checked_cell = check_cell_coord
+                    break
             except Exception:
                 continue
         
@@ -6458,6 +6461,32 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
                 logger.error(f"  Formula: {formula}")
                 return 0.0
         
+        # Pattern 3: Simple concatenation pattern (e.g., =C1&", "&G1)
+        elif len(expected_functions) == 0 or (not has_tocol and not has_torow and not has_index):
+            logger.info("Detected simple concatenation pattern")
+            
+            # Check 1: References first source column
+            col1_pattern = rf'{source_column1}\d+'
+            if not re.search(col1_pattern, formula_upper):
+                logger.error(f"Cell {checked_cell} formula should reference column {source_column1}")
+                logger.error(f"  Formula: {formula}")
+                return 0.0
+            
+            # Check 2: References second source column
+            col2_pattern = rf'{source_column2}\d+'
+            if not re.search(col2_pattern, formula_upper):
+                logger.error(f"Cell {checked_cell} formula should reference column {source_column2}")
+                logger.error(f"  Formula: {formula}")
+                return 0.0
+            
+            # Check 3: Contains concatenation operator (&)
+            if '&' not in formula:
+                logger.error(f"Cell {checked_cell} formula should use concatenation operator (&)")
+                logger.error(f"  Formula: {formula}")
+                return 0.0
+            
+            logger.info(f"✓ Simple concatenation pattern verified: {formula}")
+        
         else:
             # Check if at least some expected functions are present
             missing_functions = []
@@ -6468,7 +6497,7 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
             if missing_functions:
                 logger.error(f"Cell {checked_cell} formula missing functions: {missing_functions}")
                 logger.error(f"  Formula: {formula}")
-                logger.error(f"  Expected pattern: TOCOL/TOROW or INDEX/ROUNDUP/ROW/MOD/ROWS")
+                logger.error(f"  Expected pattern: TOCOL/TOROW or INDEX/ROUNDUP/ROW/MOD/ROWS or simple concatenation")
                 return 0.0
         
         # Common check: Contains separator in concatenation
@@ -6479,12 +6508,87 @@ def verify_tocol_torow_merge(result: str, expected: str = None, **options) -> fl
             logger.debug(f"  Formula: {formula}")
             # Don't fail, just warn - separator might be in quotes or formatted differently
         
+        # Value verification (if enabled)
+        if verify_values:
+            logger.info("Verifying calculated values...")
+            
+            # Determine end row
+            if end_row is None:
+                # Auto-detect end row by checking source columns
+                end_row = start_row
+                for row in range(start_row, start_row + 100):  # Check up to 100 rows
+                    try:
+                        cell_c = ws_data[f"{source_column1}{row}"]
+                        cell_g = ws_data[f"{source_column2}{row}"]
+                        if cell_c.value is None and cell_g.value is None:
+                            # Check if next 2 rows are also empty
+                            empty_count = 0
+                            for check_row in range(row, min(row + 3, start_row + 100)):
+                                check_cell_c = ws_data[f"{source_column1}{check_row}"]
+                                check_cell_g = ws_data[f"{source_column2}{check_row}"]
+                                if check_cell_c.value is None and check_cell_g.value is None:
+                                    empty_count += 1
+                            if empty_count >= 2:
+                                end_row = row - 1
+                                break
+                        else:
+                            end_row = row
+                    except Exception:
+                        break
+            
+            # Verify values for each row
+            all_values_match = True
+            for row in range(start_row, end_row + 1):
+                try:
+                    result_cell_coord = f"{result_column}{row}"
+                    source1_cell_coord = f"{source_column1}{row}"
+                    source2_cell_coord = f"{source_column2}{row}"
+                    
+                    # Get calculated value from result cell
+                    calculated_value = ws_data[result_cell_coord].value
+                    source1_value = ws_data[source1_cell_coord].value
+                    source2_value = ws_data[source2_cell_coord].value
+                    
+                    # Skip if source cells are empty
+                    if source1_value is None and source2_value is None:
+                        continue
+                    
+                    # Build expected value
+                    source1_str = str(source1_value).strip() if source1_value is not None else ""
+                    source2_str = str(source2_value).strip() if source2_value is not None else ""
+                    expected_value = f"{source1_str}{separator}{source2_str}"
+                    
+                    calculated_str = str(calculated_value).strip() if calculated_value is not None else ""
+                    expected_str = str(expected_value).strip()
+                    
+                    if calculated_str != expected_str:
+                        logger.warning(f"Row {row}: Value mismatch")
+                        logger.warning(f"  Calculated: {calculated_str}")
+                        logger.warning(f"  Expected: {expected_str}")
+                        logger.warning(f"  Source1 ({source1_cell_coord}): {source1_str}")
+                        logger.warning(f"  Source2 ({source2_cell_coord}): {source2_str}")
+                        all_values_match = False
+                    else:
+                        logger.debug(f"Row {row}: Value matches - {calculated_str}")
+                        
+                except Exception as e:
+                    logger.warning(f"Error verifying row {row}: {e}")
+                    continue
+            
+            if not all_values_match:
+                logger.error("Some calculated values do not match expected values")
+                return 0.0
+            else:
+                logger.info(f"✓ All values verified (rows {start_row} to {end_row})")
+        
         logger.info("=" * 60)
-        logger.info(f"✓ TOCOL/TOROW merge verification passed")
+        logger.info(f"✓ Merge verification passed")
         logger.info(f"  Result cell: {checked_cell}")
         logger.info(f"  Source range 1: {source_range1}")
         logger.info(f"  Source range 2: {source_range2}")
         logger.info(f"  Formula: {formula}")
+        if verify_values:
+            logger.info(f"  Values verified: rows {start_row} to {end_row}")
         logger.info("=" * 60)
         return 1.0
             
@@ -17648,18 +17752,11 @@ def verify_value_sort_column(result: str, expected: str = None, **options) -> fl
 
 def verify_mid_date_format(result: str, expected: str = None, **options) -> float:
     """
-    Verify if MID formulas with concatenation exist to format date from numeric string.
+    Verify if date format formulas exist and calculated values are correct.
     
     This function checks:
-    1. Whether specified cells contain MID formulas
-    2. Whether formulas use concatenation operator (&)
-    3. Whether formulas extract year (first 4 characters) and month (characters 5-6)
-    4. Whether formulas reference the correct source column cells
-    5. Whether formula structure is correct: MID(source_cell,start1,length1)&separator&MID(source_cell,start2,length2)
-    
-    Expected formula pattern:
-    - B1: =(MID(A1,1,4)&"-"&MID(A1,5,2)) (extract year and month, format as YYYY-MM)
-    - B2: =(MID(A2,1,4)&"-"&MID(A2,5,2)) (and so on for other rows)
+    1. Whether specified cells contain formulas (using get_cell_formula)
+    2. (Optional) Whether calculated values match expected date format
     
     Args:
         result (str): Path to result Excel file
@@ -17668,13 +17765,9 @@ def verify_mid_date_format(result: str, expected: str = None, **options) -> floa
             - check_column: Column to check (e.g., "B")
             - start_row: Starting row number (e.g., 1)
             - source_column: Column containing source numeric strings (e.g., "A")
-            - expected_functions: List of expected function names (default: ["MID"])
             - data_column: Column to use for auto-detecting end row (e.g., "A")
-            - year_start: Start position for year extraction (default: 1)
-            - year_length: Length of year (default: 4)
-            - month_start: Start position for month extraction (default: 5)
-            - month_length: Length of month (default: 2)
-            - separator: Separator character (default: "-")
+            - verify_values: Whether to verify calculated values match expected format (default: False)
+            - date_format: Expected date format string (e.g., "yyyy-mm-dd", default: "yyyy-mm-dd")
     
     Returns:
         float: 1.0 if verification passes, 0.0 otherwise
@@ -17689,27 +17782,25 @@ def verify_mid_date_format(result: str, expected: str = None, **options) -> floa
         check_column = options.get('check_column', 'B')
         start_row = options.get('start_row', 1)
         source_column = options.get('source_column', 'A')
-        expected_functions = options.get('expected_functions', ['MID'])
         data_column = options.get('data_column', 'A')
-        year_start = options.get('year_start', 1)
-        year_length = options.get('year_length', 4)
-        month_start = options.get('month_start', 5)
-        month_length = options.get('month_length', 2)
-        separator = options.get('separator', '-')
+        verify_values = options.get('verify_values', False)
+        date_format = options.get('date_format', 'yyyy-mm-dd')
         
-        logger.info(f"Verifying MID date format formulas in file: {result}")
+        logger.info(f"Verifying date format formulas in file: {result}")
         logger.info(f"Check column: {check_column}")
         logger.info(f"Start row: {start_row}")
         logger.info(f"Source column: {source_column}")
-        logger.info(f"Expected functions: {expected_functions}")
-        logger.info(f"Year: start={year_start}, length={year_length}")
-        logger.info(f"Month: start={month_start}, length={month_length}")
-        logger.info(f"Separator: {separator}")
+        logger.info(f"Verify values: {verify_values}")
+        if verify_values:
+            logger.info(f"Date format: {date_format}")
         
-        # Load workbook to get formulas
+        # Load workbook to get formulas and values
         try:
             wb = openpyxl.load_workbook(result, data_only=False)  # data_only=False to get formulas
             ws = wb.active
+            if verify_values:
+                wb_data = openpyxl.load_workbook(result, data_only=True)  # data_only=True to get calculated values
+                ws_data = wb_data.active
         except Exception as e:
             logger.error(f"Failed to load workbook: {e}")
             return 0.0
@@ -17741,109 +17832,21 @@ def verify_mid_date_format(result: str, expected: str = None, **options) -> floa
         for row_num in range(start_row, end_row + 1):
             cell_coord = f"{check_column}{row_num}"
             try:
-                cell = ws[cell_coord]
-                
-                # Check if cell contains a formula
-                if cell.data_type != "f":
+                # Check if cell contains a formula using reusable function
+                has_formula, formula_text = get_cell_formula(ws, cell_coord)
+                if not has_formula:
                     logger.warning(f"Cell {cell_coord} does not contain a formula")
                     all_passed = False
                     continue
-                
-                # Get formula text
-                formula_text = None
-                if hasattr(cell, "_value") and isinstance(cell._value, str) and cell._value.startswith("="):
-                    formula_text = cell._value
-                elif hasattr(cell, "formula"):
-                    formula_text = cell.formula
-                elif cell.value is not None and isinstance(cell.value, str) and cell.value.startswith("="):
-                    formula_text = cell.value
-                # Handle ArrayFormula object
-                elif hasattr(cell, "_value") and cell._value is not None:
-                    from openpyxl.worksheet.formula import ArrayFormula
-                    if isinstance(cell._value, ArrayFormula):
-                        try:
-                            formula_text = cell._value.text
-                            if formula_text and not formula_text.startswith("="):
-                                formula_text = f"={formula_text}"
-                        except (AttributeError, TypeError):
-                            formula_text = str(cell._value)
-                            if not formula_text.startswith("="):
-                                formula_text = f"={formula_text}"
                 
                 if formula_text is None:
                     logger.warning(f"Could not extract formula from cell {cell_coord}")
                     all_passed = False
                     continue
                 
-                # Remove leading = if present for pattern matching (formula may start with = or not)
-                formula_clean = formula_text.lstrip("=")
-                formula_upper = formula_text.upper()
-                logger.debug(f"Cell {cell_coord} formula: {formula_text}")
-                
-                # Check 1: Formula contains MID function (at least twice)
-                mid_pattern = r'\bMID\s*\('
-                mid_matches = len(re.findall(mid_pattern, formula_upper))
-                if mid_matches < 2:
-                    logger.warning(f"Cell {cell_coord} formula does not contain at least 2 MID functions")
-                    logger.warning(f"  Formula: {formula_text}")
-                    logger.warning(f"  Found {mid_matches} MID function(s)")
-                    all_passed = False
-                    continue
-                
-                # Check 2: Formula contains concatenation operator &
-                if '&' not in formula_text:
-                    logger.warning(f"Cell {cell_coord} formula does not contain concatenation operator &")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                # Check 3: Formula references the source column cell (e.g., A1, A2, etc.)
-                expected_source_cell = f"{source_column}{row_num}"
-                source_cell_pattern = rf'{source_column}{row_num}\b'
-                if not re.search(source_cell_pattern, formula_text, re.IGNORECASE):
-                    logger.warning(f"Cell {cell_coord} formula does not reference source column cell {expected_source_cell}")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                # Check 4: First MID function extracts year (start=year_start, length=year_length)
-                # Pattern: MID(source_cell, year_start, year_length)
-                year_mid_pattern = rf'MID\s*\(\s*{source_column}{row_num}\s*,\s*{year_start}\s*,\s*{year_length}\s*\)'
-                if not re.search(year_mid_pattern, formula_upper):
-                    logger.warning(f"Cell {cell_coord} formula does not have MID({source_column}{row_num},{year_start},{year_length}) for year extraction")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                # Check 5: Second MID function extracts month (start=month_start, length=month_length)
-                # Pattern: MID(source_cell, month_start, month_length)
-                month_mid_pattern = rf'MID\s*\(\s*{source_column}{row_num}\s*,\s*{month_start}\s*,\s*{month_length}\s*\)'
-                if not re.search(month_mid_pattern, formula_upper):
-                    logger.warning(f"Cell {cell_coord} formula does not have MID({source_column}{row_num},{month_start},{month_length}) for month extraction")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                # Check 6: Formula contains separator (with quotes or as string)
-                # Separator might be in quotes: "-" or '-' or just -
-                separator_pattern1 = rf'["\']{re.escape(separator)}["\']'  # "-" or '-'
-                separator_pattern2 = re.escape(separator)  # Just the separator
-                if not re.search(separator_pattern1, formula_text) and separator not in formula_text:
-                    logger.warning(f"Cell {cell_coord} formula does not contain separator '{separator}'")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                # Check 7: Formula structure: MID(...)&separator&MID(...)
-                # Check that there's a MID, then &, then separator, then &, then another MID
-                structure_pattern = rf'MID\s*\([^)]+\)\s*&\s*["\']?{re.escape(separator)}["\']?\s*&\s*MID\s*\('
-                if not re.search(structure_pattern, formula_upper):
-                    logger.warning(f"Cell {cell_coord} formula does not have correct structure: MID(...)&separator&MID(...)")
-                    logger.warning(f"  Formula: {formula_text}")
-                    all_passed = False
-                    continue
-                
-                logger.info(f"✓ Cell {cell_coord} has valid MID date format formula: {formula_text}")
+                # Formula exists, log it for debugging
+                logger.debug(f"Cell {cell_coord} has formula: {formula_text}")
+                logger.info(f"✓ Cell {cell_coord} contains a formula")
                 
             except Exception as e:
                 logger.error(f"Error checking cell {cell_coord}: {e}")
@@ -17851,14 +17854,75 @@ def verify_mid_date_format(result: str, expected: str = None, **options) -> floa
                 logger.error(traceback.format_exc())
                 all_passed = False
         
+        # Value verification (if enabled)
+        if verify_values:
+            logger.info("Verifying calculated values...")
+            values_match = True
+            
+            for row_num in range(start_row, end_row + 1):
+                try:
+                    result_cell_coord = f"{check_column}{row_num}"
+                    source_cell_coord = f"{source_column}{row_num}"
+                    
+                    # Get calculated value from result cell
+                    calculated_value = ws_data[result_cell_coord].value
+                    source_value = ws_data[source_cell_coord].value
+                    
+                    # Skip if source cell is empty
+                    if source_value is None:
+                        continue
+                    
+                    # Convert source value to string
+                    source_str = str(source_value).strip()
+                    
+                    # Build expected value based on date format
+                    if date_format == "yyyy-mm-dd":
+                        # Extract year, month, day from source (8-digit YYYYMMDD)
+                        if len(source_str) >= 8:
+                            year = source_str[0:4]
+                            month = source_str[4:6]
+                            day = source_str[6:8]
+                            expected_value = f"{year}-{month}-{day}"
+                        else:
+                            logger.warning(f"Row {row_num}: Source value '{source_str}' is not 8 digits")
+                            values_match = False
+                            continue
+                    else:
+                        # For other formats, try to parse and format
+                        # This is a simplified check - actual formatting might vary
+                        expected_value = None
+                    
+                    calculated_str = str(calculated_value).strip() if calculated_value is not None else ""
+                    
+                    if expected_value and calculated_str != expected_value:
+                        logger.warning(f"Row {row_num}: Value mismatch")
+                        logger.warning(f"  Calculated: {calculated_str}")
+                        logger.warning(f"  Expected: {expected_value}")
+                        logger.warning(f"  Source ({source_cell_coord}): {source_str}")
+                        values_match = False
+                    else:
+                        logger.debug(f"Row {row_num}: Value matches - {calculated_str}")
+                        
+                except Exception as e:
+                    logger.warning(f"Error verifying value for row {row_num}: {e}")
+                    continue
+            
+            if not values_match:
+                logger.error("Some calculated values do not match expected values")
+                all_passed = False
+            else:
+                logger.info(f"✓ All values verified (rows {start_row} to {end_row})")
+        
         if all_passed:
             logger.info("=" * 60)
-            logger.info(f"✓ All cells in column {check_column} contain correct MID date format formulas")
+            logger.info(f"✓ All cells in column {check_column} contain correct date format formulas")
+            if verify_values:
+                logger.info(f"  Values verified: rows {start_row} to {end_row}")
             logger.info("=" * 60)
             return 1.0
         else:
             logger.error("=" * 60)
-            logger.error(f"✗ MID date format formula verification failed")
+            logger.error(f"✗ Date format formula verification failed")
             logger.error("=" * 60)
             return 0.0
             

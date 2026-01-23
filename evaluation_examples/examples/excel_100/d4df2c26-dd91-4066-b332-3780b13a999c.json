@@ -2,7 +2,7 @@
   "id": "d4df2c26-dd91-4066-b332-3780b13a999c",
   "snapshot": "libreoffice_calc",
   "instruction": "怎样把数值变成日期显示",
-  "method": "使用MID函数结合连接符&来将8位数字（YYYYMMDD格式）转换为YYYY-MM格式的日期显示。第一步：在B1单元格中输入公式=(MID(A1,1,4)&\"-\"&MID(A1,5,2))，将A1单元格中的8位数字转换为YYYY-MM格式。公式的工作原理：MID(A1,1,4)从A1的第1个字符开始提取4个字符，即年份（如2010）；MID(A1,5,2)从A1的第5个字符开始提取2个字符，即月份（如03）；然后使用&连接符将年份、连字符\"-\"和月份连接起来，生成\"2010-03\"格式的日期显示。第二步：将B1的公式向下复制到其他行（如B2、B3等），相对引用会自动调整（A1变为A2、A3等），确保每行都能从对应的A列单元格提取年份和月份。这样就能将A列中的8位数字（如20100308）转换为B列中的YYYY-MM格式（如2010-03）。",
+  "method": "使用TEXT、DATE、LEFT、MID和RIGHT函数将8位数字（YYYYMMDD格式）转换为YYYY-MM-DD格式的日期显示。第一步：在B1单元格中输入公式=TEXT(DATE(LEFT(A1,4),MID(A1,5,2),RIGHT(A1,2)),\"yyyy-mm-dd\")，将A1单元格中的8位数字转换为标准日期格式。公式的工作原理：LEFT(A1,4)从A1的左侧提取4个字符，即年份（如2010）；MID(A1,5,2)从A1的第5个字符开始提取2个字符，即月份（如03）；RIGHT(A1,2)从A1的右侧提取2个字符，即日期（如08）；DATE函数将年、月、日组合成日期值；TEXT函数将日期值格式化为\"yyyy-mm-dd\"格式的字符串（如\"2010-03-08\"）。第二步：将B1的公式向下复制到其他行（如B2、B3等），相对引用会自动调整（A1变为A2、A3等），确保每行都能从对应的A列单元格提取完整的日期信息并格式化。这样就能将A列中的8位数字（如20100308）转换为B列中的标准日期格式（如2010-03-08）。",
   "source": "original",
   "config": [
     {
@@ -11,7 +11,7 @@
         "command": [
           "bash",
           "-c",
-          "cat > /home/user/Desktop/formula.txt << 'EOF'\nB1=(MID(A1,1,4)&\"-\"&MID(A1,5,2))\nEOF"
+          "cat > /home/user/Desktop/formula.txt << 'EOF'\nB1=TEXT(DATE(LEFT(A1,4),MID(A1,5,2),RIGHT(A1,2)),\"yyyy-mm-dd\")\nEOF"
         ]
       }
     },
@@ -79,15 +79,9 @@
       "check_column": "B",
       "start_row": 1,
       "source_column": "A",
-      "expected_functions": [
-        "MID"
-      ],
       "data_column": "A",
-      "year_start": 1,
-      "year_length": 4,
-      "month_start": 5,
-      "month_length": 2,
-      "separator": "-"
+      "verify_values": true,
+      "date_format": "yyyy-mm-dd"
     },
     "expected": {
       "type": "cloud_file",

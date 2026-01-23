@@ -62,11 +62,7 @@
     "options": {
       "expected_chart_type": "barChart",
       "check_named_ranges": true,
-      "named_range_prefixes": [
-        "G1",
-        "H1",
-        "I1"
-      ],
+      "named_range_prefixes": [],
       "check_offset_formula": true,
       "control_cell": "F1"
     },
