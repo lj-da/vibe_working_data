@@ -2738,8 +2738,9 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
     1. Whether the specified range (e.g., A2:B2) has conditional formatting
     2. Whether conditional formatting formula contains FIND function comparison: FIND(A1,"老赵，老钱，老孙，老李")>FIND(...)
     3. Whether formulas use relative references correctly (A2 references A1 and A2, B2 references A1 and B2)
-    4. Whether font color is red
-    5. Whether all specified cells have the correct conditional formatting
+    4. Whether font color matches expected (e.g., red)
+    5. Whether font bold matches expected (if specified)
+    6. Whether all specified cells have the correct conditional formatting
     
     Args:
         result (str): Path to result Excel file
@@ -2748,6 +2749,7 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
             - check_range: Range to check (e.g., "A2:B2")
             - formula_pattern: Expected formula pattern (default: 'FIND(A1,"老赵，老钱，老孙，老李")>FIND')
             - font_color: Expected font color (default: "red")
+            - font_bold: Whether font should be bold (default: False)
             - reference_string: Reference string used in FIND (default: "老赵，老钱，老孙，老李")
             - base_cell: Base cell reference (default: "A1")
     
@@ -2765,6 +2767,7 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
         check_range = options.get('check_range', 'A2:B2')
         formula_pattern = options.get('formula_pattern', 'FIND(A1,"老赵，老钱，老孙，老李")>FIND')
         font_color = options.get('font_color', 'red')
+        font_bold = options.get('font_bold', False)  # Default to False if not specified
         reference_string = options.get('reference_string', '老赵，老钱，老孙，老李')
         base_cell = options.get('base_cell', 'A1')
         
@@ -2772,6 +2775,7 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
         logger.info(f"Range to check: {check_range}")
         logger.info(f"Formula pattern: {formula_pattern}")
         logger.info(f"Font color: {font_color}")
+        logger.info(f"Font bold: {font_bold}")
         
         # Parse the range
         try:
@@ -2925,12 +2929,15 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
                     logger.debug(f"Formula does not reference base cell {base_cell}: {formula_text}")
                     continue
                 
-                # Check font color
+                # Check font color and bold
                 font_color_obj = None
+                font_bold_obj = None
                 if r.dxf and r.dxf.font:
                     try:
                         if r.dxf.font.color:
                             font_color_obj = r.dxf.font.color
+                        if hasattr(r.dxf.font, 'bold'):
+                            font_bold_obj = r.dxf.font.bold
                     except:
                         pass
                 
@@ -2943,12 +2950,19 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
                     logger.debug(f"Font color does not match expected {font_color}")
                     continue
                 
+                # Check if font bold matches (only check if font_bold is explicitly set to True)
+                if font_bold:
+                    if font_bold_obj is None or not font_bold_obj:
+                        logger.debug(f"Font bold does not match expected (expected bold, but got {font_bold_obj})")
+                        continue
+                
                 # Found matching condition
                 found_condition = True
                 condition_range_cells = fmt.cells
                 logger.info(f"✓ Found matching conditional formatting rule")
                 logger.info(f"  Formula: {formula_text}")
                 logger.info(f"  Font color: {font_color}")
+                logger.info(f"  Font bold: {font_bold}")
                 break
             
             if found_condition:
@@ -2957,7 +2971,8 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
         if not found_condition:
             logger.error("=" * 60)
             logger.error("✗ Conditional formatting rule not found")
-            logger.error(f"  Expected: FIND comparison formula with {font_color} font color")
+            bold_text = "bold " if font_bold else ""
+            logger.error(f"  Expected: FIND comparison formula with {bold_text}{font_color} font color")
             logger.error("=" * 60)
             return 0.0
         
@@ -3015,6 +3030,7 @@ def verify_find_compare_conditional_formatting(result: str, expected: str = None
             logger.info(f"  - Range: {check_range}")
             logger.info(f"  - Formula pattern: FIND({base_cell},...) > FIND(...)")
             logger.info(f"  - Font color: {font_color}")
+            logger.info(f"  - Font bold: {font_bold}")
             logger.info("=" * 60)
             return 1.0
         else:
@@ -8140,16 +8156,20 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
         
         sheet_idx = options.get('sheet_idx', 1)
         source_sheet = options.get('source_sheet', 'Sheet1')
+        expected_filter_fields = options.get('filter_fields', [])
         expected_row_fields = options.get('row_fields', [])
         expected_col_fields = options.get('col_fields', [])
         expected_data_fields = options.get('data_fields', [])
+        expected_chart_type = options.get('expected_chart_type', None)
         
         logger.info(f"Verifying pivot table with chart in file: {result}")
         logger.info(f"Sheet index: {sheet_idx}")
         logger.info(f"Source sheet: {source_sheet}")
+        logger.info(f"Expected filter fields: {expected_filter_fields}")
         logger.info(f"Expected row fields: {expected_row_fields}")
         logger.info(f"Expected column fields: {expected_col_fields}")
         logger.info(f"Expected data fields: {expected_data_fields}")
+        logger.info(f"Expected chart type: {expected_chart_type}")
         
         # Load workbook - use data_only=True and keep_links=False to avoid pivot cache issues
         wb = None
@@ -8262,7 +8282,7 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
         pivot_table_ok = False
         if wb is not None:
             try:
-                pivot_props = ["row_fields", "col_fields", "data_fields", "location"]
+                pivot_props = ["row_fields", "col_fields", "data_fields", "location", "filter"]
                 pivot_info = load_pivot_tables(wb, sheet_name, pivot_props=pivot_props)
                 
                 if pivot_info:
@@ -8270,9 +8290,34 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
                         logger.info(f"Checking pivot table with source: {source}")
                         
                         # Check if source sheet matches
-                        if source_sheet.lower() in source.lower():
-                            logger.info(f"✓ Pivot table source matches: {source}")
+                        if source_sheet.lower() not in source.lower():
+                            logger.debug(f"Pivot table source does not match, skipping: {source}")
+                            continue
                         
+                        logger.info(f"✓ Pivot table source matches: {source}")
+                        
+                        # Check filter fields
+                        filter_fields_match = True
+                        if expected_filter_fields is not None:
+                            filter_fields = info.get('filter_fields', set())
+                            logger.info(f"Pivot table filter fields (indices): {filter_fields}")
+                            if len(expected_filter_fields) == 0:
+                                if len(filter_fields) == 0:
+                                    logger.info("✓ Pivot table has no filter fields (as expected)")
+                                else:
+                                    logger.warning(f"Pivot table has filter fields {filter_fields}, but expected none")
+                                    filter_fields_match = False
+                            else:
+                                if len(filter_fields) > 0:
+                                    logger.info("✓ Pivot table has filter fields")
+                                else:
+                                    logger.warning("Pivot table has no filter fields, but expected some")
+                                    filter_fields_match = False
+                        
+                        if not filter_fields_match:
+                            logger.warning("Filter fields do not match, skipping this pivot table")
+                            continue
+                            
                         # Check row fields
                         if expected_row_fields:
                             row_fields = info.get('row_fields', [])
@@ -8321,6 +8366,7 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
         # Check if charts exist (pivot chart)
         logger.info("Checking for pivot chart...")
         chart_found = False
+        chart_type_ok = False
         
         # Try using openpyxl if available
         if ws is not None:
@@ -8420,6 +8466,93 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
         
         logger.info("✓ Chart found in the worksheet")
         
+        # Check chart type if expected_chart_type is specified
+        if expected_chart_type:
+            logger.info(f"Checking chart type: expected '{expected_chart_type}'...")
+            chart_type_ok = False
+            
+            # Check chart type via XML parsing (more reliable)
+            try:
+                import zipfile
+                with zipfile.ZipFile(result, 'r') as z_f:
+                    chart_files = [f for f in z_f.namelist() if f.startswith('xl/charts/chart') and f.endswith('.xml')]
+                    if chart_files:
+                        for chart_file in chart_files:
+                            with z_f.open(chart_file) as f:
+                                import xml.etree.ElementTree as ET
+                                tree = ET.parse(f)
+                                root = tree.getroot()
+                                
+                                # Namespace for chart XML
+                                chart_ns = {'c': 'http://schemas.openxmlformats.org/drawingml/2006/chart'}
+                                
+                                # Check for barChart or columnChart
+                                bar_charts = root.findall('.//c:barChart', chart_ns)
+                                column_charts = root.findall('.//c:columnChart', chart_ns)
+                                
+                                if bar_charts or column_charts:
+                                    # Check grouping attribute
+                                    chart_elem = bar_charts[0] if bar_charts else column_charts[0]
+                                    grouping = chart_elem.get('grouping')
+                                    
+                                    # Count series
+                                    series_elements = root.findall('.//c:ser', chart_ns)
+                                    series_count = len(series_elements)
+                                    
+                                    logger.info(f"Chart grouping attribute: {grouping}")
+                                    logger.info(f"Chart series count: {series_count}")
+                                    
+                                    # Check if it's clustered stacked chart
+                                    if expected_chart_type == 'clustered_stacked':
+                                        # For clustered stacked chart:
+                                        # 1. grouping should be "clustered" or None (None defaults to clustered in Excel)
+                                        # 2. Should have multiple series (indicating stacked behavior)
+                                        # 3. Should not be explicitly "stacked" or "percentStacked"
+                                        is_clustered = False
+                                        
+                                        if grouping is None:
+                                            # Default grouping in Excel is "clustered" when not specified
+                                            is_clustered = True
+                                            logger.info("Chart grouping is None (defaults to 'clustered' in Excel)")
+                                        elif grouping and 'clustered' in grouping.lower():
+                                            is_clustered = True
+                                            logger.info(f"Chart grouping is '{grouping}' (clustered)")
+                                        elif grouping and ('stack' in grouping.lower() or 'percent' in grouping.lower()):
+                                            # Explicitly stacked or percent stacked, not clustered
+                                            logger.warning(f"Chart grouping is '{grouping}', which is not clustered")
+                                            is_clustered = False
+                                        
+                                        if is_clustered and series_count > 1:
+                                            chart_type_ok = True
+                                            logger.info(f"✓ Chart is clustered stacked (grouping='{grouping or 'default clustered'}', {series_count} series)")
+                                        elif is_clustered and series_count <= 1:
+                                            logger.warning(f"Chart is clustered but has only {series_count} series (expected multiple for stacked)")
+                                        else:
+                                            logger.warning(f"Chart grouping is '{grouping}', expected 'clustered' (or None/default) for clustered stacked chart")
+                                    else:
+                                        # For other chart types, check grouping
+                                        if grouping and expected_chart_type.lower() in grouping.lower():
+                                            chart_type_ok = True
+                                            logger.info(f"✓ Chart type matches: grouping='{grouping}'")
+                                        elif grouping is None and expected_chart_type.lower() == 'clustered':
+                                            # Default to clustered if grouping is None
+                                            chart_type_ok = True
+                                            logger.info(f"✓ Chart type matches: grouping=None (defaults to clustered)")
+                                        else:
+                                            logger.warning(f"Chart grouping '{grouping}' does not match expected '{expected_chart_type}'")
+                                    
+                                    break
+                                else:
+                                    logger.warning("Chart is not a barChart or columnChart")
+            except Exception as e:
+                logger.warning(f"Error checking chart type via XML: {e}")
+                import traceback
+                logger.debug(traceback.format_exc())
+            
+            if not chart_type_ok:
+                logger.error(f"Chart type does not match expected '{expected_chart_type}'")
+                return 0.0
+        
         # All checks passed
         logger.info("=" * 60)
         logger.info(f"✓ Pivot table with chart verification passed!")
@@ -8429,6 +8562,8 @@ def verify_pivot_table_with_chart(result: str, expected: str = None, **options) 
             logger.info(f"  - Pivot table exists in Sheet{sheet_idx + 1}")
         logger.info(f"  - Pivot table has correct structure")
         logger.info(f"  - Chart exists in the worksheet")
+        if expected_chart_type:
+            logger.info(f"  - Chart type is '{expected_chart_type}'")
         logger.info("=" * 60)
         return 1.0
         

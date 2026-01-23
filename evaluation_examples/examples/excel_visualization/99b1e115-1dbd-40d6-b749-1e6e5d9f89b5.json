@@ -63,17 +63,19 @@
       "sheet_idx": 1,
       "source_sheet": "Sheet1",
       "pivot_table_name": null,
+      "filter_fields": [],
       "row_fields": [
         "类别",
-        "品牌",
-        "月份"
+        "月份",
+        "品牌"
       ],
       "col_fields": [
         "年份"
       ],
       "data_fields": [
         "数据2"
-      ]
+      ],
+      "expected_chart_type": "clustered_stacked"
     },
     "expected": {
       "type": "cloud_file",

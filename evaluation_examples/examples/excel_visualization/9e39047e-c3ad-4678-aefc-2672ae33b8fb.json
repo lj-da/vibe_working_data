@@ -79,6 +79,7 @@
       "check_range": "A2:B2",
       "formula_pattern": "FIND(A1,\"老赵，老钱，老孙，老李\")>FIND",
       "font_color": "red",
+      "font_bold": true,
       "reference_string": "老赵，老钱，老孙，老李",
       "base_cell": "A1"
     },

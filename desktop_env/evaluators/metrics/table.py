@@ -9231,19 +9231,47 @@ def verify_contract_expiry_reminder(result: str, expected: str = None, **options
                     continue
                 
                 # Check 4: Formula contains date comparison conditions
-                # Check for >=30 pattern (allowing for spacing variations)
+                # Use expected_conditions from options to dynamically check conditions
                 escaped_source_col = re.escape(source_column)
-                condition1_pattern = rf'{escaped_source_col}\d+\s*-\s*TODAY\s*\(\s*\)\s*>=\s*30'
-                condition1_found = re.search(condition1_pattern, formula_upper)
+                all_conditions_found = True
+                for condition in expected_conditions:
+                    # Build pattern: B\d+ - TODAY() <condition>
+                    # Handle different condition formats: >=30, >0, <=0, etc.
+                    condition_str = condition.strip()
+                    # Split condition into operator and value parts
+                    if '>=' in condition_str:
+                        op, val = '>=', condition_str.replace('>=', '').strip()
+                        op_pattern = r'\s*>=\s*'
+                    elif '<=' in condition_str:
+                        op, val = '<=', condition_str.replace('<=', '').strip()
+                        op_pattern = r'\s*<=\s*'
+                    elif '>' in condition_str:
+                        op, val = '>', condition_str.replace('>', '').strip()
+                        op_pattern = r'\s*>\s*'
+                    elif '<' in condition_str:
+                        op, val = '<', condition_str.replace('<', '').strip()
+                        op_pattern = r'\s*<\s*'
+                    elif '=' in condition_str:
+                        op, val = '=', condition_str.replace('=', '').strip()
+                        op_pattern = r'\s*=\s*'
+                    else:
+                        # Fallback: escape the whole condition
+                        op_pattern = re.escape(condition_str)
+                        val = ''
+                    
+                    if val:
+                        condition_pattern = rf'{escaped_source_col}\d+\s*-\s*TODAY\s*\(\s*\){op_pattern}{re.escape(val)}'
+                    else:
+                        condition_pattern = rf'{escaped_source_col}\d+\s*-\s*TODAY\s*\(\s*\){op_pattern}'
+                    condition_found = re.search(condition_pattern, formula_upper)
+                    if not condition_found:
+                        all_conditions_found = False
+                        break
                 
-                # Check for <=0 pattern
-                condition2_pattern = rf'{escaped_source_col}\d+\s*-\s*TODAY\s*\(\s*\)\s*<=\s*0'
-                condition2_found = re.search(condition2_pattern, formula_upper)
-                
-                if not condition1_found or not condition2_found:
+                if not all_conditions_found:
                     logger.warning(f"Cell {cell_coord} formula does not contain expected date comparison conditions")
                     logger.warning(f"Formula: {formula_text}")
-                    logger.warning(f"Expected: >=30 and <=0 conditions")
+                    logger.warning(f"Expected: {expected_conditions} conditions")
                     all_passed = False
                     continue
                 

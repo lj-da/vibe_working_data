@@ -2,7 +2,7 @@
   "id": "b925c13b-6300-400b-a912-5a4794afc35b",
   "snapshot": "libreoffice_calc",
   "instruction": "excel中设置合同到期自动提醒的公式方法，在'合同是否到期'列提示'还有xx天到期'/'已到期'",
-  "method": "使用嵌套IF函数结合TODAY函数和字符串拼接来实现合同到期自动提醒功能。在C1单元格中输入公式=IF(B1-TODAY()>=30,'还有'&B1-TODAY()&'天到期',IF(B1-TODAY()<=0,'已过期'&TODAY()-B1&'天',(B1-TODAY()&'天后到期')))。该公式的工作原理：1) B1-TODAY()计算合同到期日期与今天的差值；2) 外层IF判断：如果差值>=30，返回'还有'&B1-TODAY()&'天到期'；3) 内层IF判断：如果差值<=0，返回'已过期'&TODAY()-B1&'天'；4) 否则返回B1-TODAY()&'天后到期'。将公式复制到C1:C3范围，由于使用了相对引用（B1），在复制到不同行时，公式会自动调整为对应行的引用（如C2中的公式会变为=IF(B2-TODAY()>=30,'还有'&B2-TODAY()&'天到期',IF(B2-TODAY()<=0,'已过期'&TODAY()-B2&'天',(B2-TODAY()&'天后到期')))。这样就能为每一行数据自动计算并显示合同到期提醒信息。",
+  "method": "使用嵌套IF函数结合TODAY函数和字符串拼接来实现合同到期自动提醒功能。在C1单元格中输入公式=IF(B1-TODAY()>0,'还有'&B1-TODAY()&'天到期',IF(B1-TODAY()<=0,'已到期',''))。该公式的工作原理：1) B1-TODAY()计算合同到期日期与今天的差值；2) 外层IF判断：如果差值>0，返回'还有'&B1-TODAY()&'天到期'；3) 内层IF判断：如果差值<=0，返回'已到期'；4) 否则返回空字符串''。将公式复制到C1:C3范围，由于使用了相对引用（B1），在复制到不同行时，公式会自动调整为对应行的引用（如C2中的公式会变为=IF(B2-TODAY()>0,'还有'&B2-TODAY()&'天到期',IF(B2-TODAY()<=0,'已到期',''))。这样就能为每一行数据自动计算并显示合同到期提醒信息。",
   "source": "original",
   "config": [
     {
@@ -28,7 +28,7 @@
         "command": [
           "python",
           "-c",
-          "formula = '=IF(B2-TODAY()>=30,\"还有\"&B2-TODAY()&\"天到期\",IF(B2-TODAY()<=0,\"已过期\"&TODAY()-B2&\"天\",(B2-TODAY()&\"天后到期\")))'; f = open('/home/user/Desktop/verification_formula.txt', 'w', encoding='utf-8'); f.write(formula); f.close()"
+          "formula = '=IF(B2-TODAY()>0,\"还有\"&B2-TODAY()&\"天到期\",IF(B2-TODAY()<=0,\"已到期\",\"\"))'; f = open('/home/user/Desktop/verification_formula.txt', 'w', encoding='utf-8'); f.write(formula); f.close()"
         ]
       }
     }
@@ -83,14 +83,13 @@
         "TODAY"
       ],
       "expected_conditions": [
-        ">=30",
+        ">0",
         "<=0"
       ],
       "expected_text_patterns": [
         "还有",
         "天到期",
-        "已过期",
-        "天后到期"
+        "已到期"
       ]
     },
     "expected": {
